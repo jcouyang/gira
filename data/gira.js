@@ -1,15 +1,16 @@
-
-self.port.on('loadTemplate',function(source){
-	var repo = window.location.pathname.split('/');
-	repo.pop();
-	repo.shift();
-	var REPO_URL = ['https://api.github.com/repos'].concat(repo).join('/');
-	console.log(REPO_URL);
-	$.getJSON(REPO_URL+'/milestones', function(milestones){
-		console.log('blah');
-		var template = Handlebars.compile(source);
-		var html = template({'milestones':milestones});
-		console.log('haha',html);
-		$('body').html(html);
-	});
+var repo = window.location.pathname.split('/');
+repo.pop();
+repo.shift();
+var REPO_URL = ['https://api.github.com/repos'].concat(repo).join('/');
+$.when($.getJSON(REPO_URL+'/milestones'), $.getJSON(REPO_URL+'/issues')).done(function(milestones,issues){
+	var _issues = _(issues[0]);
+	var milestoneWithIssue= _(milestones[0])
+				.map(function(milestone){
+					milestone.issues = _issues.filter(function(issue){
+						return milestone.id === issue.milestone.id;
+					});
+					return milestone;
+				});
+	var compiled =  nunjucks.render('data/templates/gira.html', { milestones: milestoneWithIssue});
+	$('.issues.issues-list').html(compiled);
 });

@@ -3,7 +3,12 @@
   "title": "gira",
   "id": "jid1-KwytV5omzALDXw",
   "description": "a basic add-on",
-  "author": "",
+  "author": "jichao ouyang",
   "license": "MPL 2.0",
-  "version": "0.1"
+  "version": "0.1.0",
+		"main": "lib/main.js",
+		"devDependencies": {
+				"nunjucks": "~1.0.1",
+				"grunt-nunjucks":"~0.1.0"
+    }
 }

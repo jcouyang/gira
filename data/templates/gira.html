@@ -1,0 +1,31 @@
+<div class="box box-small">
+  <div class="box-header">
+    <h3 class="box-title">GIRA</h3>
+  </div>
+  <div class="box-body">
+    <div id="contributions-calendar">
+      <div class="contrib-details grid">
+				{% for milestone in milestones %}
+        <div class="col">
+          <span class="num"
+								id="{{milestone.id}}">{{milestone.title}}</span>{{milestone.description}}
+          {{milestone.open_issues}}
+					{% for issue in milestone.issues %}
+					<span class="lbl">
+						<div class="blankslate">
+							<h4 class="list-group-item-name">{{issue.title}}</h4>
+							<span class="labels">
+								{% for label in issue.labels %}
+								<span class="label labelstyle-{{label.color}}"
+											data-name="{{label.name}}">{{label.name}}</span>
+								{% endfor %}
+							</span>
+						</div>
+					</span>
+					{% endfor %}
+        </div>
+				{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
