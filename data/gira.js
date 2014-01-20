@@ -10,20 +10,20 @@ $('<li><a class="tabnav-tab" href="#gira">GIRA</a></li>')
 			var milestoneWithIssue= _(milestones[0])
 						.map(function(milestone){
 							milestone.issues = _issues.filter(function(issue){
-								return issue.milestone && milestone.id === issue.milestone.id;
+								return !!issue.milestone && milestone.id === issue.milestone.id;
 							});
 							return milestone;
 						});
 			var compiled =  nunjucks.render('data/templates/gira.html', {
 				milestones: milestoneWithIssue});
 
-			$('#issues_list').html(compiled);
+			$('#issues_list').html($(compiled).prepend($('#issues_list style')).html());
 			draggablify();
 		});
 	});
 
 function draggablify(){
-	var $issues = $('.col .lbl a');
+	var $issues = $('#issues_list .contrib-details.grid .col .lbl a');
 	$issues.on('dragstart', function (e) {
 		e.originalEvent.dataTransfer.effectAllowed = 'move';
 		e.originalEvent.dataTransfer.setData('text/html', this.id);
@@ -42,13 +42,13 @@ function draggablify(){
 			data: {
 				_method:	'put',
 				authenticity_token:token,
-				"issues[]": issueId,
+				"issues[]": issueId.replace('issue-',''),
 				milestone: this.id
 			}
 		});
 		$(this).removeClass("over")
 			.find('span.lbl')
-			.append($(issueId));
+			.append($('#'+issueId));
 		return false;
 	}); 
 }
