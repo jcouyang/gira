@@ -1,9 +1,9 @@
-(function() {(window.nunjucksPrecompiled = window.nunjucksPrecompiled || {})["data/templates/gira.html"] = (function() {function root(env, context, frame, runtime, cb) {
+(function() {(window.nunjucksPrecompiled = window.nunjucksPrecompiled || {})["gira/templates/gira.html"] = (function() {function root(env, context, frame, runtime, cb) {
 var lineno = null;
 var colno = null;
 var output = "";
 try {
-output += "<style media=\"screen\" type=\"text/css\">\n#contributions-calendar .contrib-details span.lbl div.blankslate {\n    border-left: 1px solid #DDD;\nmargin:5px;\n}\n</style>\n<div class=\"box box-small\">\n  <div class=\"box-header\">\n    <h3 class=\"box-title\">GIRA</h3>\n  </div>\n  <div class=\"box-body\">\n    <div id=\"contributions-calendar\">\n      <div class=\"contrib-details grid\">\n\t\t\t\t";
+output += "<style media=\"screen\" type=\"text/css\">\n#contributions-calendar .contrib-details span.lbl div.blankslate {\n    border-left: 1px solid #DDD;\nmargin:5px;\nmax-width:300px;\nmin-width:250px;\n}\n</style>\n<div class=\"box box-small\">\n  <div class=\"box-header\">\n    <h3 class=\"box-title\">GIRA</h3>\n  </div>\n  <div class=\"box-body\">\n    <div id=\"contributions-calendar\">\n      <div class=\"contrib-details grid\">\n\t\t\t\t";
 frame = frame.push();
 var t_3 = runtime.contextOrFrameLookup(context, frame, "milestones");
 if(t_3) {for(var t_1=0; t_1 < t_3.length; t_1++) {

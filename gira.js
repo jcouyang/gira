@@ -1,4 +1,3 @@
-
 $('<li><a class="tabnav-tab" href="#gira">GIRA</a></li>')
 	.appendTo($("#issues_next .tabnav-tabs"))
 	.click(function(){
@@ -7,21 +6,39 @@ $('<li><a class="tabnav-tab" href="#gira">GIRA</a></li>')
 	  $this.siblings().find('a').removeClass('selected');
 		$.when($.getJSON(REPO_URL+'/milestones'), $.getJSON(REPO_URL+'/issues')).done(function(milestones,issues){
 			var _issues = _(issues[0]);
-			var milestoneWithIssue= _(milestones[0])
-						.map(function(milestone){
-							milestone.issues = _issues.filter(function(issue){
-								return !!issue.milestone && milestone.id === issue.milestone.id;
-							});
-							return milestone;
-						});
-			var compiled =  nunjucks.render('data/templates/gira.html', {
-				milestones: milestoneWithIssue});
-
-			$('#issues_list').html($(compiled).prepend($('#issues_list style')).html());
-			draggablify();
+			markdownTohtml(_issues, renderGira(milestones[0]));
+	
 		});
 	});
 
+function renderGira(milestones){
+	return function(_issues){
+		var milestoneWithIssue= _(milestones)
+					.map(function(milestone){
+						milestone.issues = _issues.filter(function(issue){
+							return !!issue.milestone && milestone.id === issue.milestone.id;
+						});
+						return milestone;
+					});
+		var compiled =  nunjucks.render('gira/templates/gira.html', {milestones: milestoneWithIssue});
+		$('#issues_list').append(compiled).find('div').remove('.column');
+		draggablify();
+	};
+}
+function markdownTohtml(_issues, callback){
+	var bodies = _issues.pluck("body").join('\n# //////////////////\n');
+	$.ajax({
+		url: 'https://api.github.com/markdown',
+		type: 'post',
+		dataType: "json",
+		data: JSON.stringify({text:bodies, mode:'gfm',context:'github/gollum'})
+	}).always(function(data){
+		data.responseText.split('<h1>//////////////////</h1>').forEach(function(md,index){
+			_issues.value()[index].body=md;
+		});
+		callback(_issues);
+	});
+}
 function draggablify(){
 	var $issues = $('#issues_list .contrib-details.grid .col .lbl a');
 	$issues.on('dragstart', function (e) {
