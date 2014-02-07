@@ -83,10 +83,11 @@ Gira.prototype = {
 		var that = this;
 		if (this.github.checkLogin()){
 			this.github.getRepos().then(
-			function(repos){
+				function(repos){
 				var groupedRepo = _(repos).groupBy(function(repo){
 					return repo.owner.login;
 				});
+					that.repo = that.repo || groupedRepo[that.owner][0].name;
 				var res ={checked:that.owner, checkedRepo:that.repo, owners:_(groupedRepo).map(function(repos){return repos[0].owner;}), repos: groupedRepo[that.owner]};
 				var compiled = nunjucks.render('src/templates/repo-selector.html',res);
 				$(".pagehead.repohead h1").html(compiled);
@@ -119,6 +120,7 @@ Gira.prototype = {
 		if (this.github.checkLogin()){
 			this.github.getUser().then(
 				function(user){
+					that.owner = that.owner || user.login;
 					$(".header").html(nunjucks.render('src/templates/header.html', {user:user}));
 					$(".octicon.octicon-log-out").click(that.github.logout);
 				},
