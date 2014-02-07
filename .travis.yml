@@ -15,6 +15,7 @@ script:
 - git checkout -B gh-pages
 - git add .
 - git remote add pages $REPO_URL
+- git commit -m "publi:ship:"
 - git push pages gh-pages -f -q
 env:
   global:

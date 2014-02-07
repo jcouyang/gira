@@ -109,12 +109,12 @@ output += "\">\t\n\t\t\t\t<h4 class=\"list-group-item-name\">#";
 output += runtime.suppressValue(runtime.memberLookup((t_8),"number", env.autoesc), env.autoesc);
 output += " ";
 output += runtime.suppressValue(runtime.memberLookup((t_8),"title", env.autoesc), env.autoesc);
-output += "</h4>\n\t\t\t</a>\n\t\t\t\t";
+output += "</h4>\n\t\t\t</a>\n\t\t<!-- \t\t";
 if(runtime.memberLookup((t_4),0, env.autoesc) == runtime.contextOrFrameLookup(context, frame, "last_label")) {
-output += "\n\t\t<a type=\"button\" class=\"close close-issue left\">           <span class=\"octicon octicon-remove-close\"></span>         </a>\n\t\t\t";
+output += " -->\n\t\t<!-- <a type=\"button\" class=\"close close-issue left\">           <span class=\"octicon octicon-remove-close\"></span>         </a> -->\n\t\t<!-- \t";
 ;
 }
-output += "\n\t\t\t\t\t<span class=\"labels\">\n\t\t\t\t\t\t";
+output += " -->\n\t\t\t\t\t<span class=\"labels\">\n\t\t\t\t\t\t";
 frame = frame.push();
 var t_11 = runtime.memberLookup((t_8),"labels", env.autoesc);
 if(t_11) {for(var t_9=0; t_9 < t_11.length; t_9++) {
@@ -168,7 +168,7 @@ var lineno = null;
 var colno = null;
 var output = "";
 try {
-output += "<div class=\"container clearfix\">\n\t\t<a href=\"https://oyanglul.us/gira\" class=\"header-logo-invertocat tooltipped downwards\" original-title=\"Github Issues Really Awesome\">\n\t\t\t<span class=\"mega-octicon octicon-octoface\"></span>\n\t\t\t<span class=\"mega-octicon octicon-issue-reopened\"></span>\n\t\t\t<img width=\"40\" height=\"40\" align=\"absmiddle\" src=\"https://a248.e.akamai.net/assets.github.com/images/icons/emoji/metal.png\" alt=\":metal:\" title=\":metal:\" class=\"emoji\">\n\t\t</a>\n\n\t\t<ul id=\"user-links\">\n\t\t\t";
+output += "<div class=\"container clearfix\">\n\t\t<a href=\"/\" class=\"header-logo-invertocat tooltipped downwards\" original-title=\"Github Issues Really Awesome\">\n\t\t\t<span class=\"mega-octicon octicon-octoface\"></span>\n\t\t\t<span class=\"mega-octicon octicon-issue-reopened\"></span>\n\t\t\t<img width=\"40\" height=\"40\" align=\"absmiddle\" src=\"https://a248.e.akamai.net/assets.github.com/images/icons/emoji/metal.png\" alt=\":metal:\" title=\":metal:\" class=\"emoji\">\n\t\t</a>\n\n\t\t<ul id=\"user-links\">\n\t\t\t";
 if(runtime.contextOrFrameLookup(context, frame, "user")) {
 output += "\n\t\t\t<li>\n\t\t\t\t<a class=\"name\" href=\"#\">\n\t\t\t\t\t<img width=\"20\" height=\"20\" src=\"";
 output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"avatar_url", env.autoesc), env.autoesc);
