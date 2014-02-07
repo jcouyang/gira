@@ -2,13 +2,11 @@ var should = chai.should();
 var stub = sinon.stub;
 var gira;
 
-
 describe('unit test', function(){
 
 	describe('getIssues',function(){
-
-		it('group Issues by label', function(done){
-			var github= {
+		beforeEach(function(){
+			var github = {
 				getIssues: function(){
 					return Q([{
 						name:'issue1',
@@ -33,8 +31,11 @@ describe('unit test', function(){
 					}]);
 				}
 			};
+			gira = new Gira('jcouyang','gira',github);			
+		});
 
-			gira = new Gira('jcouyang','gira',github);
+		it('group Issues by label', function(done){
+
 			gira.groupIssuesByLabels().should.eventually.deep.equal([
 				['0-Backlog',[{
 					name:'issue without label',

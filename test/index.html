@@ -15,18 +15,20 @@
 			<script type="text/javascript" src="../libs/nunjucks-slim.min.js"></script>
 			<script type="text/javascript" src="../libs/q.js"></script>
 			<script type="text/javascript" src="../libs/templates.js"></script>
-			<script src="../src/github-api.js"></script>
-			<script src="../src/gira.js"></script>
+			<script type="text/javascript" src="../src/github-api.js"></script>
+			<script type="text/javascript" src="../src/gira.js"></script>
 			<script src="chai.js"></script>
 			<script src="sinon-chai.js"></script>
 			<script src="chai-as-promised.js"></script>
 			<script src="chai-as-promised-fix.js"></script>
 			<script type="text/javascript" src="sinon-1.7.3.js"></script>
 			<script src="tests.js"></script>
-    <script>
-      if (navigator.userAgent.indexOf('PhantomJS') < 0) {
-    mocha.run();
-																										 }
+			<script>
+				if (window.mochaPhantomJS) { 
+    mochaPhantomJS.run(); 
+} else { 
+    mocha.run(); 
+}
     </script>
   </body>
 </html>
