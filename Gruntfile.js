@@ -25,11 +25,18 @@ module.exports = function(grunt) {
 			options: {
 				run: true
 			}
+		},
+		uglify:{
+			deploy:{
+				src:['src/gira.js','src/github-api.js'],
+				dest:'javascripts/'
+			}
 		}
 	});
 	grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-nunjucks');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-mocha');
-	grunt.registerTask('default', ['nunjucks', 'copy', 'mocha']);
+	grunt.registerTask('default', ['nunjucks', 'copy', 'mocha', 'uglify']);
 };
