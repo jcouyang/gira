@@ -3,8 +3,24 @@ before_install:
     - phantomjs --version
 branches:
     only:
-        - gh-pages
+        - master
 node_js:
     - '0.10'
+before_script:
+    - git config --global user.name "Jichao Ouyang"
+    - git config --global user.email "oyanglulu@gmail.com"
+    - export REPO_URL="https://$GH_TOKEN@github.com/$GH_REPO.git"
 script:
     - npm test
+after_script:
+    - cd deploy && git init && git branch gh-pages && git add . && git commit -m "deploy" && git push origin gh-pages -f -q
+env:
+  global:
+  - GH_REPO="jcouyang/gia"
+  - secure: ! 'UcwYke5vbuDVxFf8smJ2h8UkaVAdutc4hJ7WD06KKJlxQdGuF3rrG5rActpx
+
+    5Np/gu1Nui3jnZv6jBnd9vJjKvwhPbpXBymlpoxo0tswhiAFAg5Tu8Zo50dF
+
+    nB//OpMAD8Yp30cUwZ7V7x46tikWAweZYpPGTRgfS5lU3ebA1js='
+      
+
