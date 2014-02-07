@@ -1,28 +1,22 @@
 language: node_js
 before_install:
-    - phantomjs --version
+- phantomjs --version
 branches:
-    only:
-        - master
+  only:
+  - master
 node_js:
-    - '0.10'
+- '0.10'
 before_script:
-    - git config --global user.name "Jichao Ouyang"
-    - git config --global user.email "oyanglulu@gmail.com"
-    - export REPO_URL="https://$GH_TOKEN@github.com/$GH_REPO.git"
+- git config --global user.name "Jichao Ouyang"
+- git config --global user.email "oyanglulu@gmail.com"
+- export REPO_URL="https://$GH_TOKEN@github.com/$GH_REPO.git"
 script:
-    - npm test
-    - git checkout -B gh-pages
-    - git add .
-    - git remote add pages $REPO_URL
-    - git push pages gh-pages -f -q
+- npm test
+- git checkout -B gh-pages
+- git add .
+- git remote add pages $REPO_URL
+- git push pages gh-pages -f -q
 env:
   global:
   - GH_REPO="jcouyang/gia"
-  - secure: ! 'UcwYke5vbuDVxFf8smJ2h8UkaVAdutc4hJ7WD06KKJlxQdGuF3rrG5rActpx
-
-    5Np/gu1Nui3jnZv6jBnd9vJjKvwhPbpXBymlpoxo0tswhiAFAg5Tu8Zo50dF
-
-    nB//OpMAD8Yp30cUwZ7V7x46tikWAweZYpPGTRgfS5lU3ebA1js='
-      
-
+  - secure: WRZimgS1liUgow3E/z4RzALQeZo15i9DVYTju0R70DIQkbyitkjcG3MPAJVgjzn2Am8U4WjAtep3A6LiLdOYYPjQxfizgCFEKHpHegjK2b78qmPaUozoIU+SNJtI6wfyvvqyQG21PjGgOlpY5Z/7hOTsUvJc0zY+7FR5aTXGMM0=
