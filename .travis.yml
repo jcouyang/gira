@@ -18,5 +18,5 @@ script:
 - git push pages gh-pages -f -q
 env:
   global:
-  - GH_REPO="jcouyang/gia"
+  - GH_REPO="jcouyang/gira"
   - secure: WRZimgS1liUgow3E/z4RzALQeZo15i9DVYTju0R70DIQkbyitkjcG3MPAJVgjzn2Am8U4WjAtep3A6LiLdOYYPjQxfizgCFEKHpHegjK2b78qmPaUozoIU+SNJtI6wfyvvqyQG21PjGgOlpY5Z/7hOTsUvJc0zY+7FR5aTXGMM0=
