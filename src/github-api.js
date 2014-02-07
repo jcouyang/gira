@@ -60,6 +60,7 @@ Github.prototype = {
 		}));
 	},
 	getIssues: function(owner,repo,milestone, id) {
+		id = (typeof id !== "undefined" && id !== null)?id:'';
 		return Q($.ajax({
 			url:this.getReposUrl(owner,repo)+"/issues" + (id&&'/'+id) + (milestone && ("?milestone="+milestone)),
 			type:'GET',
@@ -96,9 +97,10 @@ Github.prototype = {
 				type: 'delete'
 			});
 	},
-	newIssue: function(owner, repo, issue) {
+	newIssue: function(owner, repo, issue,id) {
+		id = (typeof id !== "undefined" && id !== null)?id:'';
 		return Q($.ajax({
-			url:this.REPO_BASE + ['repos', owner,repo,'issues'].join('/') + (id&&'/'+id) + '?access_token='+this.access_token,
+			url:this.REPO_BASE + ['repos', owner,repo,'issues'].join('/') + (id&&('/'+id)) + '?access_token='+this.access_token,
 			type: 'post',
 			dataType:'json',
 			data:JSON.stringify(issue)
