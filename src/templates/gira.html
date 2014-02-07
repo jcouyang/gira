@@ -18,9 +18,11 @@
 									data-name="{{label.name}}">{{label.name|removeIndex}}</span>
 						{% endfor %}
 					</span>
+					{%if issue.assignee %}
 					<span class="assignee tooltipped downwards yours right" href="{{issue.assignee.url}}" original-title="Assigned to {{issue.assignee.login}}">
       <img width="16" height="16" src="{{issue.assignee.avatar_url}}" alt="{{issue.assignee.login}}">
-</span>
+					</span>
+					{% endif %}
 			
 							</div>
 			{% endfor %}

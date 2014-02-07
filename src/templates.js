@@ -133,7 +133,9 @@ output += "</span>\n\t\t\t\t\t\t";
 }
 }
 frame = frame.pop();
-output += "\n\t\t\t\t\t</span>\n\t\t\t\t\t<span class=\"assignee tooltipped downwards yours right\" href=\"";
+output += "\n\t\t\t\t\t</span>\n\t\t\t\t\t";
+if(runtime.memberLookup((t_8),"assignee", env.autoesc)) {
+output += "\n\t\t\t\t\t<span class=\"assignee tooltipped downwards yours right\" href=\"";
 output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((t_8),"assignee", env.autoesc)),"url", env.autoesc), env.autoesc);
 output += "\" original-title=\"Assigned to ";
 output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((t_8),"assignee", env.autoesc)),"login", env.autoesc), env.autoesc);
@@ -141,7 +143,10 @@ output += "\">\n      <img width=\"16\" height=\"16\" src=\"";
 output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((t_8),"assignee", env.autoesc)),"avatar_url", env.autoesc), env.autoesc);
 output += "\" alt=\"";
 output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((t_8),"assignee", env.autoesc)),"login", env.autoesc), env.autoesc);
-output += "\">\n</span>\n\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t";
+output += "\">\n\t\t\t\t\t</span>\n\t\t\t\t\t";
+;
+}
+output += "\n\t\t\t\n\t\t\t\t\t\t\t</div>\n\t\t\t";
 ;
 }
 }
