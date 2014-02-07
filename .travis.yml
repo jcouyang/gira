@@ -1,0 +1,10 @@
+language: node_js
+before_install:
+    - phantomjs --version
+branches:
+    only:
+        - gh-pages
+node_js:
+    - '0.10'
+script:
+    - npm test

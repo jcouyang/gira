@@ -1,0 +1,31 @@
+<div class="contrib-details grid lala">
+	{% for issues in issuesWithLabel %}
+  <div class="col" id="{{issues[0]}}">
+    <span class="num">{{issues[0]|removeIndex|title}}</span>
+		<span class="lbl">
+			{% for issue in issues[1] %}
+			<div class="blankslate" draggable="true"  id="{{issue.number}}" data-label="{{issues[0]}}">
+			<a href="{{issue.html_url}}" target="_blank" class="octicon octicon-link-external right"></a>
+			<a href="#create-new-issue" rel="facebox" class="popable" data-issue-id="{{issue.number}}">	
+				<h4 class="list-group-item-name">#{{issue.number}} {{issue.title}}</h4>
+			</a>
+				{% if issues[0] == last_label %}
+		<a type="button" class="close close-issue left">           <span class="octicon octicon-remove-close"></span>         </a>
+			{% endif %}
+					<span class="labels">
+						{% for label in issue.labels %}
+						<span class="label labelstyle-{{label.color}}" style="background-color:#{{label.color}}"
+									data-name="{{label.name}}">{{label.name|removeIndex}}</span>
+						{% endfor %}
+					</span>
+					<span class="assignee tooltipped downwards yours right" href="{{issue.assignee.url}}" original-title="Assigned to {{issue.assignee.login}}">
+      <img width="16" height="16" src="{{issue.assignee.avatar_url}}" alt="{{issue.assignee.login}}">
+</span>
+			
+							</div>
+			{% endfor %}
+		</span>
+  </div>
+	{% endfor %}
+</div>
+
