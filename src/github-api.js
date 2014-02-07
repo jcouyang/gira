@@ -59,7 +59,7 @@ Github.prototype = {
 			dataType:'json'
 		}));
 	},
-	getIssues: function(owner,repo,milestone, id='') {
+	getIssues: function(owner,repo,milestone, id) {
 		return Q($.ajax({
 			url:this.getReposUrl(owner,repo)+"/issues" + (id&&'/'+id) + (milestone && ("?milestone="+milestone)),
 			type:'GET',
@@ -96,7 +96,7 @@ Github.prototype = {
 				type: 'delete'
 			});
 	},
-	newIssue: function(owner, repo, issue,id='') {
+	newIssue: function(owner, repo, issue) {
 		return Q($.ajax({
 			url:this.REPO_BASE + ['repos', owner,repo,'issues'].join('/') + (id&&'/'+id) + '?access_token='+this.access_token,
 			type: 'post',

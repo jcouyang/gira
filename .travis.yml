@@ -12,9 +12,8 @@ before_script:
     - export REPO_URL="https://$GH_TOKEN@github.com/$GH_REPO.git"
 script:
     - npm test
-    - git checkout -b gh-pages
+    - git checkout -B gh-pages
     - git add .
-    - git commit -am "deploy to ghpages"
     - git push origin gh-pages -f -q
 env:
   global:

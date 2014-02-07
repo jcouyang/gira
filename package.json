@@ -1,21 +1,24 @@
 {
-		"name": "gira",
-		"title": "gira",
-		"id": "jid1-KwytV5omzALDXw",
-		"description": "a basic add-on",
-		"author": "jichao ouyang",
-		"license": "MPL 2.0",
-		"version": "0.1.0",
-		"main": "lib/main.js",
-		"devDependencies": {
-				"nunjucks": "~1.0.1",
-				"grunt-nunjucks": "~0.1.0",
-				"grunt-contrib-copy": "~0.5.0",
-				"grunt": "~0.4.2",
-				"grunt-contrib-concat": "~0.3.0",
-				"mocha": "~1.17.1",
-				"grunt-cli": "~0.1.13",
-				"grunt-mocha":""
-		},
-		"scripts": { "test": "grunt" }
+  "name": "gira",
+  "title": "gira",
+  "id": "jid1-KwytV5omzALDXw",
+  "description": "a basic add-on",
+  "author": "jichao ouyang",
+  "license": "MPL 2.0",
+  "version": "0.1.0",
+  "main": "lib/main.js",
+  "devDependencies": {
+    "nunjucks": "~1.0.1",
+    "grunt-nunjucks": "~0.1.0",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt": "~0.4.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "mocha": "~1.17.1",
+    "grunt-cli": "~0.1.13",
+    "grunt-mocha": "",
+    "grunt-contrib-uglify": "~0.3.2"
+  },
+  "scripts": {
+    "test": "grunt"
+  }
 }

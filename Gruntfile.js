@@ -27,9 +27,13 @@ module.exports = function(grunt) {
 			}
 		},
 		uglify:{
-			deploy:{
-				src:['src/gira.js','src/github-api.js'],
-				dest:'javascripts/'
+			github:{
+				src:['src/github-api.js'],
+				dest:'javascripts/github-api.js'
+			},
+			gira:{
+				src:['src/gira.js'],
+				dest:"javascripts/gira.js"
 			}
 		}
 	});
