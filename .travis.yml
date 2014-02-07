@@ -14,7 +14,8 @@ script:
     - npm test
     - git checkout -B gh-pages
     - git add .
-    - git push origin gh-pages -f -q
+    - git remote add pages ${REPO_URL}
+    - git push pages gh-pages -f -q
 env:
   global:
   - GH_REPO="jcouyang/gia"
