@@ -50,7 +50,7 @@ Gira.prototype = {
 		var $issues = $('#contributions-calendar .contrib-details.grid .col .lbl div[draggable=true]');
 		$issues.on('dragstart', function (e) {
 			e.originalEvent.dataTransfer.effectAllowed = 'move';
-			e.originalEvent.dataTransfer.setData('text/html', this.id);
+			e.originalEvent.dataTransfer.setData('text/plain', this.id);
 		}); 
 		$(".col").on('dragover', function (e) {
 			if (e.preventDefault) e.preventDefault(); // allows us to drop
@@ -59,7 +59,7 @@ Gira.prototype = {
 			return false;
 		}).on('drop', function (e) {
 			if (e.stopPropagation) e.stopPropagation();
-			var $issue = $('#'+e.originalEvent.dataTransfer.getData('text/html'));
+			var $issue = $('#'+e.originalEvent.dataTransfer.getData('text/plain'));
 
 			that.github.deleteLabel(that.owner,that.repo,$issue.attr('id'),$issue.data('label'));
 			that.github.addLabel(that.owner,that.repo,$issue.attr('id'), this.id);

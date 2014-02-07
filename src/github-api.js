@@ -5,8 +5,9 @@ var Github = function(){
 
 Github.prototype = {
 	getAccessToken: function(){
-		if (window.location.search && window.location.search.contains('code')){
-			var r = /\?code=([^\/]+)\/?/;
+		var r = /\?code=([^\/]+)\/?/;
+		if (window.location.search && r.test(window.location.search)){
+		
 			var m = r.exec(location.search);
 			return Q($.ajax({
 				url:"http://query.yahooapis.com/v1/public/yql?q=env%20%22store%3A%2F%2F0zaLUaPXLo4GWBb1koVqO6%22%3Bselect%20OAuth%20from%20github%20where%20CODE%3D%22"+m.pop()+"%22&format=json&diagnostics=true&callback=?",
