@@ -12,10 +12,10 @@ before_script:
 - export REPO_URL="https://$GH_TOKEN@github.com/$GH_REPO.git"
 script:
 - npm test
-- git checkout -B gh-pages
 - git add .
 - git remote add pages $REPO_URL
 - git commit -m "publi:ship:"
+- git checkout -B gh-pages
 - git push pages gh-pages -f -q
 env:
   global:
