@@ -222,17 +222,25 @@ Gira.prototype = {
 			}else if(this.id==='new-label'){
 							$('.facebox-content:visible').html(nunjucks.render('src/templates/create-label.html'));	
 			}else{
-                Q.all([that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")), that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo)]).then(function(data) {
+                Q.all([that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")), that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo)]).then(function(data) {
                     console.log(data);
                     var issue = data[0];
                     issue.assignees = data[1];
                     issue.milestones = data[2];
+                    issue.all_labels = data[3];
                     $('.facebox-content').html(nunjucks.render('src/templates/create-issue.html',issue));
+                    that.updateLabelStatus(issue);
                 }).then(that.bindEvent).then(that.bindUploadImageEvent);
 			}
 			return false;
 		};
 	},
+    updateLabelStatus: function (issue) {
+        var activeLabels = issue.labels;
+        $.each(activeLabels, function(index, label) {
+            $(".sidebar .color-label-list li[data-name=\""+ label.name + "\"] a").addClass("selected");
+        })
+    },
     bindUploadImageEvent: function() {
         $('#write_bucket_').bind("dragenter drop", function(){
             var dropbox = $('#write_bucket_'),

@@ -314,95 +314,16 @@
 			<h3>Add Labels</h3>
 			<ul class="js-composer-labels color-label-list filter-list small">
 
-				<li data-name="0-Backlog">
-					<a class="filter-item color-label labelstyle-ededed" href="#">
-						
-						<input type="checkbox" name="issue[labels][]" id="issue_labels_0-Backlog" value="0-Backlog" style="display: none">
-						<span style="background-color: #ededed" class="color">&nbsp;</span>
-						<span class="name">0-Backlog</span>
-					</a>
-				</li>
+                {% for one_label in all_labels %}
+                    <li data-name="{{ one_label.name }}">
+                        <a class="filter-item color-label labelstyle-{{one_label.color}}" href="#">
 
-				<li data-name="1-Ready">
-					<a class="filter-item color-label labelstyle-CCCCCC" href="#">
-						
-						<input type="checkbox" name="issue[labels][]" id="issue_labels_1-Ready" value="1-Ready" style="display: none">
-						<span style="background-color: #CCCCCC" class="color">&nbsp;</span>
-						<span class="name">1-Ready</span>
-					</a>
-				</li>
-
-				<li data-name="2-Working">
-					<a class="filter-item color-label labelstyle-CCCCCC" href="#">
-						
-						<input type="checkbox" name="issue[labels][]" id="issue_labels_2-Working" value="2-Working" style="display: none">
-						<span style="background-color: #CCCCCC" class="color">&nbsp;</span>
-						<span class="name">2-Working</span>
-					</a>
-				</li>
-
-				<li data-name="3-done">
-					<a class="filter-item color-label labelstyle-CCCCCC" href="#">
-						
-						<input type="checkbox" name="issue[labels][]" id="issue_labels_3-done" value="3-done" style="display: none">
-						<span style="background-color: #CCCCCC" class="color">&nbsp;</span>
-						<span class="name">3-done</span>
-					</a>
-				</li>
-
-				<li data-name="bug">
-					<a class="filter-item color-label labelstyle-fc2929" href="#">
-						
-						<input type="checkbox" name="issue[labels][]" id="issue_labels_bug" value="bug" style="display: none">
-						<span style="background-color: #fc2929" class="color">&nbsp;</span>
-						<span class="name">bug</span>
-					</a>
-				</li>
-
-				<li data-name="duplicate">
-					<a class="filter-item color-label labelstyle-cccccc" href="#">
-						
-						<input type="checkbox" name="issue[labels][]" id="issue_labels_duplicate" value="duplicate" style="display: none">
-						<span style="background-color: #cccccc" class="color">&nbsp;</span>
-						<span class="name">duplicate</span>
-					</a>
-				</li>
-
-				<li data-name="enhancement">
-					<a class="filter-item color-label labelstyle-84b6eb" href="#">
-						
-						<input type="checkbox" name="issue[labels][]" id="issue_labels_enhancement" value="enhancement" style="display: none">
-						<span style="background-color: #84b6eb" class="color">&nbsp;</span>
-						<span class="name">enhancement</span>
-					</a>
-				</li>
-
-				<li data-name="invalid">
-					<a class="filter-item color-label labelstyle-e6e6e6" href="#">
-						
-						<input type="checkbox" name="issue[labels][]" id="issue_labels_invalid" value="invalid" style="display: none">
-						<span style="background-color: #e6e6e6" class="color">&nbsp;</span>
-						<span class="name">invalid</span>
-					</a>
-				</li>
-
-				<li data-name="question">
-					<a class="filter-item color-label labelstyle-cc317c" href="#">
-						
-						<input type="checkbox" name="issue[labels][]" id="issue_labels_question" value="question" style="display: none">
-						<span style="background-color: #cc317c" class="color">&nbsp;</span>
-						<span class="name">question</span>
-					</a>
-				</li>
-
-				<li data-name="wontfix">
-					<a class="filter-item color-label labelstyle-ffffff" href="#">
-						
-						<input type="checkbox" name="issue[labels][]" id="issue_labels_wontfix" value="wontfix" style="display: none">
-						<span style="background-color: #ffffff" class="color">&nbsp;</span>
-						<span class="name">wontfix</span>
-					</a>
-				</li>
+                            <input type="checkbox" name="issue[labels][]" id="issue_labels_{{one_label.name}}" value="{{one_label.name}}" style="display: none">
+                            <span style="background-color: #{{one_label.color}}" class="color">&nbsp;</span>
+                            <span class="name">{{one_label.name}}</span>
+                        </a>
+                    </li>
+                {% endfor %}
 
 			</ul>
 
