@@ -211,6 +211,13 @@ Gira.prototype = {
 
             console.log("enter in");
         });
+        $('.sidebar .color-label').click(function (e) {
+            e.preventDefault();
+            $(this).toggleClass('selected');
+        });
+        $('.form-actions .primary.button').submit(function () {
+            that.renderKanban();
+        });
     },
 	renderFaceBox: function() {
 		var that = this;
@@ -231,7 +238,6 @@ Gira.prototype = {
 			return false;
 		};
 	},
-
 	render: function(){
 		var that = this;
 		that.renderHeader();
