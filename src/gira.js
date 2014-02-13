@@ -232,11 +232,89 @@ Gira.prototype = {
                     var issue = data[0];
                     issue.assignees = data[1];
                     $('.facebox-content').html(nunjucks.render('src/templates/create-issue.html',issue));
-                }).then(that.bindEvent);
+                }).then(that.bindEvent).then(that.bindUploadImageEvent);
 			}
 			return false;
 		};
 	},
+    bindEvent: function () {
+
+    },
+    bindUploadImageEvent: function() {
+        $('#write_bucket_').bind("dragenter drop", image, function(){
+            var dropbox = $('#write_bucket_'),
+                message = $('.drag-and-drop', dropbox);
+
+            dropbox.filedrop({
+                paramname:'pic',
+
+                maxfiles: 5,
+                maxfilesize: 2, // in mb
+                url: 'post_file.php',
+
+                uploadFinished:function(i,file,response){
+                    alert("finished");
+                    //$.data(file).addClass('done');
+                    // response is the JSON object that post_file.php returns
+                },
+
+                error: function(err, file) {
+                    switch(err) {
+                        case 'BrowserNotSupported':
+                            showMessage('Your browser does not support HTML5 file uploads!');
+                            break;
+                        case 'TooManyFiles':
+                            alert('Too many files! Please select 5 at most!');
+                            break;
+                        case 'FileTooLarge':
+                            alert(file.name+' is too large! Please upload files up to 2mb.');
+                            break;
+                        default:
+                            break;
+                    }
+                },
+
+                // Called before each upload is started
+                beforeEach: function(file){
+                    alert("before...");
+                },
+
+                uploadStarted:function(i, file, len){
+                    createImage(file);
+                }
+
+            });
+
+            function createImage(file){
+
+                var image = $('.comment-form-textarea');
+
+                var reader = new FileReader();
+
+                reader.onload = function(e){
+
+                    // e.target.result holds the DataURL which
+                    // can be used as a source of the image:
+
+                    image.text(e.target.result);
+                };
+
+                // Reading the file as a DataURL. When finished,
+                // this will trigger the onload function above:
+                reader.readAsDataURL(file);
+
+                // Associating a preview container
+                // with the file, using jQuery's $.data():
+
+                $.data(file,preview);
+            }
+
+            function showMessage(msg){
+                message.html(msg);
+            }
+        });
+
+    },
 	render: function(){
 		var that = this;
 		that.renderHeader();
