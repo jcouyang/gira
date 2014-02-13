@@ -96,11 +96,6 @@ Gira.prototype = {
 					$(".pagehead.repohead h1").html(compiled);
 					$(".select-menu.owner-select-menu input[type=radio]").on("change", that.changeOwner.bind(that));
 					$(".target-repo-menu.select-menu input[type=radio]").on("change", that.changeRepo.bind(that));
-				},
-				function(error){
-					console.log("get repo error",error);
-					var compiled = nunjucks.render('src/templates/repo-selector.html',{username:that.username,repo:that.repo});
-					$(".pagehead.repohead h1").html(compiled);
 				});			
 		}else{
 			var compiled = nunjucks.render('src/templates/repo-selector.html',{username:that.username,repo:that.repo});
@@ -208,7 +203,7 @@ Gira.prototype = {
                 if(result){
                     $('.comment-body.markdown-body.js-comment-body p').html(result);
                 }
-            })
+            });
         });
         $('.sidebar .color-label').click(function (e) {
             e.preventDefault();
@@ -329,7 +324,7 @@ Gira.prototype = {
 				$('a[rel=facebox]').click(that.renderFaceBox());
 			})
 			.catch(function(error){
-				$('.flash-messages').html(nunjucks.render("src/templates/error.html",{message:message}));
+				console.log(error);
 			});
 	}
 };

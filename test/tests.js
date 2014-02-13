@@ -1,6 +1,5 @@
 var should = chai.should();
 var stub = sinon.stub;
-var gira;
 var Github = function(){
 	
 };
@@ -132,10 +131,9 @@ describe('unit test', function(){
 	describe("render", function(){
 		it("render not  ok", function(done){
 			gira = new Gira('jcouyang','gira',github);
-			gira.render().then(function(error){
-				if(error) done();
-				throw error;	
-			});
+			gira.render().catch(function(error){
+				throw error;
+			}).then(done);
 		});
 
 	});
