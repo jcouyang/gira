@@ -200,7 +200,6 @@ Gira.prototype = {
 					    $('.facebox-content').html(nunjucks.render('src/templates/create-issue.html',issue));
                     })
 				});
-                that.bindLabelSelectEvent();
 			}
 			return false;
 		};
