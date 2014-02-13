@@ -66,7 +66,7 @@ Github.prototype = {
 	getIssues: function(owner,repo,milestone, id) {
 		id = (typeof id !== "undefined" && id !== null)?id:'';
 		return Q($.ajax({
-			url:this.getReposUrl(owner,repo)+"/issues" + (id&&'/'+id) + (milestone && ("?milestone="+milestone)) + this.concatToken(),
+			url:this.getReposUrl(owner,repo)+"/issues" + (id&&'/'+id) + this.concatToken() + (milestone?("&milestone="+milestone):'') ,
 			type:'GET',
 			dataType:'json'
 		}));
