@@ -228,7 +228,7 @@ Gira.prototype = {
                     issue.assignees = data[1];
                     issue.milestones = data[2];
                     issue.all_labels = data[3];
-                    $('.facebox-content').html(nunjucks.render('src/templates/create-issue.html',issue));
+                    $('.facebox-content').html(mynunjucks.render('src/templates/create-issue.html',issue));
                     that.updateLabelStatus(issue);
                 }).then(that.bindEvent).then(that.bindUploadImageEvent);
 			}

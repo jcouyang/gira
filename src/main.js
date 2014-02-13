@@ -7,6 +7,9 @@ $(function(){
 	mynunjucks.addFilter('dayFromNow', function(str){
 		return Math.floor((new Date(str)-new Date())/(1000*60*60*24));
 	});
+    mynunjucks.addFilter('hasIndex', function(str){
+        return /\d+-.*/.test(str);
+    });
 	github = new Github();
 	
 	if(!github.checkLogin()){

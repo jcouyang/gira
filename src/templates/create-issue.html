@@ -315,11 +315,11 @@
 			<ul class="js-composer-labels color-label-list filter-list small">
 
                 {% for one_label in all_labels %}
-                    <li data-name="{{ one_label.name }}">
+                    <li data-name="{{ one_label.name }}" style="{% if one_label.name|hasIndex %}display: none;{% endif %}">
                         <a class="filter-item color-label labelstyle-{{one_label.color}}" href="#">
 
                             <input type="checkbox" name="issue[labels][]" id="issue_labels_{{one_label.name}}" value="{{one_label.name}}" style="display: none">
-                            <span style="background-color: #{{one_label.color}}" class="color">&nbsp;</span>
+                            <span style="background-color:  #{{one_label.color}}" class="color">&nbsp;</span>
                             <span class="name">{{one_label.name}}</span>
                         </a>
                     </li>
