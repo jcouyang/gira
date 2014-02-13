@@ -129,5 +129,11 @@ Github.prototype = {
     markdown: function (data) {
         return Q($.post(this.REPO_BASE + "markdown" + "?access_token=" + this.access_token,
             JSON.stringify(data)));
+    },
+    deleteLane: function(owner,repo,label){
+        $.ajax({
+            url: this.REPO_BASE+['repos', owner, repo, 'labels',label].join('/') + '?access_token='+this.access_token,
+            type: 'delete'
+        });
     }
 };

@@ -1,7 +1,11 @@
 <div class="contrib-details grid lala">
 	{% for issues in issuesWithLabel %}
   <div class="col" id="{{issues[0]}}">
-    <span class="num">{{issues[0]|removeIndex|title}}</span>
+    <span class="num">{{issues[0]|removeIndex|title}}
+      <a  class='remove-lane' type="button" data='{{issues[0]}}' href="#">
+          <span class="octicon octicon-remove-close"></span>
+      </a>
+    </span>
 		<span class="lbl">
 			{% for issue in issues[1] %}
 			<div class="blankslate" draggable="true"  id="{{issue.number}}" data-label="{{issues[0]}}">

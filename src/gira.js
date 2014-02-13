@@ -321,6 +321,15 @@ Gira.prototype = {
         });
 
     },
+    closeButton: function(){
+        var that = this;
+        $('.remove-lane').on('click',function(event){
+            event.preventDefault();
+            var label = $(this).attr('data');
+            that.github.deleteLane(that.owner,that.repo,label);
+            that.render();
+        })
+    },
 	render: function(){
 		var that = this;
 		that.renderHeader();
@@ -331,6 +340,7 @@ Gira.prototype = {
 			.then(function() {
 				$('a[rel=facebox]').click(that.renderFaceBox());
 			})
+            .then(that.closeButton.bind(that))
 			.catch(function(error){
 				console.log(error);
 			});
