@@ -195,6 +195,23 @@ Gira.prototype = {
 			return false;
 		};
 	},
+    bindEvent: function () {
+        var that = this;
+        $('#jk-preview').click(function(){
+            var data = {text: $('#issue_body').val()};
+
+            $.post("https://api.github.com/markdown" +"?access_token="+that.github.access_token,
+                    JSON.stringify(data)
+                ).success(function(result){
+                    if(result){
+                        $('.comment-body.markdown-body.js-comment-body p').html(result);
+                    }
+                    console.log(result);
+                });
+
+            console.log("enter in");
+        });
+    },
 	renderFaceBox: function() {
 		var that = this;
 		return function(e){
@@ -213,11 +230,8 @@ Gira.prototype = {
 			}
 			return false;
 		};
-
 	},
-    bindEvent: function () {
 
-    },
 	render: function(){
 		var that = this;
 		that.renderHeader();
