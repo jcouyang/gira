@@ -113,10 +113,14 @@
 
 								<div class="milestone infobar-widget">
 									<span class="css-truncate text js-composer-milestone-title">
+                                        {% if milestone %}
+                                        <strong class="css-truncate-target">{{milestone.title}}</strong>
+                                        {% else %}
 										No milestone
+                                        {% endif %}
 									</span>
 
-									<div class="select-menu js-menu-container js-select-menu js-composer-milestone-picker">
+									<div class="select-menu js-menu-container js-select-menu js-composer-milestone-picker {% if milestone %}is-showing-clear-item{% endif %}">
 										<span aria-label="Set milestone" role="button" class="minibutton select-menu-button icon-only js-menu-target">
 											<span class="octicon octicon-gear"></span>
 										</span>
@@ -152,22 +156,24 @@
 												<div data-tab-filter="tab-open" class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket">
 
 													<div class="select-menu-clear-item select-menu-item js-navigation-item js-clear-milestone">
-														<input type="radio" value="clear" name="milestone" id="milestone_clear">
+														<input type="radio" value="" name="milestone" id="milestone_clear">
 														<span class="select-menu-item-icon octicon octicon-remove-close"></span>
 														<div class="select-menu-item-text">Clear this milestone</div>
 													</div> <!-- /.select-menu-item -->
 
 													<div role="menu" data-filterable-type="substring" data-filterable-for="context-milestone-filter-field">
 
-														<div role="menuitem" class="select-menu-item js-navigation-item">
-															<input type="radio" value="{{milestone.number}}" name="milestone" id="milestone_{{milestone.number}}">
-															<span class="select-menu-item-icon octicon octicon-check"></span>
-															<div class="select-menu-item-text">
-																<h4 class="js-milestone-title js-select-button-text">{{milestone.title}}</h4>
-																{% if milestone.duo_on %}
-																<span class="description">Due in {{milestone.due_on}} days</span>{% endif %}
-															</div>
-														</div> <!-- /.select-menu-item -->
+                                                        {% for one_milestone in milestones %}
+                                                            <div role="menuitem" class="select-menu-item js-navigation-item {% if milestone.number == one_milestone.number %}selected{% endif %}">
+                                                                <input type="radio" value="{{one_milestone.number}}" name="milestone" id="milestone_{{one_milestone.number}}">
+                                                                <span class="select-menu-item-icon octicon octicon-check"></span>
+                                                                <div class="select-menu-item-text">
+                                                                    <h4 class="js-milestone-title js-select-button-text">{{one_milestone.title}}</h4>
+                                                                    {% if one_milestone.duo_on %}
+                                                                    <span class="description">Due in {{one_milestone.due_on}} days</span>{% endif %}
+                                                                </div>
+                                                            </div> <!-- /.select-menu-item -->
+                                                        {% endfor %}
 													</div>
 
 													<div class="select-menu-item select-menu-new-item-form js-navigation-item js-new-item-form">
