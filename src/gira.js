@@ -41,6 +41,8 @@ Gira.prototype = {
 				.map(function(label){
 				return [label.name, groupIssue[label.name]];
 			}).value();
+		}, function(error){
+			console.log(error);
 		});
 	},
 	draggablify: function(){
@@ -202,16 +204,12 @@ Gira.prototype = {
 	render: function(){
 		var that = this;
 		this.renderHeader();
-		this.renderRepoSelector()
-			.then(that.renderMilestone.bind(that))
-			.then(that.renderKanban.bind(that))
-			.then(that.draggablify.bind(that))
-			.then(function() {
+		this.renderKanban().then(that.draggablify.bind(this)).then(function() {
 				$('a[rel=facebox]').click(that.renderFaceBox());
-			})
-			.catch(function(error){
-				console.log(error);
-			});
+		});
+		this.renderRepoSelector();
+		this.renderMilestone();
+	
 	}
 };
 
