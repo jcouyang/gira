@@ -68,6 +68,13 @@ Github.prototype = {
 			dataType:'json'
 		}));
 	},
+    getAssignees: function(owner,repo) {
+        return Q($.ajax({
+            url:this.getReposUrl(owner,repo)+'/assignees',
+            type:'GET',
+            dataType:'json'
+        }));
+    },
 	getRepos: function(){
 		return Q($.ajax({
 			url:this.REPO_BASE + 'user/repos',

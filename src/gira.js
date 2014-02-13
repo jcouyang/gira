@@ -194,8 +194,13 @@ Gira.prototype = {
 			}else{
 				that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")).then(function(issue){
 					console.log(issue);
-					$('.facebox-content').html(nunjucks.render('src/templates/create-issue.html',issue));
+                    that.github.getAssignees(that.owner,that.repo).then(function(assignees) {
+                        console.log(assignees);
+                        issue.assignees = assignees;
+					    $('.facebox-content').html(nunjucks.render('src/templates/create-issue.html',issue));
+                    })
 				});
+                that.bindLabelSelectEvent();
 			}
 			return false;
 		};

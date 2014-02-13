@@ -13,5 +13,7 @@ logs
 results
 build
 .grunt
+.idea
+javascripts
 
 node_modules
