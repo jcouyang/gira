@@ -1,9 +1,52 @@
 var should = chai.should();
 var stub = sinon.stub;
 var gira;
+var Github = function(){
+	
+};
+Github.prototype = {
+	getAccessToken: function(){
+		return Q();
+	},
+	getUser:function() {
+		return Q();
+	},
+	getReposUrl:function(owner,repo) {
+		return  "/";
+	},
+	checkLogin: function() {
+		return true;
+	},
+	logout: function() {
+	},
+	getLabels: function(owner,repo){
+		return Q();
+	},
+	getMilestones: function(owner,repo){
+		return Q();
+	},
+	getIssues: function(owner,repo,milestone, id) {
+		return Q();
+	},
+	getRepos: function(){
+		return Q();
+	},
+	addLabel: function(owner,repo,id,label) {
+		return Q();
+	},
+	createLabel: function(owner,repo,label){
+		return Q();
+	},
+	deleteLabel: function(owner,repo,id,label){
+		return Q();
+	},
+	newIssue: function(owner, repo, issue,id) {
+		return Q();
+	}
+};
+var github = new Github();
 
 describe('unit test', function(){
-
 	describe('getIssues',function(){
 		beforeEach(function(){
 			var github = {
@@ -86,5 +129,17 @@ describe('unit test', function(){
 		
 	});
 
+	describe("render", function(){
+		it("render not  ok", function(done){
+			gira = new Gira('jcouyang','gira',github);
+			gira.render().then(function(error){
+				if(error) done();
+				throw error;	
+			});
+		});
+
+	});
+
+	
 });
 

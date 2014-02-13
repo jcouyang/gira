@@ -41,8 +41,6 @@ Gira.prototype = {
 				.map(function(label){
 				return [label.name, groupIssue[label.name]];
 			}).value();
-		}, function(error){
-			console.log(error);
 		});
 	},
 	draggablify: function(){
@@ -82,27 +80,28 @@ Gira.prototype = {
 	renderRepoSelector: function(repos){
 		var that = this;
 		if (this.github.checkLogin()){
-			this.github.getRepos().then(
+			return this.github.getRepos().then(
 				function(repos){
-				var groupedRepo = _(repos).groupBy(function(repo){
-					return repo.owner.login;
-				});
+					var groupedRepo = _(repos).groupBy(function(repo){
+						return repo.owner.login;
+					});
 					that.repo = that.repo || groupedRepo[that.owner][0].name;
-				var res ={checked:that.owner, checkedRepo:that.repo, owners:_(groupedRepo).map(function(repos){return repos[0].owner;}), repos: groupedRepo[that.owner]};
-				var compiled = nunjucks.render('src/templates/repo-selector.html',res);
-				$(".pagehead.repohead h1").html(compiled);
-				$(".select-menu.owner-select-menu input[type=radio]").on("change", that.changeOwner.bind(that));
-				$(".target-repo-menu.select-menu input[type=radio]").on("change", that.changeRepo.bind(that));
-			},
-			function(error){
-				console.log("get repo error",error);
-				var compiled = nunjucks.render('src/templates/repo-selector.html',{username:that.username,repo:that.repo});
-				$(".pagehead.repohead h1").html(compiled);
-			});			
+					var res ={checked:that.owner, checkedRepo:that.repo, owners:_(groupedRepo).map(function(repos){return repos[0].owner;}), repos: groupedRepo[that.owner]};
+					var compiled = nunjucks.render('src/templates/repo-selector.html',res);
+					$(".pagehead.repohead h1").html(compiled);
+					$(".select-menu.owner-select-menu input[type=radio]").on("change", that.changeOwner.bind(that));
+					$(".target-repo-menu.select-menu input[type=radio]").on("change", that.changeRepo.bind(that));
+				},
+				function(error){
+					console.log("get repo error",error);
+					var compiled = nunjucks.render('src/templates/repo-selector.html',{username:that.username,repo:that.repo});
+					$(".pagehead.repohead h1").html(compiled);
+				});			
 		}else{
 			var compiled = nunjucks.render('src/templates/repo-selector.html',{username:that.username,repo:that.repo});
-				$(".pagehead.repohead h1").html(compiled);
+			$(".pagehead.repohead h1").html(compiled);
 		}
+		return Q();
 	},
 	renderKanban: function() {
 		var that = this;
@@ -110,9 +109,22 @@ Gira.prototype = {
 			function(issues){
 				var compiled = mynunjucks.render('src/templates/gira.html', {issuesWithLabel: issues, last_label:that.last_label});
 				$('#contributions-calendar').html(compiled);
-			},
-			function(error){
-				console.log("kanban",error);
+			})
+			.then(function(){
+				$('.close.close-issue').click(function(){
+					var $close = $(this);
+					that.github.getIssues(that.owner,that.repo, that.milestone, $close.data('issue'))
+						.then(function(issue){
+							issue.state = 'close';
+							issue.assignee = issue.assignee && issue.assignee.login;
+							issue.milestone = issue.milestone && issue.milestone.number;
+
+							that.github.newIssue(that.owner,that.repo,issue,issue.number)
+								.then(function(){
+									$('#'+$close.data('issue')).remove();
+								});
+						});
+				});
 			});
 	},
 	renderHeader:function(){
@@ -208,13 +220,17 @@ Gira.prototype = {
     },
 	render: function(){
 		var that = this;
-		this.renderHeader();
-		this.renderKanban().then(that.draggablify.bind(this)).then(function() {
+		that.renderHeader();
+		return that.renderRepoSelector()
+			.then(that.renderMilestone.bind(that))
+			.then(that.renderKanban.bind(that))
+			.then(that.draggablify.bind(that))
+			.then(function() {
 				$('a[rel=facebox]').click(that.renderFaceBox());
-		});
-		this.renderRepoSelector();
-		this.renderMilestone();
-	
+			})
+			.catch(function(error){
+				return error;
+			});
 	}
 };
 

@@ -116,5 +116,14 @@ Github.prototype = {
 			dataType:'json',
 			data:JSON.stringify(issue)
 		}));
+	},
+	editIssue: function(owner, repo, issue,id) {
+		id = (typeof id !== "undefined" && id !== null)?id:'';
+		return Q($.ajax({
+			url:this.REPO_BASE + ['repos', owner,repo,'issues'].join('/') + (id&&('/'+id)) + '?access_token='+this.access_token,
+			type: 'patch',
+			dataType:'json',
+			data:JSON.stringify(issue)
+		}));
 	}
 };
