@@ -199,17 +199,11 @@ Gira.prototype = {
         var that = this;
         $('#jk-preview').click(function(){
             var data = {text: $('#issue_body').val()};
-
-            $.post("https://api.github.com/markdown" +"?access_token="+that.github.access_token,
-                    JSON.stringify(data)
-                ).success(function(result){
-                    if(result){
-                        $('.comment-body.markdown-body.js-comment-body p').html(result);
-                    }
-                    console.log(result);
-                });
-
-            console.log("enter in");
+            that.github.markdown(data).then(function(result){
+                if(result){
+                    $('.comment-body.markdown-body.js-comment-body p').html(result);
+                }
+            })
         });
         $('.sidebar .color-label').click(function (e) {
             e.preventDefault();

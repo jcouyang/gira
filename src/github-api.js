@@ -125,5 +125,9 @@ Github.prototype = {
 			dataType:'json',
 			data:JSON.stringify(issue)
 		}));
-	}
+	},
+    markdown: function (data) {
+        return Q($.post(this.REPO_BASE + "markdown" + "?access_token=" + this.access_token,
+            JSON.stringify(data)));
+    }
 };
