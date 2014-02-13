@@ -238,9 +238,6 @@ Gira.prototype = {
 			return false;
 		};
 	},
-    bindEvent: function () {
-
-    },
     bindUploadImageEvent: function() {
         $('#write_bucket_').bind("dragenter drop", function(){
             var dropbox = $('#write_bucket_'),
