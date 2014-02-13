@@ -73,7 +73,7 @@ Github.prototype = {
 	},
     getAssignees: function(owner,repo) {
         return Q($.ajax({
-            url:this.getReposUrl(owner,repo)+'/assignees',
+            url:this.getReposUrl(owner,repo)+'/assignees' + this.concatToken(),
             type:'GET',
             dataType:'json'
         }));
