@@ -33,6 +33,9 @@ Github.prototype = {
 	getReposUrl:function(owner,repo) {
 		return  this.REPO_BASE + 'repos/' + owner+'/'+repo;
 	},
+	concatToken: function() {
+		return this.access_token?'?access_token='+this.access_token:'';
+	},
 	checkLogin: function() {
 		if (localStorage.getItem("access_token")){
 			this.access_token = localStorage.getItem("access_token");
@@ -48,14 +51,14 @@ Github.prototype = {
 	},
 	getLabels: function(owner,repo){
 		return Q($.ajax({
-			url:this.getReposUrl(owner,repo)+"/labels",
+			url:this.getReposUrl(owner,repo)+"/labels" + this.concatToken(),
 			type:'GET',
 			dataType:'json'
 		}));
 	},
 	getMilestones: function(owner,repo){
 		return Q($.ajax({
-			url:this.getReposUrl(owner,repo)+'/milestones',
+			url:this.getReposUrl(owner,repo)+'/milestones' + this.concatToken(),
 			type:'GET',
 			dataType:'json'
 		}));
@@ -63,7 +66,7 @@ Github.prototype = {
 	getIssues: function(owner,repo,milestone, id) {
 		id = (typeof id !== "undefined" && id !== null)?id:'';
 		return Q($.ajax({
-			url:this.getReposUrl(owner,repo)+"/issues" + (id&&'/'+id) + (milestone && ("?milestone="+milestone)),
+			url:this.getReposUrl(owner,repo)+"/issues" + (id&&'/'+id) + (milestone && ("?milestone="+milestone)) + this.concatToken(),
 			type:'GET',
 			dataType:'json'
 		}));
