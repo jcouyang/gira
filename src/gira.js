@@ -282,31 +282,27 @@ Gira.prototype = {
                 allowedfiletypes: ['image/jpeg', 'image/png', 'image/gif'],   // filetypes allowed by Content-Type.  Empty array means no restrictions
                 allowedfileextensions: ['.jpg', '.jpeg', '.png', '.gif'], // file extensions allowed. Empty array means no restrictions
 
-                error: function (err, file) {
-                    alert("error.................");
-                    alert(err);
-//                    switch(err) {
-//                        case 'BrowserNotSupported':
-//                            showMessage('Your browser does not support HTML5 file uploads!');
-//                            break;
-//                        case 'TooManyFiles':
-//                            alert('Too many files! Please select 5 at most!');
-//                            break;
-//                        case 'FileTooLarge':
-//                            alert(file.name+' is too large! Please upload files up to 2mb.');
-//                            break;
-//                        default:
-//                            break;
-//                    }
+                error: function(err, file) {
+                    switch(err) {
+                        case 'BrowserNotSupported':
+                            showMessage('Your browser does not support HTML5 file uploads!');
+                            break;
+                        case 'TooManyFiles':
+                            alert('Too many files! Please select 5 at most!');
+                            break;
+                        case 'FileTooLarge':
+                            alert(file.name+' is too large! Please upload files up to 2mb.');
+                            break;
+                        default:
+                            break;
+                    }
                 },
 
                 // Called before each upload is started
-                beforeEach: function (file) {
-                    alert("before each...");
+                beforeEach: function(file){
                 },
 
-                uploadStarted: function (i, file, len) {
-                    alert("started");
+                uploadStarted:function(i, file, len){
                     createImage(file);
                 }
 
@@ -322,8 +318,7 @@ Gira.prototype = {
 
                     // e.target.result holds the DataURL which
                     // can be used as a source of the image:
-
-                    image.text(e.target.result);
+                    //image.text(e.target.result);
                 };
 
                 // Reading the file as a DataURL. When finished,
@@ -332,8 +327,7 @@ Gira.prototype = {
 
                 // Associating a preview container
                 // with the file, using jQuery's $.data():
-
-                $.data(file, preview);
+                $.data(file);
             }
 
             function showMessage(msg) {
