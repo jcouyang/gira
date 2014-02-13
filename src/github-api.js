@@ -71,7 +71,7 @@ Github.prototype = {
 			dataType:'json'
 		}));
 	},
-    getAssignees: function(owner,repo) {
+  getAssignees: function(owner,repo) {
         return Q($.ajax({
             url:this.getReposUrl(owner,repo)+'/assignees' + this.concatToken(),
             type:'GET',
@@ -87,12 +87,12 @@ Github.prototype = {
 		}));
 	},
 	addLabel: function(owner,repo,id,label) {
-		$.ajax({
+		return Q($.ajax({
 				url: this.REPO_BASE+['repos',owner, repo,'issues',id,'labels'].join('/') + '?access_token='+this.access_token,
 				type:'put',
-				data:JSON.stringify([label]),
+				data:JSON.stringify(label),
 				dataType:'json'
-			});
+			}));
 	},
 	createLabel: function(owner,repo,label){
 		return Q($.ajax({
@@ -103,10 +103,10 @@ Github.prototype = {
 		}));
 	},
 	deleteLabel: function(owner,repo,id,label){
-		$.ajax({
+		return Q($.ajax({
 				url: this.REPO_BASE+['repos', owner, repo,'issues',id,'labels',label].join('/') + '?access_token='+this.access_token,
 				type: 'delete'
-			});
+			}));
 	},
 	newIssue: function(owner, repo, issue,id) {
 		id = (typeof id !== "undefined" && id !== null)?id:'';

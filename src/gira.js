@@ -62,11 +62,12 @@ Gira.prototype = {
 			return false;
 		}).on('drop', function (e) {
 			if (e.stopPropagation) e.stopPropagation();
+			var column = this;
 			var $issue = $('#'+e.originalEvent.dataTransfer.getData('text/plain'));
-
-			that.github.deleteLabel(that.owner,that.repo,$issue.attr('id'),$issue.data('label'));
-			that.github.addLabel(that.owner,that.repo,$issue.attr('id'), this.id);
-
+			that.github.deleteLabel(that.owner,that.repo,$issue.attr('id'),$issue.data('label'))
+				.then(function(labels){
+					that.github.addLabel(that.owner,that.repo,$issue.attr('id'), _(labels).pluck('name').concat(column.id));
+				});
 			$(this).removeClass("over")
 				.find('span.lbl')
 				.append($($issue));
@@ -110,6 +111,7 @@ Gira.prototype = {
 				var compiled = mynunjucks.render('src/templates/gira.html', {issuesWithLabel: issues, last_label:that.last_label});
 				$('#contributions-calendar').html(compiled);
 			})
+			.then(that.draggablify.bind(that))
 			.then(function(){
 				$('.close.close-issue').click(function(){
 					var $close = $(this);
@@ -336,7 +338,6 @@ Gira.prototype = {
 		return that.renderRepoSelector()
 			.then(that.renderMilestone.bind(that))
 			.then(that.renderKanban.bind(that))
-			.then(that.draggablify.bind(that))
 			.then(function() {
 				$('a[rel=facebox]').click(that.renderFaceBox());
 			})
