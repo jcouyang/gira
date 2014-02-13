@@ -12,6 +12,9 @@ var Gira = function(username, repo, github,milestone){
 };
 
 Gira.prototype = {
+	renderError: function(message) {
+		$('.flash-messages').html(nunjucks.render("src/templates/error.html",{message:message}));
+	},
 	groupIssuesByLabels: function() {
 		var that = this;
 		return Q.all([this.github.getIssues(this.owner,this.repo,this.milestone),this.github.getLabels(this.owner,this.repo)]).then(function(data){
@@ -41,6 +44,8 @@ Gira.prototype = {
 				.map(function(label){
 				return [label.name, groupIssue[label.name]];
 			}).value();
+		}).catch(function(error){
+			that.renderError(JSON.parse(error.responseText).message);
 		});
 	},
 	draggablify: function(){
@@ -243,7 +248,7 @@ Gira.prototype = {
 				$('a[rel=facebox]').click(that.renderFaceBox());
 			})
 			.catch(function(error){
-				return error;
+				$('.flash-messages').html(nunjucks.render("src/templates/error.html",{message:message}));
 			});
 	}
 };

@@ -87,6 +87,25 @@ root: root
 };
 })();
 })();
+(function() {(window.nunjucksPrecompiled = window.nunjucksPrecompiled || {})["src/templates/error.html"] = (function() {function root(env, context, frame, runtime, cb) {
+var lineno = null;
+var colno = null;
+var output = "";
+try {
+output += "<div class=\"flash-messages\">\n  <div class=\"flash flash-error\">\n    <span class=\"octicon octicon-remove-close close js-flash-close\"></span>\n    ";
+output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, "message"), env.autoesc);
+output += "\n  </div>\n</div>\n";
+cb(null, output);
+;
+} catch (e) {
+  cb(runtime.handleError(e, lineno, colno));
+}
+}
+return {
+root: root
+};
+})();
+})();
 (function() {(window.nunjucksPrecompiled = window.nunjucksPrecompiled || {})["src/templates/gira.html"] = (function() {function root(env, context, frame, runtime, cb) {
 var lineno = null;
 var colno = null;
