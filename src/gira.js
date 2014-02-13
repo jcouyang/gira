@@ -241,10 +241,9 @@ Gira.prototype = {
 
     },
     bindUploadImageEvent: function() {
-        $('#write_bucket_').bind("dragenter drop", image, function(){
+        $('#write_bucket_').bind("dragenter drop", function(){
             var dropbox = $('#write_bucket_'),
                 message = $('.drag-and-drop', dropbox);
-
             dropbox.filedrop({
                 paramname:'pic',
 
@@ -258,28 +257,34 @@ Gira.prototype = {
                     // response is the JSON object that post_file.php returns
                 },
 
+                allowedfiletypes: ['image/jpeg','image/png','image/gif'],   // filetypes allowed by Content-Type.  Empty array means no restrictions
+                allowedfileextensions: ['.jpg','.jpeg','.png','.gif'], // file extensions allowed. Empty array means no restrictions
+
                 error: function(err, file) {
-                    switch(err) {
-                        case 'BrowserNotSupported':
-                            showMessage('Your browser does not support HTML5 file uploads!');
-                            break;
-                        case 'TooManyFiles':
-                            alert('Too many files! Please select 5 at most!');
-                            break;
-                        case 'FileTooLarge':
-                            alert(file.name+' is too large! Please upload files up to 2mb.');
-                            break;
-                        default:
-                            break;
-                    }
+                    alert("error.................");
+                    alert(err);
+//                    switch(err) {
+//                        case 'BrowserNotSupported':
+//                            showMessage('Your browser does not support HTML5 file uploads!');
+//                            break;
+//                        case 'TooManyFiles':
+//                            alert('Too many files! Please select 5 at most!');
+//                            break;
+//                        case 'FileTooLarge':
+//                            alert(file.name+' is too large! Please upload files up to 2mb.');
+//                            break;
+//                        default:
+//                            break;
+//                    }
                 },
 
                 // Called before each upload is started
                 beforeEach: function(file){
-                    alert("before...");
+                    alert("before each...");
                 },
 
                 uploadStarted:function(i, file, len){
+                    alert("started");
                     createImage(file);
                 }
 
