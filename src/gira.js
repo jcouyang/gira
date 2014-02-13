@@ -192,19 +192,20 @@ Gira.prototype = {
 			}else if(this.id==='new-label'){
 							$('.facebox-content:visible').html(nunjucks.render('src/templates/create-label.html'));	
 			}else{
-				that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")).then(function(issue){
-					console.log(issue);
-                    that.github.getAssignees(that.owner,that.repo).then(function(assignees) {
-                        console.log(assignees);
-                        issue.assignees = assignees;
-					    $('.facebox-content').html(nunjucks.render('src/templates/create-issue.html',issue));
-                    })
-				});
+                Q.all([that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")), that.github.getAssignees(that.owner,that.repo)]).then(function(data) {
+                    console.log(data);
+                    var issue = data[0];
+                    issue.assignees = data[1];
+                    $('.facebox-content').html(nunjucks.render('src/templates/create-issue.html',issue));
+                }).then(that.bindEvent);
 			}
 			return false;
 		};
 
 	},
+    bindEvent: function () {
+
+    },
 	render: function(){
 		var that = this;
 		this.renderHeader();
