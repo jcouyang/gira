@@ -59,3 +59,10 @@ ul.color-label-list {
 		padding-left:5px;
 		padding-top:5px;
 }
+
+.hide-buttons .close, .hide-buttons .link-external{
+		display:none;
+}
+.hide-buttons:hover .close, .hide-buttons:hover .link-external{
+		display:inline-block;
+}
