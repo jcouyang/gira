@@ -262,21 +262,25 @@ Gira.prototype = {
             $(".sidebar .color-label-list li[data-name=\""+ label.name + "\"] a").addClass("selected");
         })
     },
-    bindUploadImageEvent: function () {
-        $('#write_bucket_').bind("dragenter drop", function () {
+    bindUploadImageEvent: function() {
+        $('#write_bucket_').bind("drop", function(){
             var dropbox = $('#write_bucket_'),
                 message = $('.drag-and-drop', dropbox);
             dropbox.filedrop({
-                paramname: 'pic',
-
+                paramname:'pic',
                 maxfiles: 5,
                 maxfilesize: 2, // in mb
-                url: 'post_file.php',
+                withCredentials: true,
 
-                uploadFinished: function (i, file, response) {
-                    alert("finished");
-                    //$.data(file).addClass('done');
-                    // response is the JSON object that post_file.php returns
+                url: '/upload',
+
+                headers: {          // Send additional request headers
+                    'Access-Control-Allow-Origin': '*'
+                },
+
+                uploadFinished:function(i,file,response){
+                    var comments = $('#issue_body').val();
+                    $('#issue_body').val(comments + "\n" + "![Alt text](/upload/" + response + ")")
                 },
 
                 allowedfiletypes: ['image/jpeg', 'image/png', 'image/gif'],   // filetypes allowed by Content-Type.  Empty array means no restrictions
@@ -314,19 +318,11 @@ Gira.prototype = {
 
                 var reader = new FileReader();
 
-                reader.onload = function (e) {
-
-                    // e.target.result holds the DataURL which
-                    // can be used as a source of the image:
-                    //image.text(e.target.result);
+                reader.onload = function(e){
                 };
 
-                // Reading the file as a DataURL. When finished,
-                // this will trigger the onload function above:
                 reader.readAsDataURL(file);
 
-                // Associating a preview container
-                // with the file, using jQuery's $.data():
                 $.data(file);
             }
 
