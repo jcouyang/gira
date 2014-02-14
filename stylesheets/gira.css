@@ -5,11 +5,22 @@
     word-wrap: break-word;
 }
 #contributions-calendar .contrib-details span.lbl div.blankslate {
-		background-color:white;
-    	border-left: 1px solid #DDD;
-		margin:5px;
-		margin-bottom: 12px;
-		padding: 5px;
+    background-color:white;
+    border-left: 1px solid #DDD;
+    margin:5px;
+    margin-bottom: 12px;
+    padding: 5px;
+    height: 100px
+}
+#contributions-calendar .contrib-details span.lbl div.blankslate .labels {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+}
+#contributions-calendar .contrib-details span.lbl div.blankslate .octicon-remove-close {
+    position: absolute;
+    bottom: 5px;
 }
 .list-group-item-name {
     color: #4183C4;
