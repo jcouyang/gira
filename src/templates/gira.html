@@ -10,7 +10,13 @@
 			{% for issue in issues[1] %}
 			<div class="blankslate" draggable="true"  id="{{issue.number}}" data-label="{{issues[0]}}">
 			<a href="{{issue.html_url}}" target="_blank" class="octicon octicon-link-external right"></a>
-			<a href="#create-new-issue" rel="facebox" class="popable" data-issue-id="{{issue.number}}">	
+			<a href="#create-new-issue" rel="facebox" class="popable" data-issue-id="{{issue.number}}">
+                {%if issue.assignee %}
+					<span class="assignee tooltipped downwards yours right" href="{{issue.assignee.url}}"
+                          original-title="Assigned to {{issue.assignee.login}}">
+                        <img width="16" height="16" src="{{issue.assignee.avatar_url}}" alt="{{issue.assignee.login}}">
+					</span>
+                {% endif %}
 				<h4 class="list-group-item-name">#{{issue.number}} {{issue.title}}</h4>
 			</a>
 			{% if issues[0] == last_label %}
@@ -24,11 +30,7 @@
 									data-name="{{label.name}}">{{label.name|removeIndex}}</span>
 						{% endfor %}
 					</span>
-					{%if issue.assignee %}
-					<span class="assignee tooltipped downwards yours right" href="{{issue.assignee.url}}" original-title="Assigned to {{issue.assignee.login}}">
-      <img width="16" height="16" src="{{issue.assignee.avatar_url}}" alt="{{issue.assignee.login}}">
-					</span>
-					{% endif %}
+
 			
 							</div>
 			{% endfor %}
