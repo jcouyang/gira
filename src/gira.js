@@ -117,23 +117,26 @@ Gira.prototype = {
                 var compiled = mynunjucks.render('src/templates/gira.html', {issuesWithLabel: issues, last_label: that.last_label});
                 $('#contributions-calendar').html(compiled);
             })
-            .then(that.draggablify.bind(that))
-            .then(function () {
-                $('.close.close-issue').click(function () {
-                    var $close = $(this);
-                    that.github.getIssues(that.owner, that.repo, that.milestone, $close.data('issue'))
-                        .then(function (issue) {
-                            issue.state = 'close';
-                            issue.assignee = issue.assignee && issue.assignee.login;
-                            issue.milestone = issue.milestone && issue.milestone.number;
+        .then(that.draggablify.bind(that))
+				.then(function () {
+                $('a[rel=facebox]').click(that.renderFaceBox());
+        })
+        .then(function () {
+          $('.close.close-issue').click(function () {
+            var $close = $(this);
+            that.github.getIssues(that.owner, that.repo, that.milestone, $close.data('issue'))
+              .then(function (issue) {
+                issue.state = 'close';
+                issue.assignee = issue.assignee && issue.assignee.login;
+                issue.milestone = issue.milestone && issue.milestone.number;
 
-                            that.github.newIssue(that.owner, that.repo, issue, issue.number)
-                                .then(function () {
-                                    $('#' + $close.data('issue')).remove();
-                                });
-                        });
-                });
-            });
+                that.github.newIssue(that.owner, that.repo, issue, issue.number)
+                  .then(function () {
+                    $('#' + $close.data('issue')).remove();
+                  });
+              });
+          });
+        });
     },
     renderHeader: function () {
         var that = this;
@@ -354,9 +357,6 @@ Gira.prototype = {
         return that.renderRepoSelector()
             .then(that.renderMilestone.bind(that))
             .then(that.renderKanban.bind(that))
-            .then(function () {
-                $('a[rel=facebox]').click(that.renderFaceBox());
-            })
             .then(that.closeButton.bind(that))
             .catch(function (error) {
                 console.log(error);
