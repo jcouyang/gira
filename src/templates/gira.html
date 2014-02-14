@@ -27,7 +27,7 @@
                 {% endif %}
 					<span class="labels">
 						{% for label in issue.labels %}
-						<span class="label labelstyle-{{label.color}}" style="background-color:#{{label.color}}"
+						<span class="label labelstyle-{{label.color}}" style="background-color:#{{label.color}};{% if label.name|hasIndex %}display: none;{% endif %}"
                               data-name="{{label.name}}">{{label.name|removeIndex}}</span>
 						{% endfor %}
 					</span>
