@@ -231,12 +231,12 @@ Gira.prototype = {
 		return function(e){
 			e.preventDefault();
 			if(this.id==='new-issue'){
-                var tasks = [{}, that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo)]
+                var tasks = [{}, that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo),{}];
                 that.renderIssueBox(tasks);
 			}else if(this.id==='new-label'){
                 $('.facebox-content:visible').html(nunjucks.render('src/templates/create-label.html'));
 			}else{
-                var tasks = [that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")), that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo)]
+                var tasks = [that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")), that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo), that.github.getComments(that.owner,that.repo,$(this).data("issue-id"))];
                 that.renderIssueBox(tasks);
             }
 			return false;
@@ -249,8 +249,9 @@ Gira.prototype = {
             var context = data[0];
             context.assignees = data[1];
             context.milestones = data[2];
-            context.all_labels = data[3];
-            $('.facebox-content').html(mynunjucks.render('src/templates/create-issue.html',context));
+          context.all_labels = data[3];
+					context.comments = data[4];
+            $('.facebox-content').html(mynunjucks.render('src/templates/edit-issue.html',context));
             if (typeof context.labels !== 'undefined') {
                 that.updateLabelStatus(context);
             }

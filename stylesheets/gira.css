@@ -66,3 +66,8 @@ ul.color-label-list {
 .hide-buttons:hover .close, .hide-buttons:hover .link-external{
 		display:inline-block;
 }
+
+.discussion-timeline {
+    position: relative;
+    width: 600px;
+}

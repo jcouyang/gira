@@ -23,6 +23,13 @@ Github.prototype = {
             return Q();
         }
     },
+	getComments: function(owner, repo, issueId){
+		return Q($.ajax({
+            url: this.getReposUrl(owner, repo) + "/issues/" + issueId + "/comments" + this.concatToken(),
+            type: 'GET',
+            dataType: 'json'
+        }));
+	},
     getUser: function () {
         return Q($.ajax({
             url: this.REPO_BASE + "user?access_token=" + this.access_token,
