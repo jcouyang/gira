@@ -34,9 +34,9 @@ app.get('/', function (req, res){
     res.render('index.html');
 });
 
-app.get('/uploads/images/:file', function (req, res){
+app.get('/images/:file', function (req, res){
     file = req.params.file;
-    var img = fs.readFileSync(__dirname + "/uploads/images/" + file);
+    var img = fs.readFileSync(__dirname + "/uploads/" + file);
     res.writeHead(200, {'Content-Type': 'image/jpg', 'Access-Control-Allow-Origin': '*'});
     res.end(img, 'binary');
 
@@ -51,10 +51,10 @@ console.log(req);
     var extName = path.extname(req.files.pic.name).toLowerCase();
 
     var tempPath = req.files.pic.path,
-        targetPath = path.resolve('./uploads/' + internalImageName + '.' +extName);
+        targetPath = path.resolve('./uploads/' + internalImageName + '.' + extName);
         fs.rename(tempPath, targetPath, function(err) {
             if (err) throw err;
-            res.send(internalImageName, 200);
+            res.send(internalImageName + '.' + extName, 200);
             console.log("Upload completed!");
         });
 

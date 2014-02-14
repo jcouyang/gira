@@ -280,7 +280,7 @@ Gira.prototype = {
 
                 uploadFinished:function(i,file,response){
                     var comments = $('#issue_body').val();
-                    $('#issue_body').val(comments + "\n" + "![Alt text](/upload/" + response + ")")
+                    $('#issue_body').val(comments + "\n" + "![Alt text](/images/" + response + ")")
                 },
 
                 allowedfiletypes: ['image/jpeg', 'image/png', 'image/gif'],   // filetypes allowed by Content-Type.  Empty array means no restrictions
