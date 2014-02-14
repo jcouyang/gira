@@ -12,10 +12,14 @@ var Gira = function (username, repo, github, milestone) {
 };
 
 Gira.prototype = {
-    renderError: function (message) {
-        $('#contributions-calendar').html(nunjucks.render("src/templates/error.html", {message: message}));
-    },
-    groupIssuesByLabels: function () {
+	renderError: function(message) {
+		$('.notification').html(nunjucks.render("src/templates/error.html",{message:message}));
+		window.setTimeout(function(){
+			$('.notification .close.js-flash-close').click();
+		}, 2000);
+
+	},
+  groupIssuesByLabels: function () {
         var that = this;
         return Q.all([this.github.getIssues(this.owner, this.repo, this.milestone), this.github.getLabels(this.owner, this.repo)]).then(function (data) {
             var issues = data[0];
@@ -45,8 +49,8 @@ Gira.prototype = {
                     return [label.name, groupIssue[label.name]];
                 }).value();
         }).catch(function (error) {
-                that.renderError(JSON.parse(error.responseText).message);
-            });
+          that.renderError(JSON.parse(error.responseText).message);
+        });
     },
     draggablify: function () {
         var that = this;
@@ -342,7 +346,7 @@ Gira.prototype = {
             var label = $(this).attr('data');
             that.github.deleteLane(that.owner, that.repo, label);
             that.render();
-        })
+        });
     },
     render: function () {
         var that = this;
