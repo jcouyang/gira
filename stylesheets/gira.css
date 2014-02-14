@@ -6,8 +6,9 @@
 }
 #contributions-calendar .contrib-details span.lbl div.blankslate {
 		background-color:white;
-    border-left: 1px solid #DDD;
+    	border-left: 1px solid #DDD;
 		margin:5px;
+		margin-bottom: 12px;
 		padding: 5px;
 }
 .list-group-item-name {
