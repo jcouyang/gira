@@ -219,32 +219,40 @@ Gira.prototype = {
             that.renderKanban();
         });
     },
-    renderFaceBox: function () {
-        var that = this;
-        return function (e) {
-            e.preventDefault();
-            if (this.id === 'new-issue') {
-                $('.facebox-content:visible').html(nunjucks.render('src/templates/create-issue.html'));
-            } else if (this.id === 'new-label') {
+	renderFaceBox: function() {
+		var that = this;
+		return function(e){
+			e.preventDefault();
+			if(this.id==='new-issue'){
+                var tasks = [{}, that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo)]
+                that.renderIssueBox(tasks);
+			}else if(this.id==='new-label'){
                 $('.facebox-content:visible').html(nunjucks.render('src/templates/create-label.html'));
-            } else {
-                Q.all([that.github.getIssues(that.owner, that.repo, null, $(this).data("issue-id")), that.github.getAssignees(that.owner, that.repo), that.github.getMilestones(that.owner, that.repo), that.github.getLabels(that.owner, that.repo)]).then(function (data) {
-                    console.log(data);
-                    var issue = data[0];
-                    issue.assignees = data[1];
-                    issue.milestones = data[2];
-                    issue.all_labels = data[3];
-                    $('.facebox-content').html(mynunjucks.render('src/templates/create-issue.html', issue));
-                    that.updateLabelStatus(issue);
-                }).then(that.bindEvent).then(that.bindUploadImageEvent);
+			}else{
+                var tasks = [that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")), that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo)]
+                that.renderIssueBox(tasks);
             }
-            return false;
-        };
+			return false;
+		};
+	},
+    renderIssueBox: function(tasks) {
+        var that = this;
+        Q.all(tasks).then(function(data) {
+            console.log(data);
+            var context = data[0];
+            context.assignees = data[1];
+            context.milestones = data[2];
+            context.all_labels = data[3];
+            $('.facebox-content').html(mynunjucks.render('src/templates/create-issue.html',context));
+            if (typeof context.labels !== 'undefined') {
+                that.updateLabelStatus(context);
+            }
+        }).then(that.bindEvent).then(that.bindUploadImageEvent);
     },
-    updateLabelStatus: function (issue) {
-        var activeLabels = issue.labels;
-        $.each(activeLabels, function (index, label) {
-            $(".sidebar .color-label-list li[data-name=\"" + label.name + "\"] a").addClass("selected");
+    updateLabelStatus: function (context) {
+        var activeLabels = context.labels;
+        $.each(activeLabels, function(index, label) {
+            $(".sidebar .color-label-list li[data-name=\""+ label.name + "\"] a").addClass("selected");
         })
     },
     bindUploadImageEvent: function () {
