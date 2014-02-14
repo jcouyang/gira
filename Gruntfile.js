@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     nunjucks: {
       precompile: {
         src: 'src/templates/*',
-        dest: 'src/templates.js'
+        dest: 'javascripts/templates.js'
       }
     },
 		copy: {
