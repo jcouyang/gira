@@ -235,8 +235,10 @@ Gira.prototype = {
                 that.renderIssueBox(tasks);
 			}else if(this.id==='new-label'){
                 $('.facebox-content:visible').html(nunjucks.render('src/templates/create-label.html'));
-			}else{
-                var tasks = [that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")), that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo), that.github.getComments(that.owner,that.repo,$(this).data("issue-id"))];
+			}else if(this.id==='show-diagram'){
+                $('.facebox-content:visible').html(nunjucks.render('src/templates/show-diagram.html'));
+            }else {
+                var tasks = [that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")), that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo)]
                 that.renderIssueBox(tasks);
             }
 			return false;
