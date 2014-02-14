@@ -17,3 +17,4 @@ build
 
 node_modules
 src/templates.js
+uploads

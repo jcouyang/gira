@@ -315,8 +315,6 @@ Gira.prototype = {
 
             function createImage(file) {
 
-                var image = $('.comment-form-textarea');
-
                 var reader = new FileReader();
 
                 reader.onload = function(e){

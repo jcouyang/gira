@@ -15,6 +15,10 @@ app.use('/',express.static(__dirname, '/javascripts'));
 var fs = require('fs');
 var path = require('path');
 
+fs.exists('/uploads', function (exists) {
+    if (!exists) fs.mkdir("uploads");
+});
+
 function createUUID() {
     // http://www.ietf.org/rfc/rfc4122.txt
     var s = [];
