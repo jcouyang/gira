@@ -13,7 +13,7 @@ var Gira = function(username, repo, github,milestone){
 
 Gira.prototype = {
 	renderError: function(message) {
-		$('.flash-messages').html(nunjucks.render("src/templates/error.html",{message:message}));
+		$('#contributions-calendar').html(nunjucks.render("src/templates/error.html",{message:message}));
 	},
 	groupIssuesByLabels: function() {
 		var that = this;

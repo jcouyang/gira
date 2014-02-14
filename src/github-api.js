@@ -47,7 +47,7 @@ Github.prototype = {
 	},
 	logout: function() {
 		localStorage.remove("access_token");
-		location.reload();
+		window.location.reload();
 	},
 	getLabels: function(owner,repo){
 		return Q($.ajax({
