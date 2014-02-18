@@ -142,5 +142,13 @@ Github.prototype = {
             url: this.REPO_BASE + ['repos', owner, repo, 'labels', label].join('/') + '?access_token=' + this.access_token,
             type: 'delete'
         });
-    }
+    },
+	uploadBlob:function(data){
+		return Q($.ajax({
+			url:this.getReposUrl + '/git/blobs' + this.concatToken,
+			type: 'post',
+			dataType: 'json',
+			data: JSON.stringify(data)
+		}));
+	}
 };

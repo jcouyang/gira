@@ -10,11 +10,14 @@ before_script:
 - git config --global user.name "Jichao Ouyang"
 - git config --global user.email "oyanglulu@gmail.com"
 - export REPO_URL="https://$GH_TOKEN@github.com/$GH_REPO.git"
+- export GIRA_URL="https://$GH_TOKEN@github.com/getgira/getgira.github.com.git"
 script:
 - npm test
 - git add .
 - git remote add pages $REPO_URL
 - git commit -m "publi:ship:"
+- git remote add gira $GIRA_URL
+- git push gira gh-pages -f -q
 - git checkout -B gh-pages
 - git push pages gh-pages -f -q
 env:
