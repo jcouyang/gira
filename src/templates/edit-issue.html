@@ -464,7 +464,11 @@
 				<div class="form-actions">
 
 					<button data-disable-with="" data-disable-invalid="" tabindex="1" class="button primary" type="submit">
-						Submit new issue
+						{% if comments %}
+						Submit new issues
+						{% else %}
+						Edit issues
+						{% endif %}
 					</button>
 				</div>
 

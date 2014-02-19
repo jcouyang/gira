@@ -237,16 +237,18 @@ Gira.prototype = {
                 $('.facebox-content:visible').html(nunjucks.render('src/templates/create-label.html'));
 			}else if(this.id==='show-diagram'){
                 $('.facebox-content:visible').html(nunjucks.render('src/templates/show-diagram.html'));
-            }else {
-                var tasks = [that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")), that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo)]
-                that.renderIssueBox(tasks);
+      }else {
+                var tasks = [that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")), that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo)];
+        that.renderIssueBox(tasks).then(function(){
+					$('#jk-preview').click();
+				});
             }
 			return false;
 		};
 	},
     renderIssueBox: function(tasks) {
         var that = this;
-        Q.all(tasks).then(function(data) {
+			return Q.all(tasks).then(function(data) {
             console.log(data);
             var context = data[0];
             context.assignees = data[1];
@@ -263,7 +265,7 @@ Gira.prototype = {
         var activeLabels = context.labels;
         $.each(activeLabels, function(index, label) {
             $(".sidebar .color-label-list li[data-name=\""+ label.name + "\"] a").addClass("selected");
-        })
+        });
     },
     bindUploadImageEvent: function() {
         $('#write_bucket_').bind("drop", function(){
@@ -283,7 +285,7 @@ Gira.prototype = {
 
                 uploadFinished:function(i,file,response){
                     var comments = $('#issue_body').val();
-                    $('#issue_body').val(comments + "\n" + "![Alt text](/images/" + response + ")")
+                    $('#issue_body').val(comments + "\n" + "![Alt text](/images/" + response + ")");
                 },
 
                 allowedfiletypes: ['image/jpeg', 'image/png', 'image/gif'],   // filetypes allowed by Content-Type.  Empty array means no restrictions
