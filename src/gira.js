@@ -291,7 +291,6 @@ Gira.prototype = {
 					}
 				})
 					.then(function(resp){
-						debugger;
 					var selectionStart = $('#issue_body')[0].selectionStart;
 					var selectionEnd = $('#issue_body')[0].selectionEnd;
 
@@ -299,7 +298,9 @@ Gira.prototype = {
 
 					$('#issue_body')[0].selectionStart = selectionStart;
 					$('#issue_body')[0].selectionEnd = selectionEnd;
-				});
+					},function(error){
+						console.log("exist",error);
+					});
 			};
 
 			if (file) {
