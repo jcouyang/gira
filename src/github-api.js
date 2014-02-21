@@ -1,4 +1,6 @@
-var Github = function () {
+var Github = function (owner, repo) {
+	this.owner = owner;
+	this.repo = repo;
   this.REPO_BASE = 'https://api.github.com/';
   this.access_token = localStorage.getItem("access_token");
 };
@@ -23,22 +25,22 @@ Github.prototype = {
       return Q();
     }
   },
-	getComments: function(owner, repo, issueId){
+	getComments: function(issueId){
 		return Q($.ajax({
-      url: this.getReposUrl(owner, repo) + "/issues/" + issueId + "/comments" + this.concatToken(),
+      url: this.getReposUrl() + "/issues/" + issueId + "/comments" + this.concatToken(),
       type: 'GET',
       dataType: 'json'
     }));
 	},
   getUser: function () {
     return Q($.ajax({
-      url: this.REPO_BASE + "user?access_token=" + this.access_token,
+      url: this.REPO_BASE + "user" + this.concatToken(),
       type: 'GET',
       dataType: 'json'
     }));
   },
-  getReposUrl: function (owner, repo) {
-    return  this.REPO_BASE + 'repos/' + owner + '/' + repo;
+  getReposUrl: function () {
+    return  this.REPO_BASE + 'repos/' + this.owner + '/' + this.repo;
   },
   concatToken: function () {
     return this.access_token ? '?access_token=' + this.access_token : '';
@@ -56,31 +58,31 @@ Github.prototype = {
     localStorage.remove("access_token");
     window.location.reload();
   },
-  getLabels: function (owner, repo) {
+  getLabels: function () {
     return Q($.ajax({
-      url: this.getReposUrl(owner, repo) + "/labels" + this.concatToken(),
+      url: this.getReposUrl() + "/labels" + this.concatToken(),
       type: 'GET',
       dataType: 'json'
     }));
   },
-  getMilestones: function (owner, repo) {
+  getMilestones: function () {
     return Q($.ajax({
-      url: this.getReposUrl(owner, repo) + '/milestones' + this.concatToken(),
+      url: this.getReposUrl() + '/milestones' + this.concatToken(),
       type: 'GET',
       dataType: 'json'
     }));
   },
-  getIssues: function (owner, repo, milestone, id) {
+  getIssues: function (milestone, id) {
     id = (typeof id !== "undefined" && id !== null) ? id : '';
     return Q($.ajax({
-      url: this.getReposUrl(owner, repo) + "/issues" + (id && '/' + id) + this.concatToken() + (milestone ? ("&milestone=" + milestone) : ''),
+      url: this.getReposUrl() + "/issues" + (id && '/' + id) + this.concatToken() + (milestone ? ("&milestone=" + milestone) : ''),
       type: 'GET',
       dataType: 'json'
     }));
   },
-  getAssignees: function (owner, repo) {
+  getAssignees: function () {
     return Q($.ajax({
-      url: this.getReposUrl(owner, repo) + '/assignees' + this.concatToken(),
+      url: this.getReposUrl() + '/assignees' + this.concatToken(),
       type: 'GET',
       dataType: 'json'
     }));
@@ -93,41 +95,41 @@ Github.prototype = {
       dataType: 'json'
     }));
   },
-  addLabel: function (owner, repo, id, label) {
+  addLabel: function (id, label) {
     return Q($.ajax({
-      url: this.REPO_BASE + ['repos', owner, repo, 'issues', id, 'labels'].join('/') + '?access_token=' + this.access_token,
+      url: this.REPO_BASE + ['repos', 'issues', id, 'labels'].join('/') + '?access_token=' + this.access_token,
       type: 'put',
       data: JSON.stringify(label),
       dataType: 'json'
     }));
   },
-  createLabel: function (owner, repo, label) {
+  createLabel: function (label) {
     return Q($.ajax({
-      url: this.REPO_BASE + ['repos', owner, repo, 'labels'].join('/') + '?access_token=' + this.access_token,
+      url: this.REPO_BASE + ['repos', 'labels'].join('/') + '?access_token=' + this.access_token,
       type: 'post',
       data: JSON.stringify(label),
       dataType: 'json'
     }));
   },
-  deleteLabel: function (owner, repo, id, label) {
+  deleteLabel: function (id, label) {
     return Q($.ajax({
-      url: this.REPO_BASE + ['repos', owner, repo, 'issues', id, 'labels', label].join('/') + '?access_token=' + this.access_token,
+      url: this.REPO_BASE + ['repos', 'issues', id, 'labels', label].join('/') + '?access_token=' + this.access_token,
       type: 'delete'
     }));
   },
-  newIssue: function (owner, repo, issue, id) {
+  newIssue: function (issue, id) {
     id = (typeof id !== "undefined" && id !== null) ? id : '';
     return Q($.ajax({
-      url: this.REPO_BASE + ['repos', owner, repo, 'issues'].join('/') + (id && ('/' + id)) + '?access_token=' + this.access_token,
+      url: this.REPO_BASE + ['repos', 'issues'].join('/') + (id && ('/' + id)) + '?access_token=' + this.access_token,
       type: 'post',
       dataType: 'json',
       data: JSON.stringify(issue)
     }));
   },
-  editIssue: function (owner, repo, issue, id) {
+  editIssue: function (issue, id) {
     id = (typeof id !== "undefined" && id !== null) ? id : '';
     return Q($.ajax({
-      url: this.REPO_BASE + ['repos', owner, repo, 'issues'].join('/') + (id && ('/' + id)) + '?access_token=' + this.access_token,
+      url: this.REPO_BASE + ['repos', 'issues'].join('/') + (id && ('/' + id)) + '?access_token=' + this.access_token,
       type: 'patch',
       dataType: 'json',
       data: JSON.stringify(issue)
@@ -137,23 +139,23 @@ Github.prototype = {
     return Q($.post(this.REPO_BASE + "markdown" + "?access_token=" + this.access_token,
 										JSON.stringify(data)));
   },
-  deleteLane: function (owner, repo, label) {
+  deleteLane: function (label) {
     $.ajax({
-      url: this.REPO_BASE + ['repos', owner, repo, 'labels', label].join('/') + '?access_token=' + this.access_token,
+      url: this.REPO_BASE + ['repos', 'labels', label].join('/') + '?access_token=' + this.access_token,
       type: 'delete'
     });
   },
-	uploadImage:function(owner, repo, data){
+	uploadImage:function(data){
 		return Q($.ajax({
-			url:this.getReposUrl(owner, repo) + '/contents/'+ data.path + this.concatToken(),
+			url:this.getReposUrl() + '/contents/'+ data.path + this.concatToken(),
 			type: 'put',
 			dataType: 'json',
 			data: JSON.stringify(data)
 		}));
 	},
-	createBranch:function(owner,repo,branch,sha){
+	createBranch:function(branch,sha){
 		return Q($.ajax({
-			url:this.getReposUrl(owner, repo) + '/git/refs' + this.concatToken(),
+			url:this.getReposUrl() + '/git/refs' + this.concatToken(),
 			type: 'post',
 			dataType: 'json',
 			data: JSON.stringify({
@@ -162,9 +164,9 @@ Github.prototype = {
 				})
 		}));
 	},
-	getRefSha:function(owner,repo,branch){
+	getRefSha:function(branch){
 		return Q($.ajax({
-						url:this.getReposUrl(owner, repo) + '/git/refs' + this.concatToken(),
+						url:this.getReposUrl() + '/git/refs' + this.concatToken(),
 			type: 'get',
 			dataType: 'json'
 		}));

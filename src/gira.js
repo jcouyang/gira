@@ -23,20 +23,20 @@ var Gira = function (username, repo, github, milestone) {
   this.owners = {};
 };
 
-if (!github.checkLogin()) {
-  $(".site.clearfix").html(nunjucks.render('src/templates/index.html'));
-  $('#try-gira').click(function () {
-    var userrepo = $(".marketing-section-enterprise input[name=username]").val().split('/');
-    gira = new Gira(userrepo[0], userrepo[1], github);
-    gira.render();
-  });
-}
+// if (!github.checkLogin()) {
+//   $(".site.clearfix").html(nunjucks.render('src/templates/index.html'));
+//   $('#try-gira').click(function () {
+//     var userrepo = $(".marketing-section-enterprise input[name=username]").val().split('/');
+//     gira = new Gira(userrepo[0], userrepo[1], github);
+//     gira.render();
+//   });
+// }
 gira = new Gira("jcouyang", "gira", github);
-github.getAccessToken().then(function () {
-  gira.render();
-}, function (error) {
-  console.log("invalid token", error);
-});
+// github.getAccessToken().then(function () {
+//   gira.render();
+// }, function (error) {
+//   console.log("invalid token", error);
+// });
 
 var View = Gira.View = function(){
 	this.initialize.apply(this, arguments);
@@ -65,13 +65,8 @@ View.extend = function(props){
 _.extend(View.prototype, {
 	el:$('body'),
 	templateName:"index.html",
-	templateEngin:nunjucks,
+	templateEngine:mynunjucks,
 	modelReady:{},
-	events: {
-      "keypress #new-todo":  "createOnEnter",
-      "click #clear-completed": "clearCompleted",
-      "click #toggle-all": "toggleAllComplete"
-    },
 	initialize:function(){
 		this.render();
 	},
@@ -85,74 +80,44 @@ _.extend(View.prototype, {
 			console.log(error);
 			$(self.el).html(self.templateEngine.render(self.templateName));
 		});
+
 	},
 	delegateEvents:function(){
 		var self = this;
 		var events = _.result(this, 'events');
 		if (!events) return this;
-		_.each(_(events).keys,function(key){
+		_.each(_(events).keys(),function(key){
 			var match = key.match(delegateEventSplitter);
 			var eventName = match[1], selector = match[2];
 			if (selector=='')
-				$(self.el).on(eventName, _.bind(events[key],self));
+				$(self.el).on(eventName, _.bind(self[events[key]],self));
 			else
-				$(self.el).find(selector).on(eventName, _.bind(events[key],self));
+				$(self.el).find(selector).on(eventName, _.bind(self[events[key]],self));
 		});
 	}
 });
 
+
 var HeaderView = View.extend({
 	el:"#header",
 	templateName:"src/templates/header.html",
-	templateEngine:mynunjucks,
 	modelReady: function(){
 		return github.getUser();
 	},
 	events: {
-		"click .octicon.octicon-log-out": github.logout
+		"click .octicon.octicon-log-out": "logout"
+	},
+	logout: function(){
+		github.logout();
 	}
 });
 
-renderKanban: function () {
+var KanbanView = View.extend({
+	el:"#contributions-calendar",
+	templateName:"src/templates/gira.html",
+	modelReady: function(){
     var that = this;
-    return this.groupIssuesByLabels().then(
-      function (issues) {
-        var compiled = mynunjucks.render('src/templates/gira.html', {issuesWithLabel: issues, last_label: that.last_label});
-        $('#contributions-calendar').html(compiled);
-      })
-      .then(that.draggablify.bind(that))
-			.then(function () {
-        $('a[rel=facebox]').click(that.renderFaceBox());
-      })
-      .then(function () {
-        $('.close.close-issue').click(function () {
-          var $close = $(this);
-          that.github.getIssues(that.owner, that.repo, that.milestone, $close.data('issue'))
-            .then(function (issue) {
-              issue.state = 'close';
-              issue.assignee = issue.assignee && issue.assignee.login;
-              issue.milestone = issue.milestone && issue.milestone.number;
-
-              that.github.newIssue(that.owner, that.repo, issue, issue.number)
-                .then(function () {
-                  $('#' + $close.data('issue')).remove();
-                });
-            });
-        });
-      });
-  },
-var header = new HeaderView;
-Gira.prototype = {
-	renderError: function(message) {
-		$('.notification').html(nunjucks.render("src/templates/error.html",{message:message}));
-		window.setTimeout(function(){
-			$('.notification .close.js-flash-close').click();
-		}, 2000);
-
-	},
-  groupIssuesByLabels: function () {
-    var that = this;
-    return Q.all([this.github.getIssues(this.owner, this.repo, this.milestone), this.github.getLabels(this.owner, this.repo)]).then(function (data) {
+    return Q.all([github.getIssues(this.milestone), github.getLabels()]).then(function (data) {
       var issues = data[0];
       var labels = _(data[1]).filter(function (label) {
         return LABEL_REGEX.test(label.name);
@@ -166,7 +131,7 @@ Gira.prototype = {
         }
         return "0-Backlog";
       });
-      return _.chain(labels.concat({name: "0-Backlog"}))
+      issues = _.chain(labels.concat({name: "0-Backlog"}))
         .sortBy(function (label) {
           return label.name;
         })
@@ -179,11 +144,33 @@ Gira.prototype = {
         .map(function (label) {
           return [label.name, groupIssue[label.name]];
         }).value();
+			return {issuesWithLabel: issues, last_label: that.last_label};
     }).catch(function (error) {
-      that.renderError(JSON.parse(error.responseText).message);
+      // that.renderError(JSON.parse(error.responseText).message);
     });
-  },
-  draggablify: function () {
+	},
+	events:{
+		"click a[rel=facebox]": "renderFaceBox",
+		"click .close.close-issue":"closeIssue"
+	},
+	renderFaceBox: function(){
+		console.log("render popup");
+	},
+	closeIssue: function(e){
+		var $close = $(e.target);
+    github.getIssues(this.milestone, $close.data('issue'))
+      .then(function (issue) {
+        issue.state = 'close';
+        issue.assignee = issue.assignee && issue.assignee.login;
+        issue.milestone = issue.milestone && issue.milestone.number;
+
+        github.newIssue(issue, issue.number)
+          .then(function () {
+            $('#' + $close.data('issue')).remove();
+          });
+      });
+	},
+	  draggablify: function () {
     var that = this;
     var $issues = $('#contributions-calendar .contrib-details.grid .col .lbl div[draggable=true]');
     $issues.on('dragstart', function (e) {
@@ -199,114 +186,114 @@ Gira.prototype = {
       if (e.stopPropagation) e.stopPropagation();
       var column = this;
       var $issue = $('#' + e.originalEvent.dataTransfer.getData('text/plain'));
-      that.github.deleteLabel(that.owner, that.repo, $issue.attr('id'), $issue.data('label'))
+      that.github.deleteLabel($issue.attr('id'), $issue.data('label'))
         .then(function (labels) {
-          that.github.addLabel(that.owner, that.repo, $issue.attr('id'), _(labels).pluck('name').concat(column.id));
+          that.github.addLabel($issue.attr('id'), _(labels).pluck('name').concat(column.id));
         });
       $(this).removeClass("over")
         .find('span.lbl')
         .append($($issue));
       return false;
     });
-  },
+  }
+});
 
+
+var RepoSelectorView = View.extend({
+	repo:'gira',
+	owner:'jcouyang',
+	el: ".pagehead.repohead h1",
+	templateName:"src/templates/repo-selector.html",
   changeOwner: function (event) {
     this.owner = $(event.target).attr('name');
-    this.renderRepoSelector();
+    this.render();
   },
   changeRepo: function (event) {
     this.repo = $(event.target).attr('name');
-    this.renderKanban();
+    // this.renderKanban();
   },
-  renderRepoSelector: function (repos) {
-    var that = this;
-    if (this.github.checkLogin()) {
-      return this.github.getRepos().then(
-        function (repos) {
-          var groupedRepo = _(repos).groupBy(function (repo) {
-            return repo.owner.login;
-          });
-          that.repo = that.repo || groupedRepo[that.owner][0].name;
-          var res = {checked: that.owner, checkedRepo: that.repo, owners: _(groupedRepo).map(function (repos) {
-            return repos[0].owner;
-          }), repos: groupedRepo[that.owner]};
-          var compiled = nunjucks.render('src/templates/repo-selector.html', res);
-          $(".pagehead.repohead h1").html(compiled);
-          $(".select-menu.owner-select-menu input[type=radio]").on("change", that.changeOwner.bind(that));
-          $(".target-repo-menu.select-menu input[type=radio]").on("change", that.changeRepo.bind(that));
-        });
-    } else {
-      var compiled = nunjucks.render('src/templates/repo-selector.html', {username: that.username, repo: that.repo});
-      $(".pagehead.repohead h1").html(compiled);
-    }
-    return Q();
-  },
-  renderKanban: function () {
-    var that = this;
-    return this.groupIssuesByLabels().then(
-      function (issues) {
-        var compiled = mynunjucks.render('src/templates/gira.html', {issuesWithLabel: issues, last_label: that.last_label});
-        $('#contributions-calendar').html(compiled);
-      })
-      .then(that.draggablify.bind(that))
-			.then(function () {
-        $('a[rel=facebox]').click(that.renderFaceBox());
-      })
-      .then(function () {
-        $('.close.close-issue').click(function () {
-          var $close = $(this);
-          that.github.getIssues(that.owner, that.repo, that.milestone, $close.data('issue'))
-            .then(function (issue) {
-              issue.state = 'close';
-              issue.assignee = issue.assignee && issue.assignee.login;
-              issue.milestone = issue.milestone && issue.milestone.number;
-
-              that.github.newIssue(that.owner, that.repo, issue, issue.number)
-                .then(function () {
-                  $('#' + $close.data('issue')).remove();
-                });
-            });
-        });
+	events:{
+		"change .select-menu.owner-select-menu input[type=radio]":"changeOwner",
+		"change .target-repo-menu.select-menu input[type=radio]":"changeRepo"
+	},
+	modelReady:function(){
+		var self = this;
+		return github.getRepos().then(function (repos) {
+      var groupedRepo = _(repos).groupBy(function (repo) {
+        return repo.owner.login;
       });
+      self.repo = self.repo || groupedRepo[self.owner][0].name;
+      return {checked: self.owner, checkedRepo: self.repo, owners: _(groupedRepo).map(function (repos) {
+        return repos[0].owner;
+      }), repos: groupedRepo[self.owner]};
+    });
+	}
+});
+
+
+var MilestoneView = View.extend({
+	milestone:"1.0.0",
+	el:".pagehead.repohead div.sidebar-milestone-widget",
+	templateName: "src/templates/milestones.html",
+	events:{
+		"click .sidebar-milestone-widget .select-menu a.select-menu-item":
+	},
+	changeMilestone:function (e) {
+    e.preventDefault();
+    this.milestone = $(this).data('milestone');
+    this.render();
+    return false;
   },
-  renderHeader: function () {
-    var that = this;
-    if (this.github.checkLogin()) {
-      this.github.getUser().then(
-        function (user) {
-          that.owner = that.owner || user.login;
-          $(".header").html(nunjucks.render('src/templates/header.html', {user: user}));
-          $(".octicon.octicon-log-out").click(that.github.logout);
-        },
-        function (error) {
-          $(".header").html(nunjucks.render('src/templates/header.html'));
-        }
-      );
-    } else {
-      $(".header").html(nunjucks.render('src/templates/header.html'));
-    }
-  },
-  renderMilestone: function () {
-    var that = this;
-    this.github.getMilestones(this.owner, this.repo).then(function (milestones) {
-      $(".pagehead.repohead div.sidebar-milestone-widget").html(
-        mynunjucks.render('src/templates/milestones.html', {
-          selected: that.milestone && _(milestones).find(function (milestone) {
-            return milestone.number === that.milestone;
+	modelReady:function(){
+		var self = this;
+		return github.getMilestones().then(function (milestones) {
+			return {
+          selected: self.milestone && _(milestones).find(function (milestone) {
+            return milestone.number === self.milestone;
           }),
           milestones: milestones
-        })
-      );
-      $(".sidebar-milestone-widget .select-menu a.select-menu-item").click(function (e) {
-        e.preventDefault();
-        that.milestone = $(this).data('milestone');
-        that.render();
-        return false;
-      });
-
+        };
     });
-  },
-  createLabel: function () {
+	}
+});
+
+var EditIssueView = View.extend({
+	edit:true,
+	el:".facebox-content",
+	templateName:"src/templates/edit-issue.html",
+	modelReady:function(){
+		var tasks = [this.edit&&github.getIssues(null,$(this).data("issue-id")), github.getAssignees(), github.getMilestones(),this.edit&&github.getLabels()];
+		return Q.all(tasks).then(function(data) {
+      console.log(data);
+      var context = data[0];
+      context.assignees = data[1];
+      context.milestones = data[2];
+      context.all_labels = data[3];
+			context.comments = data[4];
+			return context;
+    });
+	}
+});
+
+$(function(){
+	var header = new HeaderView;
+	var kanban = new KanbanView;
+	var reposelector = new RepoSelectorView;
+	var milestone = new MilestoneView;
+	
+});
+
+
+// Gira.prototype = {
+// 	renderError: function(message) {
+// 		$('.notification').html(nunjucks.render("src/templates/error.html",{message:message}));
+// 		window.setTimeout(function(){
+// 			$('.notification .close.js-flash-close').click();
+// 		}, 2000);
+
+// 	},
+
+function createLabel() {
     var that = this;
     return function () {
       var form = $('form:visible');
@@ -319,8 +306,8 @@ Gira.prototype = {
       });
       return false;
     };
-  },
-  createIssue: function () {
+  }
+   function createIssue() {
     var that = this;
     return function () {
       var form = $('form:visible');
@@ -338,129 +325,88 @@ Gira.prototype = {
       });
       return false;
     };
-  },
-  bindEvent: function () {
-    var that = this;
-    $('#jk-preview').click(function () {
-      var data = {text: $('#issue_body').val()};
-      that.github.markdown(data).then(function (result) {
-        if (result) {
-          $('.comment-body.markdown-body.js-comment-body p').html(result);
-        }
-      });
-    });
-    $('.sidebar .color-label').click(function (e) {
-      e.preventDefault();
-      $(this).toggleClass('selected');
-    });
-    $('.form-actions .primary.button').submit(function () {
-      that.renderKanban();
-    });
-  },
-	renderFaceBox: function() {
-		var that = this;
-		return function(e){
-			e.preventDefault();
-			if(this.id==='new-issue'){
-        var tasks = [{}, that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo),{}];
-        that.renderIssueBox(tasks);
-			}else if(this.id==='new-label'){
-        $('.facebox-content:visible').html(nunjucks.render('src/templates/create-label.html'));
-			}else if(this.id==='show-diagram'){
-        $('.facebox-content:visible').html(nunjucks.render('src/templates/show-diagram.html'));
-      }else {
-        var tasks = [that.github.getIssues(that.owner,that.repo,null,$(this).data("issue-id")), that.github.getAssignees(that.owner,that.repo), that.github.getMilestones(that.owner,that.repo), that.github.getLabels(that.owner,that.repo)];
-        that.renderIssueBox(tasks).then(function(){
-					$('#jk-preview').click();
-				});
-      }
-			return false;
-		};
-	},
-  renderIssueBox: function(tasks) {
-    var that = this;
-		return Q.all(tasks).then(function(data) {
-      console.log(data);
-      var context = data[0];
-      context.assignees = data[1];
-      context.milestones = data[2];
-      context.all_labels = data[3];
-			context.comments = data[4];
-      $('.facebox-content').html(mynunjucks.render('src/templates/edit-issue.html',context));
-      if (typeof context.labels !== 'undefined') {
-        that.updateLabelStatus(context);
-      }
-    }).then(that.bindEvent).then(that.bindUploadImageEvent.bind(that));
-  },
-  updateLabelStatus: function (context) {
-    var activeLabels = context.labels;
-    $.each(activeLabels, function(index, label) {
-      $(".sidebar .color-label-list li[data-name=\""+ label.name + "\"] a").addClass("selected");
-    });
-  },
-  bindUploadImageEvent: function() {
-		var that = this;
-    $('input[type=file]').on("change", function(){
-			var file = this.files[0];
-			var data = {};
-			data.path="images/" + file.name.replace(' ','-');
-			data.message = "upload" + file.name;
-			var reader  = new FileReader();
-			reader.onloadend = function () {
-				data.content = reader.result;
-				data.branch = "gira-images";
-				data.content = data.content.slice(data.content.indexOf(',')+1);
-				that.github.getRefSha(that.owner,that.repo).then(function(refs){
-					var _refs = _(refs);
-					if(_refs.find(function(ref){return ref.ref==="refs/heads/gira-images";})){
-						return that.github.uploadImage(that.owner,that.repo,data);
-					}
-					else{
-						return that.github.createBranch(that.owner,that.repo,"refs/heads/gira-images", _refs.first().object.sha).then(function(){
-							that.github.uploadImage(that.owner,that.repo,data);
-						});
-					}
-				})
-					.then(function(resp){
-					var selectionStart = $('#issue_body')[0].selectionStart;
-					var selectionEnd = $('#issue_body')[0].selectionEnd;
-
-					$('#issue_body').val($('#issue_body').val() + '![]('+ resp.content.html_url + '?raw=true)');
-
-					$('#issue_body')[0].selectionStart = selectionStart;
-					$('#issue_body')[0].selectionEnd = selectionEnd;
-					},function(error){
-						console.log("exist",error);
-					});
-			};
-
-			if (file) {
-				reader.readAsDataURL(file);
-			} else {
-				data.content = "";
-			}	
-		});
-  },
-  closeButton: function () {
-    var that = this;
-    $('.remove-lane').on('click', function (event) {
-      event.preventDefault();
-      var label = $(this).attr('data');
-      that.github.deleteLane(that.owner, that.repo, label);
-      that.render();
-    });
-  },
-  render: function () {
-    var that = this;
-    that.renderHeader();
-    return that.renderRepoSelector()
-      .then(that.renderMilestone.bind(that))
-      .then(that.renderKanban.bind(that))
-      .then(that.closeButton.bind(that))
-      .catch(function (error) {
-        console.log(error);
-      });
   }
-};
+//   bindEvent: function () {
+//     var that = this;
+//     $('#jk-preview').click(function () {
+//       var data = {text: $('#issue_body').val()};
+//       that.github.markdown(data).then(function (result) {
+//         if (result) {
+//           $('.comment-body.markdown-body.js-comment-body p').html(result);
+//         }
+//       });
+//     });
+//     $('.sidebar .color-label').click(function (e) {
+//       e.preventDefault();
+//       $(this).toggleClass('selected');
+//     });
+//     $('.form-actions .primary.button').submit(function () {
+//       that.renderKanban();
+//     });
+//   },
+//   bindUploadImageEvent: function() {
+// 		var that = this;
+//     $('input[type=file]').on("change", function(){
+// 			var file = this.files[0];
+// 			var data = {};
+// 			data.path="images/" + file.name.replace(' ','-');
+// 			data.message = "upload" + file.name;
+// 			var reader  = new FileReader();
+// 			reader.onloadend = function () {
+// 				data.content = reader.result;
+// 				data.branch = "gira-images";
+// 				data.content = data.content.slice(data.content.indexOf(',')+1);
+// 				that.github.getRefSha(that.owner,that.repo).then(function(refs){
+// 					var _refs = _(refs);
+// 					if(_refs.find(function(ref){return ref.ref==="refs/heads/gira-images";})){
+// 						return that.github.uploadImage(that.owner,that.repo,data);
+// 					}
+// 					else{
+// 						return that.github.createBranch(that.owner,that.repo,"refs/heads/gira-images", _refs.first().object.sha).then(function(){
+// 							that.github.uploadImage(that.owner,that.repo,data);
+// 						});
+// 					}
+// 				})
+// 					.then(function(resp){
+// 					var selectionStart = $('#issue_body')[0].selectionStart;
+// 					var selectionEnd = $('#issue_body')[0].selectionEnd;
+
+// 					$('#issue_body').val($('#issue_body').val() + '![]('+ resp.content.html_url + '?raw=true)');
+
+// 					$('#issue_body')[0].selectionStart = selectionStart;
+// 					$('#issue_body')[0].selectionEnd = selectionEnd;
+// 					},function(error){
+// 						console.log("exist",error);
+// 					});
+// 			};
+
+// 			if (file) {
+// 				reader.readAsDataURL(file);
+// 			} else {
+// 				data.content = "";
+// 			}	
+// 		});
+//   },
+//   closeButton: function () {
+//     var that = this;
+//     $('.remove-lane').on('click', function (event) {
+//       event.preventDefault();
+//       var label = $(this).attr('data');
+//       that.github.deleteLane(that.owner, that.repo, label);
+//       that.render();
+//     });
+//   },
+//   render: function () {
+//     var that = this;
+//     that.renderHeader();
+//     return that.renderRepoSelector()
+//       .then(that.renderMilestone.bind(that))
+//       .then(that.renderKanban.bind(that))
+//       .then(that.closeButton.bind(that))
+//       .catch(function (error) {
+//         console.log(error);
+//       });
+//   }
+// };
 
 
