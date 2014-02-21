@@ -10,7 +10,7 @@ mynunjucks.addFilter('dayFromNow', function (str) {
 mynunjucks.addFilter('hasIndex', function (str) {
   return /\d+-.*/.test(str);
 });
-github = new Github();
+github = new Github('jcouyang','gira');
 
 var Gira = function (username, repo, github, milestone) {
   this.username = username;
@@ -22,6 +22,21 @@ var Gira = function (username, repo, github, milestone) {
   this.milestones = {};
   this.owners = {};
 };
+
+if (!github.checkLogin()) {
+  $(".site.clearfix").html(nunjucks.render('src/templates/index.html'));
+  $('#try-gira').click(function () {
+    var userrepo = $(".marketing-section-enterprise input[name=username]").val().split('/');
+    gira = new Gira(userrepo[0], userrepo[1], github);
+    gira.render();
+  });
+}
+gira = new Gira("jcouyang", "gira", github);
+github.getAccessToken().then(function () {
+  gira.render();
+}, function (error) {
+  console.log("invalid token", error);
+});
 
 var View = Gira.View = function(){
 	this.initialize.apply(this, arguments);
@@ -98,6 +113,34 @@ var HeaderView = View.extend({
 	}
 });
 
+renderKanban: function () {
+    var that = this;
+    return this.groupIssuesByLabels().then(
+      function (issues) {
+        var compiled = mynunjucks.render('src/templates/gira.html', {issuesWithLabel: issues, last_label: that.last_label});
+        $('#contributions-calendar').html(compiled);
+      })
+      .then(that.draggablify.bind(that))
+			.then(function () {
+        $('a[rel=facebox]').click(that.renderFaceBox());
+      })
+      .then(function () {
+        $('.close.close-issue').click(function () {
+          var $close = $(this);
+          that.github.getIssues(that.owner, that.repo, that.milestone, $close.data('issue'))
+            .then(function (issue) {
+              issue.state = 'close';
+              issue.assignee = issue.assignee && issue.assignee.login;
+              issue.milestone = issue.milestone && issue.milestone.number;
+
+              that.github.newIssue(that.owner, that.repo, issue, issue.number)
+                .then(function () {
+                  $('#' + $close.data('issue')).remove();
+                });
+            });
+        });
+      });
+  },
 var header = new HeaderView;
 Gira.prototype = {
 	renderError: function(message) {
