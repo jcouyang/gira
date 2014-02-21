@@ -145,10 +145,28 @@ Github.prototype = {
   },
 	uploadImage:function(owner, repo, data){
 		return Q($.ajax({
-			url:this.getReposUrl(owner, repo) + '/contents/images' + this.concatToken(),
+			url:this.getReposUrl(owner, repo) + '/contents/'+ data.path + this.concatToken(),
 			type: 'put',
 			dataType: 'json',
 			data: JSON.stringify(data)
+		}));
+	},
+	createBranch:function(owner,repo,branch,sha){
+		return Q($.ajax({
+			url:this.getReposUrl(owner, repo) + '/git/refs' + this.concatToken(),
+			type: 'post',
+			dataType: 'json',
+			data: JSON.stringify({
+				ref:branch,
+				sha:sha
+				})
+		}));
+	},
+	getRefSha:function(owner,repo,branch){
+		return Q($.ajax({
+						url:this.getReposUrl(owner, repo) + '/git/refs' + this.concatToken(),
+			type: 'get',
+			dataType: 'json'
 		}));
 	}
 };

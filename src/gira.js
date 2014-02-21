@@ -272,12 +272,34 @@ Gira.prototype = {
     $('input[type=file]').on("change", function(){
 			var file = this.files[0];
 			var data = {};
-			// data.path="images";
+			data.path="images/" + file.name.replace(' ','-');
 			data.message = "upload" + file.name;
 			var reader  = new FileReader();
 			reader.onloadend = function () {
 				data.content = reader.result;
-				that.github.uploadImage(that.owner, that.repo, data);
+				data.branch = "gira-images";
+				data.content = data.content.slice(data.content.indexOf(',')+1);
+				that.github.getRefSha(that.owner,that.repo).then(function(refs){
+					var _refs = _(refs);
+					if(_refs.find(function(ref){return ref.ref==="refs/heads/gira-images";})){
+						return that.github.uploadImage(that.owner,that.repo,data);
+					}
+					else{
+						return that.github.createBranch(that.owner,that.repo,"refs/heads/gira-images", _refs.first().object.sha).then(function(){
+							that.github.uploadImage(that.owner,that.repo,data);
+						});
+					}
+				})
+					.then(function(resp){
+						debugger;
+					var selectionStart = $('#issue_body')[0].selectionStart;
+					var selectionEnd = $('#issue_body')[0].selectionEnd;
+
+					$('#issue_body').val($('#issue_body').val() + '![]('+ resp.content.html_url + '?raw=true)');
+
+					$('#issue_body')[0].selectionStart = selectionStart;
+					$('#issue_body')[0].selectionEnd = selectionEnd;
+				});
 			};
 
 			if (file) {
