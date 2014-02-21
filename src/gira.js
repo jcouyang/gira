@@ -1,4 +1,16 @@
 var LABEL_REGEX = /^\d+-(\w+)/;
+mynunjucks = new nunjucks.Environment();
+mynunjucks.addFilter('removeIndex', function (str) {
+  var matched = LABEL_REGEX.exec(str);
+  return matched && matched.pop() || str;
+});
+mynunjucks.addFilter('dayFromNow', function (str) {
+  return Math.floor((new Date(str) - new Date()) / (1000 * 60 * 60 * 24));
+});
+mynunjucks.addFilter('hasIndex', function (str) {
+  return /\d+-.*/.test(str);
+});
+github = new Github();
 
 var Gira = function (username, repo, github, milestone) {
   this.username = username;
@@ -11,6 +23,82 @@ var Gira = function (username, repo, github, milestone) {
   this.owners = {};
 };
 
+var View = Gira.View = function(){
+	this.initialize.apply(this, arguments);
+};
+
+var delegateEventSplitter = /^(\S+)\s*(.*)$/;
+
+View.extend = function(props){
+	var parent = this;
+	var child;
+	if (props && _.has(props, 'constructor')) {
+      child = props.constructor;
+    } else {
+      child = function(){ return parent.apply(this, arguments); };
+    }
+	_.extend(child, parent);
+	var Surrogate = function(){ this.constructor = child; };
+    Surrogate.prototype = parent.prototype;
+  child.prototype = new Surrogate;
+	
+	_.extend(child.prototype,props);
+	child.__super__ = parent.prototype;
+	return child;
+};
+
+_.extend(View.prototype, {
+	el:$('body'),
+	templateName:"index.html",
+	templateEngin:nunjucks,
+	modelReady:{},
+	events: {
+      "keypress #new-todo":  "createOnEnter",
+      "click #clear-completed": "clearCompleted",
+      "click #toggle-all": "toggleAllComplete"
+    },
+	initialize:function(){
+		this.render();
+	},
+	render: function(){
+		var self = this;
+		this.modelReady().then(function(model){
+			console.log(model);
+			$(self.el).html(self.templateEngine.render(self.templateName,model));
+			self.delegateEvents();
+		}).catch(function(error){
+			console.log(error);
+			$(self.el).html(self.templateEngine.render(self.templateName));
+		});
+	},
+	delegateEvents:function(){
+		var self = this;
+		var events = _.result(this, 'events');
+		if (!events) return this;
+		_.each(_(events).keys,function(key){
+			var match = key.match(delegateEventSplitter);
+			var eventName = match[1], selector = match[2];
+			if (selector=='')
+				$(self.el).on(eventName, _.bind(events[key],self));
+			else
+				$(self.el).find(selector).on(eventName, _.bind(events[key],self));
+		});
+	}
+});
+
+var HeaderView = View.extend({
+	el:"#header",
+	templateName:"src/templates/header.html",
+	templateEngine:mynunjucks,
+	modelReady: function(){
+		return github.getUser();
+	},
+	events: {
+		"click .octicon.octicon-log-out": github.logout
+	}
+});
+
+var header = new HeaderView;
 Gira.prototype = {
 	renderError: function(message) {
 		$('.notification').html(nunjucks.render("src/templates/error.html",{message:message}));
