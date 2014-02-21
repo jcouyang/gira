@@ -257,10 +257,26 @@ var MilestoneView = View.extend({
 	}
 });
 
+
 var EditIssueView = View.extend({
 	edit:true,
 	el:".facebox-content",
 	templateName:"src/templates/edit-issue.html",
+	events:{
+		"submit form":"createIssue",
+		"click #jk-preview":"preview",
+		"click .sidebar .color-label":"addLabels",
+	},
+	addLabels: function(e){
+      e.preventDefault();
+      $(e.target).toggleClass('selected');
+	},
+	preview: function () {
+    var data = {text: $('#issue_body').val()};
+    that.github.markdown(data).then(function (result) {
+      $('.comment-body.markdown-body.js-comment-body p').html(result);
+    });
+  },
 	modelReady:function(){
 		var tasks = [this.edit&&github.getIssues(null,$(this).data("issue-id")), github.getAssignees(), github.getMilestones(),this.edit&&github.getLabels()];
 		return Q.all(tasks).then(function(data) {
@@ -272,7 +288,24 @@ var EditIssueView = View.extend({
 			context.comments = data[4];
 			return context;
     });
-	}
+	},
+	createIssue: function() {
+    var that = this;
+    var form = $('form:visible');
+    github.newIssue({
+      title: form.find("input[name='issue[title]']").val(),
+      body: form.find("textarea[name='issue[body]']").val(),
+      assignee: form.find(".assignee input[type=radio]:checked").val(),
+      milestone: form.find(".milestone input[type=radio]:checked").val(),
+      labels: form.find("a.selected input").get().map(function (input) {
+        return input.value;
+      })
+    }, form.data('issue-id')).then(function () {
+      that.render();
+      $(".facebox-close").click();
+    });
+    return false;
+  }
 });
 
 $(function(){
@@ -307,43 +340,6 @@ function createLabel() {
       return false;
     };
   }
-   function createIssue() {
-    var that = this;
-    return function () {
-      var form = $('form:visible');
-      that.github.newIssue(that.owner, that.repo, {
-        title: form.find("input[name='issue[title]']").val(),
-        body: form.find("textarea[name='issue[body]']").val(),
-        assignee: form.find(".assignee input[type=radio]:checked").val(),
-        milestone: form.find(".milestone input[type=radio]:checked").val(),
-        labels: form.find("a.selected input").get().map(function (input) {
-          return input.value;
-        })
-      }, form.data('issue-id')).then(function () {
-        that.render();
-        $(".facebox-close").click();
-      });
-      return false;
-    };
-  }
-//   bindEvent: function () {
-//     var that = this;
-//     $('#jk-preview').click(function () {
-//       var data = {text: $('#issue_body').val()};
-//       that.github.markdown(data).then(function (result) {
-//         if (result) {
-//           $('.comment-body.markdown-body.js-comment-body p').html(result);
-//         }
-//       });
-//     });
-//     $('.sidebar .color-label').click(function (e) {
-//       e.preventDefault();
-//       $(this).toggleClass('selected');
-//     });
-//     $('.form-actions .primary.button').submit(function () {
-//       that.renderKanban();
-//     });
-//   },
 //   bindUploadImageEvent: function() {
 // 		var that = this;
 //     $('input[type=file]').on("change", function(){
