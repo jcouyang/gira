@@ -266,6 +266,47 @@ var EditIssueView = View.extend({
 		"submit form":"createIssue",
 		"click #jk-preview":"preview",
 		"click .sidebar .color-label":"addLabels",
+		"change input[type=file]": "uploadImage"
+	},
+	uploadImage:function(){
+		var file = e.target.files[0];
+		var data = {};
+		data.path="images/" + file.name.replace(' ','-');
+		data.message = "upload" + file.name;
+		var reader  = new FileReader();
+		reader.onloadend = function () {
+			data.content = reader.result;
+			data.branch = "gira-images";
+			data.content = data.content.slice(data.content.indexOf(',')+1);
+			github.getRefSha().then(function(refs){
+				var _refs = _(refs);
+				if(_refs.find(function(ref){return ref.ref==="refs/heads/gira-images";})){
+					return github.uploadImage(data);
+				}
+				else{
+					return github.createBranch("refs/heads/gira-images", _refs.first().object.sha).then(function(){
+						github.uploadImage(data);
+					});
+				}
+			})
+				.then(function(resp){
+					var selectionStart = $('#issue_body')[0].selectionStart;
+					var selectionEnd = $('#issue_body')[0].selectionEnd;
+
+					$('#issue_body').val($('#issue_body').val() + '![]('+ resp.content.html_url + '?raw=true)');
+
+					$('#issue_body')[0].selectionStart = selectionStart;
+					$('#issue_body')[0].selectionEnd = selectionEnd;
+				},function(error){
+					console.log("exist",error);
+				});
+		};
+
+		if (file) {
+			reader.readAsDataURL(file);
+		} else {
+			data.content = "";
+		}	
 	},
 	addLabels: function(e){
       e.preventDefault();
@@ -273,7 +314,7 @@ var EditIssueView = View.extend({
 	},
 	preview: function () {
     var data = {text: $('#issue_body').val()};
-    that.github.markdown(data).then(function (result) {
+    github.markdown(data).then(function (result) {
       $('.comment-body.markdown-body.js-comment-body p').html(result);
     });
   },
@@ -330,79 +371,14 @@ function createLabel() {
     var that = this;
     return function () {
       var form = $('form:visible');
-      that.github.createLabel(that.owner, that.repo, {
+      github.createLabel( {
         color: form.find('input[name=color]').val().replace('#', ''),
         name: (parseInt(/^(\d+)-\w+/.exec(that.last_label).pop()) + 1) + '-' + form.find('input[name=label]').val()
       }).then(function () {
-        that.render();
+        // that.render();
         $(".facebox-close").click();
       });
       return false;
     };
   }
-//   bindUploadImageEvent: function() {
-// 		var that = this;
-//     $('input[type=file]').on("change", function(){
-// 			var file = this.files[0];
-// 			var data = {};
-// 			data.path="images/" + file.name.replace(' ','-');
-// 			data.message = "upload" + file.name;
-// 			var reader  = new FileReader();
-// 			reader.onloadend = function () {
-// 				data.content = reader.result;
-// 				data.branch = "gira-images";
-// 				data.content = data.content.slice(data.content.indexOf(',')+1);
-// 				that.github.getRefSha(that.owner,that.repo).then(function(refs){
-// 					var _refs = _(refs);
-// 					if(_refs.find(function(ref){return ref.ref==="refs/heads/gira-images";})){
-// 						return that.github.uploadImage(that.owner,that.repo,data);
-// 					}
-// 					else{
-// 						return that.github.createBranch(that.owner,that.repo,"refs/heads/gira-images", _refs.first().object.sha).then(function(){
-// 							that.github.uploadImage(that.owner,that.repo,data);
-// 						});
-// 					}
-// 				})
-// 					.then(function(resp){
-// 					var selectionStart = $('#issue_body')[0].selectionStart;
-// 					var selectionEnd = $('#issue_body')[0].selectionEnd;
-
-// 					$('#issue_body').val($('#issue_body').val() + '![]('+ resp.content.html_url + '?raw=true)');
-
-// 					$('#issue_body')[0].selectionStart = selectionStart;
-// 					$('#issue_body')[0].selectionEnd = selectionEnd;
-// 					},function(error){
-// 						console.log("exist",error);
-// 					});
-// 			};
-
-// 			if (file) {
-// 				reader.readAsDataURL(file);
-// 			} else {
-// 				data.content = "";
-// 			}	
-// 		});
-//   },
-//   closeButton: function () {
-//     var that = this;
-//     $('.remove-lane').on('click', function (event) {
-//       event.preventDefault();
-//       var label = $(this).attr('data');
-//       that.github.deleteLane(that.owner, that.repo, label);
-//       that.render();
-//     });
-//   },
-//   render: function () {
-//     var that = this;
-//     that.renderHeader();
-//     return that.renderRepoSelector()
-//       .then(that.renderMilestone.bind(that))
-//       .then(that.renderKanban.bind(that))
-//       .then(that.closeButton.bind(that))
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-// };
-
 
