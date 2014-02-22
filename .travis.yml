@@ -15,9 +15,9 @@ script:
 - npm test
 - git add .
 - git remote add pages $REPO_URL
-- git commit -m "publi:ship:"
 - git remote add gira $GIRA_URL
-- git push gira gh-pages -f -q
+- git commit -m "publi:ship:"
+- git push gira master -f -q
 - git checkout -B gh-pages
 - git push pages gh-pages -f -q
 env:

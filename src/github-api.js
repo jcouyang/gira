@@ -97,7 +97,7 @@ Github.prototype = {
   },
   addLabel: function (id, label) {
     return Q($.ajax({
-      url: this.REPO_BASE + ['repos', 'issues', id, 'labels'].join('/') + '?access_token=' + this.access_token,
+      url: [this.getReposUrl(), 'issues', id, 'labels'].join('/') + '?access_token=' + this.access_token,
       type: 'put',
       data: JSON.stringify(label),
       dataType: 'json'
@@ -105,7 +105,7 @@ Github.prototype = {
   },
   createLabel: function (label) {
     return Q($.ajax({
-      url: this.REPO_BASE + ['repos', 'labels'].join('/') + '?access_token=' + this.access_token,
+      url: this.getReposUrl() +  '/labels' + this.concatToken(),
       type: 'post',
       data: JSON.stringify(label),
       dataType: 'json'
@@ -113,15 +113,15 @@ Github.prototype = {
   },
   deleteLabel: function (id, label) {
     return Q($.ajax({
-      url: this.REPO_BASE + ['repos', 'issues', id, 'labels', label].join('/') + '?access_token=' + this.access_token,
+      url: this.getReposUrl() + "/issues/" + id + "/labels/" + label + this.concatToken(),
       type: 'delete'
     }));
   },
   newIssue: function (issue, id) {
     id = (typeof id !== "undefined" && id !== null) ? id : '';
     return Q($.ajax({
-      url: this.REPO_BASE + ['repos', 'issues'].join('/') + (id && ('/' + id)) + '?access_token=' + this.access_token,
-      type: 'post',
+      url: this.getReposUrl() + "/issues" +  this.concatToken(),
+			type: 'post',
       dataType: 'json',
       data: JSON.stringify(issue)
     }));
@@ -141,7 +141,7 @@ Github.prototype = {
   },
   deleteLane: function (label) {
     $.ajax({
-      url: this.REPO_BASE + ['repos', 'labels', label].join('/') + '?access_token=' + this.access_token,
+      url: [this.getReposUrl(), 'labels', label].join('/') + this.concatToken(),
       type: 'delete'
     });
   },

@@ -31,14 +31,15 @@ var Gira = function (username, repo, github, milestone) {
 //     gira.render();
 //   });
 // }
-gira = new Gira("jcouyang", "gira", github);
+// gira = new Gira("jcouyang", "gira", github);
 // github.getAccessToken().then(function () {
 //   gira.render();
 // }, function (error) {
 //   console.log("invalid token", error);
 // });
 
-var View = Gira.View = function(){
+var View = Gira.View = function(options){
+	_.extend(this,options);
 	this.initialize.apply(this, arguments);
 };
 
@@ -48,13 +49,13 @@ View.extend = function(props){
 	var parent = this;
 	var child;
 	if (props && _.has(props, 'constructor')) {
-      child = props.constructor;
-    } else {
-      child = function(){ return parent.apply(this, arguments); };
-    }
+    child = props.constructor;
+  } else {
+    child = function(){ return parent.apply(this, arguments); };
+  }
 	_.extend(child, parent);
 	var Surrogate = function(){ this.constructor = child; };
-    Surrogate.prototype = parent.prototype;
+  Surrogate.prototype = parent.prototype;
   child.prototype = new Surrogate;
 	
 	_.extend(child.prototype,props);
@@ -79,9 +80,10 @@ _.extend(View.prototype, {
 		}).catch(function(error){
 			console.log(error);
 			$(self.el).html(self.templateEngine.render(self.templateName));
-		});
+		}).then(self.afterRender.bind(self));
 
 	},
+	afterRender:function(){},
 	delegateEvents:function(){
 		var self = this;
 		var events = _.result(this, 'events');
@@ -114,10 +116,11 @@ var HeaderView = View.extend({
 
 var KanbanView = View.extend({
 	el:"#contributions-calendar",
+	milestone:"",
 	templateName:"src/templates/gira.html",
 	modelReady: function(){
     var that = this;
-    return Q.all([github.getIssues(this.milestone), github.getLabels()]).then(function (data) {
+    return Q.all([github.getIssues(that.milestone), github.getLabels()]).then(function (data) {
       var issues = data[0];
       var labels = _(data[1]).filter(function (label) {
         return LABEL_REGEX.test(label.name);
@@ -151,9 +154,39 @@ var KanbanView = View.extend({
 	},
 	events:{
 		"click a[rel=facebox]": "renderFaceBox",
-		"click .close.close-issue":"closeIssue"
+		"click .close.close-issue":"closeIssue",
+		"dragstart .contrib-details.grid .col .lbl div[draggable=true]":"dragStart",
+		"dragover .col":"dragover",
+		"drop .col":"drop"
+		
 	},
-	renderFaceBox: function(){
+	drop: function (e) {
+    e.stopPropagation();
+    var column = e.target;
+    var $issue = $('#' + e.originalEvent.dataTransfer.getData('text/plain'));
+    github.deleteLabel($issue.attr('id'), $issue.data('label'))
+      .then(function (labels) {
+        github.addLabel($issue.attr('id'), _(labels).pluck('name').concat(column.id));
+      });
+    $(e.target).removeClass("over")
+      .find('span.lbl')
+      .append($($issue));
+    return false;
+  },
+	dragStart: function (e) {
+		e.stopPropagation();
+    e.originalEvent.dataTransfer.effectAllowed = 'move';
+    e.originalEvent.dataTransfer.setData('text/plain', e.target.id);
+		console.log("transfet data",e.target, e.target.id);
+  },
+	dragover: function (e) {
+      if (e.preventDefault) e.preventDefault(); // allows us to drop
+      $(e.target).removeClass("over").addClass('over');
+      e.originalEvent.dataTransfer.dropEffect = 'move';
+      return false;
+    },
+	renderFaceBox: function(e){
+		new EditIssueView(true, e.target.id);
 		console.log("render popup");
 	},
 	closeIssue: function(e){
@@ -169,33 +202,7 @@ var KanbanView = View.extend({
             $('#' + $close.data('issue')).remove();
           });
       });
-	},
-	  draggablify: function () {
-    var that = this;
-    var $issues = $('#contributions-calendar .contrib-details.grid .col .lbl div[draggable=true]');
-    $issues.on('dragstart', function (e) {
-      e.originalEvent.dataTransfer.effectAllowed = 'move';
-      e.originalEvent.dataTransfer.setData('text/plain', this.id);
-    });
-    $(".col").on('dragover',function (e) {
-      if (e.preventDefault) e.preventDefault(); // allows us to drop
-      $(this).removeClass("over").addClass('over');
-      e.originalEvent.dataTransfer.dropEffect = 'move';
-      return false;
-    }).on('drop', function (e) {
-      if (e.stopPropagation) e.stopPropagation();
-      var column = this;
-      var $issue = $('#' + e.originalEvent.dataTransfer.getData('text/plain'));
-      that.github.deleteLabel($issue.attr('id'), $issue.data('label'))
-        .then(function (labels) {
-          that.github.addLabel($issue.attr('id'), _(labels).pluck('name').concat(column.id));
-        });
-      $(this).removeClass("over")
-        .find('span.lbl')
-        .append($($issue));
-      return false;
-    });
-  }
+	}
 });
 
 
@@ -206,12 +213,19 @@ var RepoSelectorView = View.extend({
 	templateName:"src/templates/repo-selector.html",
   changeOwner: function (event) {
     this.owner = $(event.target).attr('name');
+		this.repo="";
     this.render();
   },
   changeRepo: function (event) {
     this.repo = $(event.target).attr('name');
-    // this.renderKanban();
+		github.owner = this.owner;
+		github.repo = this.repo;
   },
+	afterRender: function(){
+		github.owner = $(this.el).find(".select-menu.owner-select-menu .selected input[type=radio]").attr("name");
+		github.repo = $(this.el).find(".target-repo-menu.select-menu .selected input[type=radio]").attr("name");
+		new KanbanView;
+	},
 	events:{
 		"change .select-menu.owner-select-menu input[type=radio]":"changeOwner",
 		"change .target-repo-menu.select-menu input[type=radio]":"changeRepo"
@@ -236,23 +250,23 @@ var MilestoneView = View.extend({
 	el:".pagehead.repohead div.sidebar-milestone-widget",
 	templateName: "src/templates/milestones.html",
 	events:{
-		"click .sidebar-milestone-widget .select-menu a.select-menu-item":
+		"click .select-menu a.select-menu-item": "changeMilestone"
 	},
 	changeMilestone:function (e) {
-    e.preventDefault();
-    this.milestone = $(this).data('milestone');
-    this.render();
-    return false;
+		e.stopPropagation();
+    this.milestone = $(this.el).find("a.select-menu-item.last-visible").data('milestone');
+		this.render();
+		new KanbanView({milestone:this.milestone});
   },
 	modelReady:function(){
 		var self = this;
 		return github.getMilestones().then(function (milestones) {
 			return {
-          selected: self.milestone && _(milestones).find(function (milestone) {
-            return milestone.number === self.milestone;
-          }),
-          milestones: milestones
-        };
+        selected: self.milestone && _(milestones).find(function (milestone) {
+          return milestone.number === self.milestone;
+        }),
+        milestones: milestones
+      };
     });
 	}
 });
@@ -260,12 +274,13 @@ var MilestoneView = View.extend({
 
 var EditIssueView = View.extend({
 	edit:true,
+	issue_id:'',
 	el:".facebox-content",
 	templateName:"src/templates/edit-issue.html",
 	events:{
-		"submit form":"createIssue",
+		"submit form:visible":"createIssue",
 		"click #jk-preview":"preview",
-		"click .sidebar .color-label":"addLabels",
+		"click .color-label":"addLabels",
 		"change input[type=file]": "uploadImage"
 	},
 	uploadImage:function(){
@@ -309,8 +324,8 @@ var EditIssueView = View.extend({
 		}	
 	},
 	addLabels: function(e){
-      e.preventDefault();
-      $(e.target).toggleClass('selected');
+    e.preventDefault();
+    $(e.target).toggleClass('selected');
 	},
 	preview: function () {
     var data = {text: $('#issue_body').val()};
@@ -319,7 +334,7 @@ var EditIssueView = View.extend({
     });
   },
 	modelReady:function(){
-		var tasks = [this.edit&&github.getIssues(null,$(this).data("issue-id")), github.getAssignees(), github.getMilestones(),this.edit&&github.getLabels()];
+		var tasks = [this.edit&&github.getIssues(null,this.issue_id), github.getAssignees(), github.getMilestones(),this.edit&&github.getLabels()];
 		return Q.all(tasks).then(function(data) {
       console.log(data);
       var context = data[0];
@@ -344,6 +359,7 @@ var EditIssueView = View.extend({
     }, form.data('issue-id')).then(function () {
       that.render();
       $(".facebox-close").click();
+			new KanbanView;
     });
     return false;
   }
@@ -351,10 +367,8 @@ var EditIssueView = View.extend({
 
 $(function(){
 	var header = new HeaderView;
-	var kanban = new KanbanView;
 	var reposelector = new RepoSelectorView;
 	var milestone = new MilestoneView;
-	
 });
 
 
@@ -367,18 +381,18 @@ $(function(){
 
 // 	},
 
-function createLabel() {
-    var that = this;
-    return function () {
-      var form = $('form:visible');
-      github.createLabel( {
-        color: form.find('input[name=color]').val().replace('#', ''),
-        name: (parseInt(/^(\d+)-\w+/.exec(that.last_label).pop()) + 1) + '-' + form.find('input[name=label]').val()
-      }).then(function () {
-        // that.render();
-        $(".facebox-close").click();
-      });
-      return false;
-    };
-  }
+// function createLabel() {
+//     var that = this;
+//     return function () {
+//       var form = $('form:visible');
+//       github.createLabel( {
+//         color: form.find('input[name=color]').val().replace('#', ''),
+//         name: (parseInt(/^(\d+)-\w+/.exec(that.last_label).pop()) + 1) + '-' + form.find('input[name=label]').val()
+//       }).then(function () {
+//         // that.render();
+//         $(".facebox-close").click();
+//       });
+//       return false;
+//     };
+//   }
 
