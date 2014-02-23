@@ -174,10 +174,9 @@ var KanbanView = View.extend({
     return false;
   },
 	dragStart: function (e) {
-		e.stopPropagation();
     e.originalEvent.dataTransfer.effectAllowed = 'move';
-    e.originalEvent.dataTransfer.setData('text/plain', e.target.id);
-		console.log("transfet data",e.target, e.target.id);
+    e.originalEvent.dataTransfer.setData('text/plain', e.target.id||e.target.dataset["issueId"]);
+		console.log('transfet',e.target)
   },
 	dragover: function (e) {
       if (e.preventDefault) e.preventDefault(); // allows us to drop
@@ -186,8 +185,11 @@ var KanbanView = View.extend({
       return false;
     },
 	renderFaceBox: function(e){
-		new EditIssueView(true, e.target.id);
-		console.log("render popup");
+		new EditIssueView({
+			edit:true,
+			issue_id:e.currentTarget.dataset["issueId"]
+		});
+		console.log("render popup",e.target.dataset["issueId"]);
 	},
 	closeIssue: function(e){
 		var $close = $(e.target);
@@ -325,7 +327,7 @@ var EditIssueView = View.extend({
 	},
 	addLabels: function(e){
     e.preventDefault();
-    $(e.target).toggleClass('selected');
+    $(e.currentTarget).toggleClass('selected');
 	},
 	preview: function () {
     var data = {text: $('#issue_body').val()};
