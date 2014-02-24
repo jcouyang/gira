@@ -12,33 +12,7 @@ mynunjucks.addFilter('hasIndex', function (str) {
 });
 github = new Github('jcouyang','gira');
 
-var Gira = function (username, repo, github, milestone) {
-  this.username = username;
-  this.repo = repo;
-  this.owner = username;
-  this.milestone = milestone || '';
-  this.last_label = '';
-  this.github = github;
-  this.milestones = {};
-  this.owners = {};
-};
-
-// if (!github.checkLogin()) {
-//   $(".site.clearfix").html(nunjucks.render('src/templates/index.html'));
-//   $('#try-gira').click(function () {
-//     var userrepo = $(".marketing-section-enterprise input[name=username]").val().split('/');
-//     gira = new Gira(userrepo[0], userrepo[1], github);
-//     gira.render();
-//   });
-// }
-// gira = new Gira("jcouyang", "gira", github);
-// github.getAccessToken().then(function () {
-//   gira.render();
-// }, function (error) {
-//   console.log("invalid token", error);
-// });
-
-var View = Gira.View = function(options){
+var View = function(options){
 	_.extend(this,options);
 	this.initialize.apply(this, arguments);
 };
@@ -79,13 +53,14 @@ _.extend(View.prototype, {
 			console.log(model);
 			$(self.el).html(self.templateEngine.render(self.templateName,model));
 			self.delegateEvents();
+			self.afterRender.call(self);
 		}).catch(function(error){
-			debugger
 			console.log("error",error);
-			new ErrorView({message:JSON.parse(error.responseText).message});
+			if(typeof(error)==="string")
+				error = JSON.parse(error.responseText||error);
+			// new ErrorView({message:error.message});
 			$(self.el).html(self.templateEngine.render(self.templateName));
-		}).then(self.afterRender.bind(self));
-
+		});
 	},
 	afterRender:function(){},
 	delegateEvents:function(){
@@ -417,11 +392,27 @@ var ErrorView = View.extend({
 	}
 });
 
-$(function(){
-	header = new HeaderView;
-	reposelector = new RepoSelectorView;
-	milestone = new MilestoneView;
-	kanban = null;
-});
+// $(function(){
+// 	function renderViews(){
+// 		header = new HeaderView;
+// 		reposelector = new RepoSelectorView;
+// 		milestone = new MilestoneView;
+// 		kanban = null;		
+// 	}
+// 	if (!github.checkLogin()) {
+// 		$(".site.clearfix").html(nunjucks.render('src/templates/index.html'));
+// 		$('#try-gira').click(function () {
+// 			var userrepo = $(".marketing-section-enterprise input[name=username]").val().split('/');
+// 			github.owner = userrepo[0];
+// 			github.owner = userrepo[1];
+// 			renderViews();
+// 		});
+// 	}
+// 	github.getAccessToken().then(function () {
+// 		renderViews();
+// 	}, function (error) {
+// 		console.log("invalid token", error);
+// 	});
+// });
 
 

@@ -45,41 +45,17 @@ Github.prototype = {
 };
 var github = new Github();
 
+
 describe('unit test', function(){
 	describe('getIssues',function(){
 		beforeEach(function(){
-			var github = {
-				getIssues: function(){
-					return Q([{
-						name:'issue1',
-						'labels':[
-							{name:"1-doing"},
-							{name:"haha"}]
-					},{
-						name:'issue without label',
-						'labels':[]
-					},{
-						name: "issue without number label",
-						labels:[
-							{name:'wahaha'}
-						]
-					}]);
-				},
-				getLabels:function(){
-					return Q([{
-						name:'1-doing'
-					},{
-						name:'something else'
-					}]);
-				}
-			};
-			gira = new Gira('jcouyang','gira',github);			
-		});
-
-		it('group Issues by label', function(done){
-
-			gira.groupIssuesByLabels().should.eventually.deep.equal([
-				['0-Backlog',[{
+			github.getIssues= function(){
+				return Q([{
+					name:'issue1',
+					'labels':[
+						{name:"1-doing"},
+						{name:"haha"}]
+				},{
 					name:'issue without label',
 					'labels':[]
 				},{
@@ -87,57 +63,62 @@ describe('unit test', function(){
 					labels:[
 						{name:'wahaha'}
 					]
-				}]],
-				['1-doing',[{name:'issue1','labels':[{name:"1-doing"},{name:"haha"}]}]]
-				]).notify(done);	
+				}]);
+			};
+			github.getLabels = function(){
+				return Q([{
+					name:'1-doing'
+				},{
+					name:'something else'
+				}]);
+			};
+			mynunjucks.render = sinon.spy();
+		});
+
+		it('group Issues by label', function(done){
+
+			KanbanView.prototype.afterRender = function(){
+				mynunjucks.render.args[0][1].should.be.deep.equal({"issuesWithLabel":[["0-Backlog",[{"name":"issue without label","labels":[]},{"name":"issue without number label","labels":[{"name":"wahaha"}]}]],["1-doing",[{"name":"issue1","labels":[{"name":"1-doing"},{"name":"haha"}]}]]],"last_label":"1-doing"});
+				done();
+			};
+			var kanban = new KanbanView;
 		});
 
 		it('empty label', function(done){
-			var github = {
-				getIssues: function(){
-					return Q([{
-						name:'issue without label',
-						'labels':[]
-					},{
-						name: "issue without number label",
-						labels:[
-							{name:'wahaha'}
-						]
-					}]);
-				},
-				getLabels:function(){
-					return Q();
-				}
+			github.getIssues= function(){
+				return Q([{
+					name:'issue without label',
+					'labels':[]
+				},{
+					name: "issue without number label",
+					labels:[
+						{name:'wahaha'}
+					]
+				}]);
 			};
-			gira = new Gira('jcouyang','gira',github);
-			gira.groupIssuesByLabels().should.eventually.deep.equal([
-				['0-Backlog',
-				 [{
-					 name:'issue without label',
-					 'labels':[]
-				 },{
-					 name: "issue without number label",
-					 labels:[
-						 {name:'wahaha'}
-					 ]
-				 }]
-				]
-				]).notify(done);	
-		});
-
-		
-	});
-
-	describe("render", function(){
-		it("render not  ok", function(done){
-			gira = new Gira('jcouyang','gira',github);
-			gira.render().catch(function(error){
-				throw error;
-			}).then(done);
+			github.getLabels=function(){
+				return Q();
+			};
+			
+			KanbanView.prototype.afterRender = function(){
+				mynunjucks.render.args[0][1].should.be.deep.equal({"issuesWithLabel":[
+					['0-Backlog',
+					 [{
+						 name:'issue without label',
+						 'labels':[]
+					 },{
+						 name: "issue without number label",
+						 labels:[
+							 {name:'wahaha'}
+						 ]
+					 }]
+					]
+				],"last_label":"0-Backlog"});
+				done();
+			};
+			var kanban = new KanbanView;
 		});
 
 	});
-
-	
 });
 
