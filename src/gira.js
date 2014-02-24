@@ -160,13 +160,15 @@ var KanbanView = View.extend({
 		"dragstart .contrib-details.grid .col .lbl div[draggable=true]":"dragStart",
 		"dragover .col":"dragover",
 		"drop .col":"drop",
-		"remove-lane": "removeLane"
+		"click .remove-lane": "removeLane"
 	},
 	removeLane:function(e){
 		e.preventDefault();
     var label = $(e.currentTarget).attr('data');
-    that.github.deleteLane(label);
-    new KanbanView;
+    github.deleteLane(label);
+		setTimeout(function(){
+			kanban && kanban.render() || new KanbanView;			
+		}, 3000);
 	},
 	drop: function (e) {
     e.stopPropagation();
@@ -234,7 +236,7 @@ var RepoSelectorView = View.extend({
 	afterRender: function(){
 		github.owner = $(this.el).find(".select-menu.owner-select-menu .selected input[type=radio]").attr("name");
 		github.repo = $(this.el).find(".target-repo-menu.select-menu .selected input[type=radio]").attr("name");
-		new KanbanView;
+		kanban && kanban.render() || new KanbanView;
 	},
 	events:{
 		"change .select-menu.owner-select-menu input[type=radio]":"changeOwner",
@@ -266,7 +268,7 @@ var MilestoneView = View.extend({
 		e.stopPropagation();
     this.milestone = $(this.el).find("a.select-menu-item.last-visible").data('milestone');
 		this.render();
-		new KanbanView({milestone:this.milestone});
+		kanban && (kanban.milestone = this.milestone) && kanban.render() || new KanbanView({milestone:this.milestone});
   },
 	modelReady:function(){
 		var self = this;
@@ -369,26 +371,11 @@ var EditIssueView = View.extend({
     }, form.data('issue-id')).then(function () {
       that.render();
       $(".facebox-close").click();
-			new KanbanView;
+			kanban && kanban.render() || new KanbanView;
     });
     return false;
   }
 });
-
-function createLabel() {
-    var that = this;
-    return function () {
-      var form = $('form:visible');
-      github.createLabel( {
-        color: form.find('input[name=color]').val().replace('#', ''),
-        name: (parseInt(/^(\d+)-\w+/.exec(that.last_label).pop()) + 1) + '-' + form.find('input[name=label]').val()
-      }).then(function () {
-        // that.render();
-        $(".facebox-close").click();
-      });
-      return false;
-    };
-  }
 
 var LabelView = View.extend({
 	el:".facebox-content",
@@ -404,6 +391,7 @@ var LabelView = View.extend({
       color: form.find('input[name=color]').val().replace('#', ''),
       name: (parseInt(/^(\d+)-\w+/.exec(last_label).pop()) + 1) + '-' + form.find('input[name=label]').val()
     }).then(function () {
+			kanban && kanban.render() || new KanbanView;
       $(".facebox-close").click();
     });
 		return false;
@@ -411,9 +399,10 @@ var LabelView = View.extend({
 });
 
 $(function(){
-	var header = new HeaderView;
-	var reposelector = new RepoSelectorView;
-	var milestone = new MilestoneView;
+	header = new HeaderView;
+	reposelector = new RepoSelectorView;
+	milestone = new MilestoneView;
+	kanban = new KanbanView;
 });
 
 
