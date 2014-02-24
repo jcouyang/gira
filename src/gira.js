@@ -80,7 +80,9 @@ _.extend(View.prototype, {
 			$(self.el).html(self.templateEngine.render(self.templateName,model));
 			self.delegateEvents();
 		}).catch(function(error){
-			console.log(error);
+			debugger
+			console.log("error",error);
+			new ErrorView({message:JSON.parse(error.responseText).message});
 			$(self.el).html(self.templateEngine.render(self.templateName));
 		}).then(self.afterRender.bind(self));
 
@@ -150,8 +152,6 @@ var KanbanView = View.extend({
           return [label.name, groupIssue[label.name]];
         }).value();
 			return {issuesWithLabel: issues, last_label: that.last_label};
-    }).catch(function (error) {
-      // that.renderError(JSON.parse(error.responseText).message);
     });
 	},
 	events:{
@@ -237,7 +237,7 @@ var RepoSelectorView = View.extend({
 	afterRender: function(){
 		github.owner = $(this.el).find(".select-menu.owner-select-menu .selected input[type=radio]").attr("name");
 		github.repo = $(this.el).find(".target-repo-menu.select-menu .selected input[type=radio]").attr("name");
-		kanban && kanban.render() || new KanbanView;
+		kanban && kanban.render() || (kanban = new KanbanView);
 	},
 	events:{
 		"change .select-menu.owner-select-menu input[type=radio]":"changeOwner",
@@ -269,7 +269,7 @@ var MilestoneView = View.extend({
 		e.stopPropagation();
     this.milestone = $(this.el).find("a.select-menu-item.last-visible").data('milestone');
 		this.render();
-		kanban && (kanban.milestone = this.milestone) && kanban.render() || new KanbanView({milestone:this.milestone});
+		kanban && (kanban.milestone = this.milestone) && kanban.render() || (kanban =new KanbanView({milestone:this.milestone}));
   },
 	modelReady:function(){
 		var self = this;
@@ -372,7 +372,7 @@ var EditIssueView = View.extend({
     }, form.data('issue-id')).then(function () {
       that.render();
       $(".facebox-close").click();
-			kanban && kanban.render() || new KanbanView;
+			kanban && kanban.render() || (kanban = new KanbanView);
     });
     return false;
   },
@@ -396,10 +396,24 @@ var LabelView = View.extend({
       color: form.find('input[name=color]').val().replace('#', ''),
       name: (parseInt(/^(\d+)-\w+/.exec(last_label).pop()) + 1) + '-' + form.find('input[name=label]').val()
     }).then(function () {
-			kanban && kanban.render() || new KanbanView;
+			kanban && kanban.render() || (kanban = new KanbanView);
       $(".facebox-close").click();
     });
 		return false;
+	}
+});
+
+var ErrorView = View.extend({
+	message:"",
+	el:".notification",
+	templateName:"src/templates/error.html",
+	modelReady:function(){
+		return Q({message:this.message});
+	},
+	afterRender:function(){
+		window.setTimeout(function(){
+			$('.notification .close.js-flash-close').click();
+		}, 2000);
 	}
 });
 
@@ -407,17 +421,7 @@ $(function(){
 	header = new HeaderView;
 	reposelector = new RepoSelectorView;
 	milestone = new MilestoneView;
-	kanban = new KanbanView;
+	kanban = null;
 });
-
-
-// Gira.prototype = {
-// 	renderError: function(message) {
-// 		$('.notification').html(nunjucks.render("src/templates/error.html",{message:message}));
-// 		window.setTimeout(function(){
-// 			$('.notification .close.js-flash-close').click();
-// 		}, 2000);
-
-// 	},
 
 
