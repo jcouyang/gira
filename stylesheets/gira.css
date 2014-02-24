@@ -78,3 +78,22 @@ ul.color-label-list {
     position: relative;
     width: 600px;
 }
+
+.repo-selector {
+		margin-top:-4px;
+}
+
+#new-issue, #new-label {
+		margin-left:5px;
+}
+
+.site-footer .mega-octicon {
+    color: #CCCCCC;
+    font-size: 24px;
+    height: 24px;
+    left: 50%;
+    margin-left: -12px;
+    position: absolute;
+    top: 38px;
+    width: 24px;
+}
