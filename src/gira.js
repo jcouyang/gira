@@ -232,6 +232,7 @@ var RepoSelectorView = View.extend({
     this.repo = $(event.currentTarget).attr('name');
 		github.owner = this.owner;
 		github.repo = this.repo;
+		this.render();
   },
 	afterRender: function(){
 		github.owner = $(this.el).find(".select-menu.owner-select-menu .selected input[type=radio]").attr("name");
@@ -374,7 +375,11 @@ var EditIssueView = View.extend({
 			kanban && kanban.render() || new KanbanView;
     });
     return false;
-  }
+  },
+	afterRender: function(){
+		if (!!this.edit)
+			$("#jk-preview").click();		
+	}
 });
 
 var LabelView = View.extend({
