@@ -159,8 +159,14 @@ var KanbanView = View.extend({
 		"click .close.close-issue":"closeIssue",
 		"dragstart .contrib-details.grid .col .lbl div[draggable=true]":"dragStart",
 		"dragover .col":"dragover",
-		"drop .col":"drop"
-		
+		"drop .col":"drop",
+		"remove-lane": "removeLane"
+	},
+	removeLane:function(e){
+		e.preventDefault();
+    var label = $(e.currentTarget).attr('data');
+    that.github.deleteLane(label);
+    new KanbanView;
 	},
 	drop: function (e) {
     e.stopPropagation();
@@ -287,7 +293,7 @@ var EditIssueView = View.extend({
 		"click .color-label":"addLabels",
 		"change input[type=file]": "uploadImage"
 	},
-	uploadImage:function(){
+	uploadImage:function(e){
 		var file = e.currentTarget.files[0];
 		var data = {};
 		data.path="images/" + file.name.replace(' ','-');
