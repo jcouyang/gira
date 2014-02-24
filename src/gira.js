@@ -67,7 +67,9 @@ _.extend(View.prototype, {
 	el:$('body'),
 	templateName:"index.html",
 	templateEngine:mynunjucks,
-	modelReady:{},
+	modelReady:function(){
+		return Q();
+	},
 	initialize:function(){
 		this.render();
 	},
@@ -162,25 +164,25 @@ var KanbanView = View.extend({
 	},
 	drop: function (e) {
     e.stopPropagation();
-    var column = e.target;
+    var column = e.currentTarget;
     var $issue = $('#' + e.originalEvent.dataTransfer.getData('text/plain'));
     github.deleteLabel($issue.attr('id'), $issue.data('label'))
       .then(function (labels) {
         github.addLabel($issue.attr('id'), _(labels).pluck('name').concat(column.id));
       });
-    $(e.target).removeClass("over")
+    $(e.currentTarget).removeClass("over")
       .find('span.lbl')
       .append($($issue));
     return false;
   },
 	dragStart: function (e) {
     e.originalEvent.dataTransfer.effectAllowed = 'move';
-    e.originalEvent.dataTransfer.setData('text/plain', e.target.id||e.target.dataset["issueId"]);
-		console.log('transfet',e.target)
+    e.originalEvent.dataTransfer.setData('text/plain', e.currentTarget.id);
+		console.log('transfet',e.currentTarget);
   },
 	dragover: function (e) {
       if (e.preventDefault) e.preventDefault(); // allows us to drop
-      $(e.target).removeClass("over").addClass('over');
+      $(e.currentTarget).removeClass("over").addClass('over');
       e.originalEvent.dataTransfer.dropEffect = 'move';
       return false;
     },
@@ -189,10 +191,10 @@ var KanbanView = View.extend({
 			edit:true,
 			issue_id:e.currentTarget.dataset["issueId"]
 		});
-		console.log("render popup",e.target.dataset["issueId"]);
+		console.log("render popup",e.currentTarget.dataset["issueId"]);
 	},
 	closeIssue: function(e){
-		var $close = $(e.target);
+		var $close = $(e.currentTarget);
     github.getIssues(this.milestone, $close.data('issue'))
       .then(function (issue) {
         issue.state = 'close';
@@ -214,12 +216,12 @@ var RepoSelectorView = View.extend({
 	el: ".pagehead.repohead h1",
 	templateName:"src/templates/repo-selector.html",
   changeOwner: function (event) {
-    this.owner = $(event.target).attr('name');
+    this.owner = $(event.currentTarget).attr('name');
 		this.repo="";
     this.render();
   },
   changeRepo: function (event) {
-    this.repo = $(event.target).attr('name');
+    this.repo = $(event.currentTarget).attr('name');
 		github.owner = this.owner;
 		github.repo = this.repo;
   },
@@ -286,7 +288,7 @@ var EditIssueView = View.extend({
 		"change input[type=file]": "uploadImage"
 	},
 	uploadImage:function(){
-		var file = e.target.files[0];
+		var file = e.currentTarget.files[0];
 		var data = {};
 		data.path="images/" + file.name.replace(' ','-');
 		data.message = "upload" + file.name;
@@ -367,6 +369,41 @@ var EditIssueView = View.extend({
   }
 });
 
+function createLabel() {
+    var that = this;
+    return function () {
+      var form = $('form:visible');
+      github.createLabel( {
+        color: form.find('input[name=color]').val().replace('#', ''),
+        name: (parseInt(/^(\d+)-\w+/.exec(that.last_label).pop()) + 1) + '-' + form.find('input[name=label]').val()
+      }).then(function () {
+        // that.render();
+        $(".facebox-close").click();
+      });
+      return false;
+    };
+  }
+
+var LabelView = View.extend({
+	el:".facebox-content",
+	templateName:"src/templates/create-label.html",
+	events:{
+		"submit #new_label_form": "submit"
+	},
+	submit:function(e){
+		e.preventDefault();
+		var form = $(e.currentTarget);
+		var last_label = $(".col").last().attr("id");
+		github.createLabel( {
+      color: form.find('input[name=color]').val().replace('#', ''),
+      name: (parseInt(/^(\d+)-\w+/.exec(last_label).pop()) + 1) + '-' + form.find('input[name=label]').val()
+    }).then(function () {
+      $(".facebox-close").click();
+    });
+		return false;
+	}
+});
+
 $(function(){
 	var header = new HeaderView;
 	var reposelector = new RepoSelectorView;
@@ -383,18 +420,4 @@ $(function(){
 
 // 	},
 
-// function createLabel() {
-//     var that = this;
-//     return function () {
-//       var form = $('form:visible');
-//       github.createLabel( {
-//         color: form.find('input[name=color]').val().replace('#', ''),
-//         name: (parseInt(/^(\d+)-\w+/.exec(that.last_label).pop()) + 1) + '-' + form.find('input[name=label]').val()
-//       }).then(function () {
-//         // that.render();
-//         $(".facebox-close").click();
-//       });
-//       return false;
-//     };
-//   }
 
