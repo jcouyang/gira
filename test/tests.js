@@ -121,12 +121,22 @@ describe('unit test', function(){
 			github.deleteLane.calledWith("1-done").should.be.true;
 		});
 
-		it("close issue", function(){
-			github.newIssue = sinon.spy();
-			github.getIssues = sinon.spy();
+		it("close issue", function(done){
+			var issue = {state:"open",assignee:"wo",milestone:"v1",number:1};
+			
+			github.getIssues = sinon.stub();
+			github.getIssues.returns(Q(issue));
 			kanban.milestone = "";
+			
+			github.newIssue = sinon.stub();
+			var result = {then:function(){
+				debugger
+				github.newIssue.args[0][0].should.be.deep.equal(issue);
+				done();			
+			}};
+			github.newIssue.returns(result);
 			kanban.closeIssue({currentTarget:"<div data-issue=wahaha></div>"});
-			github.getIssues.calledWith("","wahaha").should.be.true;
+			github.getIssues.calledWith("wahaha").should.be.true;
 		});
 	});
 });

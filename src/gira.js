@@ -180,7 +180,6 @@ var KanbanView = View.extend({
         issue.state = 'close';
         issue.assignee = issue.assignee && issue.assignee.login;
         issue.milestone = issue.milestone && issue.milestone.number;
-
         github.newIssue(issue, issue.number)
           .then(function () {
             $('#' + $close.data('issue')).remove();

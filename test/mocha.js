@@ -4303,7 +4303,7 @@ Runnable.prototype.run = function(fn){
   // finished
   function done(err) {
     if (self.timedOut) return;
-    if (finished) return multiple(err);
+    // if (finished) return multiple(err);
     self.clearTimeout();
     self.duration = new Date - start;
     finished = true;
