@@ -95,11 +95,10 @@ var HeaderView = View.extend({
 
 var KanbanView = View.extend({
 	el:"#contributions-calendar",
-	milestone:"",
 	templateName:"src/templates/gira.html",
 	modelReady: function(){
     var that = this;
-    return Q.all([github.getIssues(that.milestone), github.getLabels()]).then(function (data) {
+    return Q.all([github.getIssues(), github.getLabels()]).then(function (data) {
       var issues = data[0];
       var labels = _(data[1]).filter(function (label) {
         return LABEL_REGEX.test(label.name);
@@ -141,9 +140,7 @@ var KanbanView = View.extend({
 		e.preventDefault();
     var label = $(e.currentTarget).attr('data');
     github.deleteLane(label);
-		setTimeout(function(){
-			kanban && kanban.render() || new KanbanView;			
-		}, 3000);
+		// window.location.reload();
 	},
 	drop: function (e) {
     e.stopPropagation();
@@ -178,7 +175,7 @@ var KanbanView = View.extend({
 	},
 	closeIssue: function(e){
 		var $close = $(e.currentTarget);
-    github.getIssues(this.milestone, $close.data('issue'))
+    github.getIssues($close.data('issue'))
       .then(function (issue) {
         issue.state = 'close';
         issue.assignee = issue.assignee && issue.assignee.login;
@@ -207,11 +204,14 @@ var RepoSelectorView = View.extend({
     this.repo = $(event.currentTarget).attr('name');
 		github.owner = this.owner;
 		github.repo = this.repo;
+		
 		this.render();
   },
 	afterRender: function(){
 		github.owner = $(this.el).find(".select-menu.owner-select-menu .selected input[type=radio]").attr("name");
 		github.repo = $(this.el).find(".target-repo-menu.select-menu .selected input[type=radio]").attr("name");
+		github.milestone = "";
+		milestone.render();
 		kanban && kanban.render() || (kanban = new KanbanView);
 	},
 	events:{
@@ -242,9 +242,10 @@ var MilestoneView = View.extend({
 	},
 	changeMilestone:function (e) {
 		e.stopPropagation();
-    this.milestone = $(this.el).find("a.select-menu-item.last-visible").data('milestone');
+    this.milestone = $(e.currentTarget).data('milestone');
+		github.milestone = this.milestone;
 		this.render();
-		kanban && (kanban.milestone = this.milestone) && kanban.render() || (kanban =new KanbanView({milestone:this.milestone}));
+		kanban && kanban.render() || (kanban =new KanbanView());
   },
 	modelReady:function(){
 		var self = this;
@@ -391,28 +392,5 @@ var ErrorView = View.extend({
 		}, 2000);
 	}
 });
-
-// $(function(){
-// 	function renderViews(){
-// 		header = new HeaderView;
-// 		reposelector = new RepoSelectorView;
-// 		milestone = new MilestoneView;
-// 		kanban = null;		
-// 	}
-// 	if (!github.checkLogin()) {
-// 		$(".site.clearfix").html(nunjucks.render('src/templates/index.html'));
-// 		$('#try-gira').click(function () {
-// 			var userrepo = $(".marketing-section-enterprise input[name=username]").val().split('/');
-// 			github.owner = userrepo[0];
-// 			github.owner = userrepo[1];
-// 			renderViews();
-// 		});
-// 	}
-// 	github.getAccessToken().then(function () {
-// 		renderViews();
-// 	}, function (error) {
-// 		console.log("invalid token", error);
-// 	});
-// });
 
 

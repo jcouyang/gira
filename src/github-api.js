@@ -1,6 +1,7 @@
 var Github = function (owner, repo) {
 	this.owner = owner;
 	this.repo = repo;
+	this.milestone = "";
   this.REPO_BASE = 'https://api.github.com/';
   this.access_token = localStorage.getItem("access_token");
 };
@@ -72,10 +73,10 @@ Github.prototype = {
       dataType: 'json'
     }));
   },
-  getIssues: function (milestone, id) {
+  getIssues: function (id) {
     id = (typeof id !== "undefined" && id !== null) ? id : '';
     return Q($.ajax({
-      url: this.getReposUrl() + "/issues" + (id && '/' + id) + this.concatToken() + (milestone ? ("&milestone=" + milestone) : ''),
+      url: this.getReposUrl() + "/issues" + (id && '/' + id) + this.concatToken() + (this.milestone ? ("&milestone=" + this.milestone) : ''),
       type: 'GET',
       dataType: 'json'
     }));
