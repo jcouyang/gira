@@ -130,7 +130,6 @@ describe('unit test', function(){
 			
 			github.newIssue = sinon.stub();
 			var result = {then:function(){
-				debugger
 				github.newIssue.args[0][0].should.be.deep.equal(issue);
 				done();			
 			}};
