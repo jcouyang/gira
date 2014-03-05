@@ -207,8 +207,10 @@ var RepoSelectorView = View.extend({
 		this.render();
   },
 	afterRender: function(){
-		github.owner = $(this.el).find(".select-menu.owner-select-menu .selected input[type=radio]").attr("name");
-		github.repo = $(this.el).find(".target-repo-menu.select-menu .selected input[type=radio]").attr("name");
+		var owner = $(this.el).find(".select-menu.owner-select-menu .selected input[type=radio]");
+		var repo = $(this.el).find(".target-repo-menu.select-menu .selected input[type=radio]");
+		github.owner = (owner && owner.attr("name")) || this.owner;
+		github.repo = (repo && repo.attr("name")) || this.repo;
 		github.milestone = "";
 		milestone.render();
 		kanban && kanban.render() || (kanban = new KanbanView);
@@ -219,15 +221,19 @@ var RepoSelectorView = View.extend({
 	},
 	modelReady:function(){
 		var self = this;
-		return github.getRepos().then(function (repos) {
-      var groupedRepo = _(repos).groupBy(function (repo) {
-        return repo.owner.login;
-      });
-      self.repo = self.repo || groupedRepo[self.owner][0].name;
-      return {checked: self.owner, checkedRepo: self.repo, owners: _(groupedRepo).map(function (repos) {
-        return repos[0].owner;
-      }), repos: groupedRepo[self.owner]};
-    });
+		if (github.access_token){
+			return github.getRepos().then(function (repos) {
+				var groupedRepo = _(repos).groupBy(function (repo) {
+					return repo.owner.login;
+				});
+				self.repo = self.repo || groupedRepo[self.owner][0].name;
+				return {checked: self.owner, checkedRepo: self.repo, owners: _(groupedRepo).map(function (repos) {
+					return repos[0].owner;
+				}), repos: groupedRepo[self.owner]};
+			});
+		}else{
+			return Q({username:this.owner,repo:this.repo});
+		}
 	}
 });
 

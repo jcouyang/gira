@@ -90,8 +90,7 @@ Github.prototype = {
   },
   getRepos: function () {
     return Q($.ajax({
-      url: this.REPO_BASE + 'user/repos',
-      data: {access_token: this.access_token},
+      url: this.REPO_BASE + 'user/repos' + this.concatToken(),
       type: 'get',
       dataType: 'json'
     }));
@@ -130,7 +129,7 @@ Github.prototype = {
   editIssue: function (issue, id) {
     id = (typeof id !== "undefined" && id !== null) ? id : '';
     return Q($.ajax({
-      url: this.REPO_BASE + ['repos', 'issues'].join('/') + (id && ('/' + id)) + '?access_token=' + this.access_token,
+      url: this.REPO_BASE + ['repos', 'issues'].join('/') + (id && ('/' + id)) + this.concatToken(),
       type: 'patch',
       dataType: 'json',
       data: JSON.stringify(issue)
