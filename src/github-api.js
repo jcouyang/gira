@@ -23,7 +23,7 @@ Github.prototype = {
         console.log("invalid code", error);
       });
     } else {
-      return Q();
+      return Q(this.access_token);
     }
   },
 	getComments: function(issueId){

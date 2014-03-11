@@ -12,7 +12,7 @@
     padding: 5px;
 }
 .box-body {
-		margin-top:10px;
+		margin-top:52px;
 }
 #contributions-calendar .contrib-details span.lbl div.blankslate .octicon-remove-close {
     position: absolute;
@@ -29,7 +29,7 @@
     float: right;
 }
 
-#main_content .box .pagehead.repohead {
+#main_content .pagehead.repohead {
 		margin-bottom: 0;
 }
 

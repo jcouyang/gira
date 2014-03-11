@@ -32,7 +32,7 @@ View.extend = function(props){
   Surrogate.prototype = parent.prototype;
   child.prototype = new Surrogate;
 	
-	_.extend(child.prototype,props);
+	_.extend(child.prototype, props);
 	child.__super__ = parent.prototype;
 	return child;
 };

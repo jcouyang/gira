@@ -35,6 +35,12 @@ module.exports = function(grunt) {
 				src:['src/gira.js'],
 				dest:"javascripts/gira.js"
 			}
+		},
+		watch:{
+			scripts: {
+				files: ['src/**/*'],
+				tasks:['default']
+			}
 		}
 	});
 	grunt.loadNpmTasks('grunt-contrib-concat');
@@ -42,5 +48,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-nunjucks');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-mocha');
-	grunt.registerTask('default', ['nunjucks', 'copy', 'mocha', 'uglify']);
+	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.registerTask('default', ['nunjucks', 'copy']);
+	grunt.registerTask('deploy', ['nunjucks', 'copy','mocha', 'uglify']);
 };

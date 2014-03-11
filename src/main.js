@@ -6,16 +6,19 @@ $(function(){
 		kanban = null;		
 	}
 	if (!github.checkLogin()) {
-		$(".site.clearfix").html(mynunjucks.render('src/templates/index.html'));
+				renderViews();
 		$('#try-gira').click(function () {
 			var userrepo = $(".marketing-section-enterprise input[name=username]").val().split('/');
 			github.owner = userrepo[0];
 			github.owner = userrepo[1];
 			renderViews();
 		});
-		renderViews();
+
 	}
-	github.getAccessToken().then(function () {
+	github.getAccessToken().then(function (login) {
+		if (!login) return;
+		$(".intro").remove();
+		$(".loggedin").removeClass("hidden");
 		renderViews();
 	}, function (error) {
 		console.log("invalid token", error);
