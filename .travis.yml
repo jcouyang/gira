@@ -13,7 +13,8 @@ before_script:
 - export GIRA_URL="https://$GH_TOKEN@github.com/getgira/getgira.github.com.git"
 script:
 - npm test
-- git add .
+- git add javascript
+- git rm -rf src
 - git remote add pages $REPO_URL
 - git remote add gira $GIRA_URL
 - git commit -m "publi:ship:"
