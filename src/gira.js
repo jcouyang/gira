@@ -266,7 +266,7 @@ var MilestoneView = View.extend({
 
 
 var EditIssueView = View.extend({
-	edit:true,
+	edit:false,
 	issue_id:'',
 	el:".facebox-content",
 	templateName:"src/templates/edit-issue.html",
