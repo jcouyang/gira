@@ -34,11 +34,15 @@ Github.prototype = {
     }));
 	},
   getUser: function () {
+		var self = this;
     return Q($.ajax({
       url: this.REPO_BASE + "user" + this.concatToken(),
       type: 'GET',
       dataType: 'json'
-    }));
+    })).then(function(data){
+			self.owner=data.login;
+			return data;
+		});
   },
   getReposUrl: function () {
     return  this.REPO_BASE + 'repos/' + this.owner + '/' + this.repo;

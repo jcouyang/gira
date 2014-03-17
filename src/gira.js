@@ -190,8 +190,7 @@ var KanbanView = View.extend({
 
 
 var RepoSelectorView = View.extend({
-	repo:'gira',
-	owner:'jcouyang',
+	owner:github.owner,
 	el: ".pagehead.repohead h1",
 	templateName:"src/templates/repo-selector.html",
   changeOwner: function (event) {
