@@ -4,6 +4,9 @@
     margin: 0 60px 2px 0;
     word-wrap: break-word;
 }
+.marketing-section-enterprise {
+		max-height:460px;
+}
 #contributions-calendar .contrib-details span.lbl div.blankslate {
     background-color:white;
     border-left: 1px solid #DDD;
