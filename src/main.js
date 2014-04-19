@@ -19,7 +19,7 @@ $(function(){
 		if (!login) return;
 		$(".intro").remove();
 		$(".loggedin").removeClass("hidden");
-		renderViews();
+		// renderViews();
 	}, function (error) {
 		console.log("invalid token", error);
 	});
