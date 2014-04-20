@@ -1,6 +1,7 @@
 var LABEL_REGEX = /^\d+-(\w+)/;
 var API_BASE = 'https://api.github.com/';
 var TOKEN = localStorage.access_token;
+var USERNAME = 'jcouyang';
 var concatToken =  function () {
 	if(TOKEN)
     return '?access_token=' + TOKEN; 
@@ -34,6 +35,65 @@ var HeaderView = View.extend({
 
 var headerView = new HeaderView;
 headerView.render();
+
+var repoModel = new Model("repo", "get@" + API_BASE + "user/repos" + concatToken());
+repoModel.dataProc = function(data){
+	var groupedRepo = _(data).groupBy(function (repo) {
+    return repo.owner.login;
+  });
+	var owner = USERNAME;
+  var repo =  this.repo || groupedRepo[owner][0].name;
+  return {checked: owner, checkedRepo: repo, owners: _(groupedRepo).map(function (repos) {
+    return repos[0].owner;
+  }), repos: groupedRepo[owner]};
+};
+
+var RepoSelectorView = View.extend({
+	owner:"",
+	el: $(".pagehead.repohead h1"),
+	template:"src/templates/repo-selector.html",
+  changeOwner: function (event) {
+    this.model.owner = $(event.currentTarget).attr('name');
+		this.model.repo="";
+    this.render();
+  },
+  changeRepo: function (event) {
+    this.model.repo = $(event.currentTarget).attr('name');
+		window.location.hash = this.model.owner + "/" +  this.model.repo;
+  },
+	model: repoModel,
+	events:{
+		"change .select-menu.owner-select-menu input[type=radio]":"changeOwner",
+		"change .target-repo-menu.select-menu input[type=radio]":"changeRepo"
+	}
+});
+
+var milestoneModel = new Model("milestone", "get@" + API_BASE + window.location.hash + "/milestones" + concatToken());
+milestoneModel.dataProc = function(milestones){
+	var self = this;
+	return {
+		selected: self.milestone && _(milestones).find(function (milestone) {
+      return milestone.number === self.milestone;
+    }),
+    milestones: milestones
+  };
+};
+var MilestoneView = View.extend({
+	milestone:"1.0.0",
+	model: milestoneModel,
+	el: $(".pagehead.repohead div.sidebar-milestone-widget"),
+	template: "src/templates/milestones.html",
+	events:{
+		"click .select-menu a.select-menu-item": "changeMilestone"
+	},
+	changeMilestone:function (e) {
+		e.stopPropagation();
+		this.model.milestone = $(e.currentTarget).data('milestone');
+		this.render();
+  }
+});
+
+
 // var KanbanView = View.extend({
 // 	el:"#contributions-calendar",
 // 	templateName:"src/templates/gira.html",
@@ -130,80 +190,23 @@ headerView.render();
 // });
 
 
-// var RepoSelectorView = View.extend({
-// 	owner:github.owner,
-// 	el: ".pagehead.repohead h1",
-// 	templateName:"src/templates/repo-selector.html",
-//   changeOwner: function (event) {
-//     this.owner = $(event.currentTarget).attr('name');
-// 		this.repo="";
-//     this.render();
-//   },
-//   changeRepo: function (event) {
-//     this.repo = $(event.currentTarget).attr('name');
-// 		github.owner = this.owner;
-// 		github.repo = this.repo;
-		
-// 		this.render();
-//   },
-// 	afterRender: function(){
-// 		var owner = $(this.el).find(".select-menu.owner-select-menu .selected input[type=radio]");
-// 		var repo = $(this.el).find(".target-repo-menu.select-menu .selected input[type=radio]");
-// 		github.owner = (owner && owner.attr("name")) || this.owner;
-// 		github.repo = (repo && repo.attr("name")) || this.repo;
-// 		github.milestone = "";
-// 		milestone.render();
-// 		kanban && kanban.render() || (kanban = new KanbanView);
-// 	},
-// 	events:{
-// 		"change .select-menu.owner-select-menu input[type=radio]":"changeOwner",
-// 		"change .target-repo-menu.select-menu input[type=radio]":"changeRepo"
-// 	},
-// 	modelReady:function(){
-// 		var self = this;
-// 		if (github.access_token){
-// 			return github.getRepos().then(function (repos) {
-// 				var groupedRepo = _(repos).groupBy(function (repo) {
-// 					return repo.owner.login;
-// 				});
-// 				self.repo = self.repo || groupedRepo[self.owner][0].name;
-// 				return {checked: self.owner, checkedRepo: self.repo, owners: _(groupedRepo).map(function (repos) {
-// 					return repos[0].owner;
-// 				}), repos: groupedRepo[self.owner]};
-// 			});
-// 		}else{
-// 			return Q({username:this.owner,repo:this.repo});
-// 		}
-// 	}
-// });
+var router = new Router();
+router.get(":username/:repo", function(params, data){
+	repoModel.owner = params.username;
+	repoModel.repo = params.repo;
+	var repoView = new RepoSelectorView;
+	repoView.render();
+	var milestoneView = new MilestoneView;
+	milestoneView.render();
+});
 
 
-// var MilestoneView = View.extend({
-// 	milestone:"1.0.0",
-// 	el:".pagehead.repohead div.sidebar-milestone-widget",
-// 	templateName: "src/templates/milestones.html",
-// 	events:{
-// 		"click .select-menu a.select-menu-item": "changeMilestone"
-// 	},
-// 	changeMilestone:function (e) {
-// 		e.stopPropagation();
-//     this.milestone = $(e.currentTarget).data('milestone');
-// 		github.milestone = this.milestone;
-// 		this.render();
-// 		kanban && kanban.render() || (kanban =new KanbanView());
-//   },
-// 	modelReady:function(){
-// 		var self = this;
-// 		return github.getMilestones().then(function (milestones) {
-// 			return {
-//         selected: self.milestone && _(milestones).find(function (milestone) {
-//           return milestone.number === self.milestone;
-//         }),
-//         milestones: milestones
-//       };
-//     });
-// 	}
-// });
+
+
+
+
+
+
 
 
 // var EditIssueView = View.extend({

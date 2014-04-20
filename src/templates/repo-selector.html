@@ -1,12 +1,12 @@
 <span class="repo-label">
-	<a href="https://github.com/{{checked}}/{{checkedRepo}}" target="_blank">public <span
+	<a href="https://github.com/{{data.checked}}/{{data.checkedRepo}}" target="_blank">public <span
             class="octicon octicon-link-external"></a></span>
 </span>
 <span class="mega-octicon octicon-repo"></span> <span class="author">
-	{% if username %}
-	<a rel="author" itemprop="url" class="url fn" href="/{{username}}"><span itemprop="title">{{username}}</span></a>
+	{% if data.username %}
+	<a rel="author" itemprop="url" class="url fn" href="/{{data.username}}"><span itemprop="title">{{data.username}}</span></a>
 	<span class="repohead-name-divider">/</span>
-	<strong><a class="js-current-repository js-repo-home-link" href="/{{username}}/{{repo}}">{{repo}}</a></strong>
+	<strong><a class="js-current-repository js-repo-home-link" href="/{{data.username}}/{{data.repo}}">{{data.repo}}</a></strong>
 	{% else %}
 	<div class="repo-selector js-repo-selector ">
 
@@ -16,7 +16,7 @@
                 <div class="select-menu owner-select-menu js-menu-container js-select-menu js-owner-container js-owner-select">
 					<span class="minibutton select-menu-button js-menu-target">
 						<span class="js-select-button">
-              {{checked}}
+              {{data.checked}}
             </span>
 					</span>
 
@@ -28,9 +28,9 @@
                             </div>
                             <!-- /.select-menu-header -->
                             <div class="select-menu-list">
-                                {% for owner in owners %}
-                                <div class="select-menu-item js-navigation-item {{" selected
-                                " if owner.login == checked}}">
+                                {% for owner in data.owners %}
+                                <div class="select-menu-item js-navigation-item {{" data.selected
+                                " if owner.login == data.checked}}">
                                 <input type="radio" checked="{{owner.login==checked}}" id="{{owner.login}}"
                                        name="{{owner.login}}" value="hubot">
                                 <span class="select-menu-item-icon octicon octicon-check"></span>
@@ -58,7 +58,7 @@
             <div class="target-repo-menu select-menu js-menu-container js-select-menu js-target-repo-menu owner-is-active"
                  data-owner="hubot">
 					<span class="minibutton select-menu-button js-menu-target">
-						<span class="js-select-button">{{checkedRepo}}</span>
+						<span class="js-select-button">{{data.checkedRepo}}</span>
 					</span>
 
                 <div aria-hidden="true" class="select-menu-modal-holder js-menu-content js-navigation-container">
@@ -69,11 +69,11 @@
                         </div>
                         <!-- /.select-menu-header -->
                         <div class="select-menu-list">
-                            {% for repo in repos %}
-                            <div class="select-menu-item js-navigation-item {{" selected
+                            {% for repo in data.repos %}
+                            <div class="select-menu-item js-navigation-item {{" data.selected
                             " if repo.name==checkedRepo}}">
                             <input type="radio" id="{{repo.id}}" name="{{repo.name}}" value="{{repo.full_name}}"
-                                   checked="{{repo.name==checkedRepo}}"/>
+                                   checked="{{repo.name==data.checkedRepo}}"/>
                             <span class="select-menu-item-icon octicon octicon-check"></span>
 
                             <div class="select-menu-item-text js-select-button-text">{{repo.name}}</div>
