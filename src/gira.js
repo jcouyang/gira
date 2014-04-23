@@ -20,7 +20,27 @@ mynunjucks.addFilter('hasIndex', function (str) {
 github = new Github('jcouyang','gira');
 
 var userModel = new Model("user", "get@" + API_BASE + "user" + concatToken());
+var repoModel = new Model("repo", "get@" + API_BASE + "user/repos" + concatToken());
+var milestoneModel = new Model("milestone");
+milestoneModel.dataProc = function(milestones){
+	var self = this;
+	return {
+		selected: self.milestone && _(milestones).find(function (milestone) {
+      return milestone.number === self.milestone;
+    }),
+    milestones: milestones
+  };
+};
+var issuesModel = new Model("issues");
+var labelModel = new Model("labels");
+var assigneeModel = new Model("assignee");
+function initKanbanModels(params, hash){
+	issuesModel.url =  "get@" + API_BASE + 'repos/' +  hash + "/issues" + concatToken();
+	labelModel.url = "get@" + API_BASE + 'repos/' +  hash + "/labels" + concatToken();
+	milestoneModel.url = "get@" + API_BASE + 'repos/' + hash + "/milestones" + concatToken();
+	assigneeModel.url =  "get@" + API_BASE + 'repos/' +  hash + "/assignees" + concatToken();
 
+}
 var HeaderView = View.extend({
 	model: userModel,
 	el:$("#header"),
@@ -36,7 +56,7 @@ var HeaderView = View.extend({
 var headerView = new HeaderView;
 headerView.render();
 
-var repoModel = new Model("repo", "get@" + API_BASE + "user/repos" + concatToken());
+
 repoModel.dataProc = function(data){
 	var groupedRepo = _(data).groupBy(function (repo) {
     return repo.owner.login;
@@ -67,18 +87,8 @@ var RepoSelectorView = View.extend({
 		"change .target-repo-menu.select-menu input[type=radio]":"changeRepo"
 	}
 });
-
-var milestoneModel = new Model("milestone", "get@" + API_BASE + window.location.hash + "/milestones" + concatToken());
-milestoneModel.dataProc = function(milestones){
-	var self = this;
-	return {
-		selected: self.milestone && _(milestones).find(function (milestone) {
-      return milestone.number === self.milestone;
-    }),
-    milestones: milestones
-  };
-};
 var MilestoneView = View.extend({
+		templateEngine: mynunjucks,
 	milestone:"1.0.0",
 	model: milestoneModel,
 	el: $(".pagehead.repohead div.sidebar-milestone-widget"),
@@ -93,111 +103,254 @@ var MilestoneView = View.extend({
   }
 });
 
+var KanbanModel = Model.extend({
+	dataProc: function(data){
+		var that = this;
+		var issues = data[0];
+    var labels = _(data[1]).filter(function (label) {
+      return LABEL_REGEX.test(label.name);
+    });
+    var groupIssue = _(issues).groupBy(function (issue) {
+      var column = _(issue.labels).find(function (label) {
+        return LABEL_REGEX.test(label.name);
+      });
+      if (column) {
+        return column.name;
+      }
+      return "0-Backlog";
+    });
+    issues = _.chain(labels.concat({name: "0-Backlog"}))
+      .sortBy(function (label) {
+        return label.name;
+      })
+      .uniq(true, function (label) {
+        return label.name;
+      })
+      .tap(function (label) {
+        that.last_label = label[label.length - 1].name;
+      })
+      .map(function (label) {
+        return [label.name, groupIssue[label.name]];
+      }).value();
+		return {issuesWithLabel: issues, last_label: that.last_label};
+	},
+	fetch:function(){
+		var self = this;
+		issuesModel.fetch();
+		labelModel.fetch();
+		Q.all([issuesModel.data.promise, labelModel.data.promise]).then(function(data){
+			self.data.resolve(self.dataProc(data));
+		});
+		Q.all([issuesModel.updated.promise, labelModel.updated.promise]).then(function(data){
+			self.updated.resolve(self.dataProc(data));
+		});
+	},
+	refetch:this.fetch
+});
 
-// var KanbanView = View.extend({
-// 	el:"#contributions-calendar",
-// 	templateName:"src/templates/gira.html",
-// 	modelReady: function(){
-//     var that = this;
-//     return Q.all([github.getIssues(), github.getLabels()]).then(function (data) {
-//       var issues = data[0];
-//       var labels = _(data[1]).filter(function (label) {
-//         return LABEL_REGEX.test(label.name);
-//       });
-//       var groupIssue = _(issues).groupBy(function (issue) {
-//         var column = _(issue.labels).find(function (label) {
-//           return LABEL_REGEX.test(label.name);
-//         });
-//         if (column) {
-//           return column.name;
-//         }
-//         return "0-Backlog";
-//       });
-//       issues = _.chain(labels.concat({name: "0-Backlog"}))
-//         .sortBy(function (label) {
-//           return label.name;
-//         })
-//         .uniq(true, function (label) {
-//           return label.name;
-//         })
-//         .tap(function (label) {
-//           that.last_label = label[label.length - 1].name;
-//         })
-//         .map(function (label) {
-//           return [label.name, groupIssue[label.name]];
-//         }).value();
-// 			return {issuesWithLabel: issues, last_label: that.last_label};
-//     });
-// 	},
-// 	events:{
-// 		"click a[rel=facebox]": "renderFaceBox",
-// 		"click .close.close-issue":"closeIssue",
-// 		"dragstart .contrib-details.grid .col .lbl div[draggable=true]":"dragStart",
-// 		"dragover .col":"dragover",
-// 		"drop .col":"drop",
-// 		"click .remove-lane": "removeLane"
-// 	},
-// 	removeLane:function(e){
-// 		e.preventDefault();
-//     var label = $(e.currentTarget).attr('data');
-//     github.deleteLane(label);
-// 		// window.location.reload();
-// 	},
-// 	drop: function (e) {
-//     e.stopPropagation();
-//     var column = e.currentTarget;
-//     var $issue = $('#' + e.originalEvent.dataTransfer.getData('text/plain'));
-//     github.deleteLabel($issue.attr('id'), $issue.data('label'))
-//       .then(function (labels) {
-//         github.addLabel($issue.attr('id'), _(labels).pluck('name').concat(column.id));
-//       });
-//     $(e.currentTarget).removeClass("over")
-//       .find('span.lbl')
-//       .append($($issue));
-//     return false;
-//   },
-// 	dragStart: function (e) {
-//     e.originalEvent.dataTransfer.effectAllowed = 'move';
-//     e.originalEvent.dataTransfer.setData('text/plain', e.currentTarget.id);
-// 		console.log('transfet',e.currentTarget);
-//   },
-// 	dragover: function (e) {
-//       if (e.preventDefault) e.preventDefault(); // allows us to drop
-//       $(e.currentTarget).removeClass("over").addClass('over');
-//       e.originalEvent.dataTransfer.dropEffect = 'move';
-//       return false;
-//     },
-// 	renderFaceBox: function(e){
-// 		new EditIssueView({
-// 			edit:true,
-// 			issue_id:e.currentTarget.dataset["issueId"]
-// 		});
-// 		console.log("render popup",e.currentTarget.dataset["issueId"]);
-// 	},
-// 	closeIssue: function(e){
-// 		var $close = $(e.currentTarget);
-//     github.getIssues($close.data('issue'))
-//       .then(function (issue) {
-//         issue.state = 'close';
-//         issue.assignee = issue.assignee && issue.assignee.login;
-//         issue.milestone = issue.milestone && issue.milestone.number;
-//         github.newIssue(issue, issue.number)
-//           .then(function () {
-//             $('#' + $close.data('issue')).remove();
-//           });
-//       });
-// 	}
-// });
+var kanbanModel = new KanbanModel("kanban");
+
+var KanbanView = View.extend({
+	templateEngine: mynunjucks,
+	el: $("#contributions-calendar"),
+	template:"src/templates/gira.html",
+	model: kanbanModel,
+	events:{
+		// "click .close.close-issue":"closeIssue",
+		"dragstart .contrib-details.grid .col .lbl div[draggable=true]":"dragStart",
+		"dragover .col":"dragover",
+		"drop .col":"drop",
+		"click .remove-lane": "removeLane"
+	},
+	removeLane:function(e){
+		e.preventDefault();
+    var label = $(e.currentTarget).attr('data');
+    github.deleteLane(label);
+		// window.location.reload();
+	},
+	drop: function (e) {
+    e.stopPropagation();
+    var column = e.currentTarget;
+    var $issue = $('#' + e.originalEvent.dataTransfer.getData('text/plain'));
+    github.deleteLabel($issue.attr('id'), $issue.data('label'))
+      .then(function (labels) {
+        github.addLabel($issue.attr('id'), _(labels).pluck('name').concat(column.id));
+      });
+    $(e.currentTarget).removeClass("over")
+      .find('span.lbl')
+      .append($($issue));
+    return false;
+  },
+	dragStart: function (e) {
+    e.originalEvent.dataTransfer.effectAllowed = 'move';
+    e.originalEvent.dataTransfer.setData('text/plain', e.currentTarget.id);
+		console.log('transfet',e.currentTarget);
+  },
+	dragover: function (e) {
+      if (e.preventDefault) e.preventDefault(); // allows us to drop
+      $(e.currentTarget).removeClass("over").addClass('over');
+      e.originalEvent.dataTransfer.dropEffect = 'move';
+      return false;
+    },
+	closeIssue: function(e){
+		var $close = $(e.currentTarget);
+    github.getIssues($close.data('issue'))
+      .then(function (issue) {
+        issue.state = 'close';
+        issue.assignee = issue.assignee && issue.assignee.login;
+        issue.milestone = issue.milestone && issue.milestone.number;
+        github.newIssue(issue, issue.number)
+          .then(function () {
+            $('#' + $close.data('issue')).remove();
+          });
+      });
+	}
+});
+
+function initIssueDetail(params,hash){
+	var issueModel = new Model("issue");
+	var commentModel = new Model("comment");
+	var EditIssueModel = Model.extend({
+		dataProc: function(data){
+      console.log(data);
+      var context = data[0];
+      context.assignees = data[1];
+      context.milestones = data[2];
+      context.all_labels = data[3];
+			context.comments = data[4];
+			return context;
+		},
+		fetch:function(){
+			var self = this;
+			issuesModel.fetch();
+			labelModel.fetch();
+			issueModel.url = "get@" + API_BASE + 'repos/' + hash + concatToken();
+			commentModel.url = "get@" + API_BASE + 'repos/' + hash + "/comments" +  concatToken();
+			issueModel.fetch();
+			assigneeModel.fetch();
+			milestoneModel.fetch();
+			labelModel.fetch();
+			commentModel.fetch();
+			Q.all([issueModel.data.promise, assigneeModel.data.promise, milestoneModel.data.promise, labelModel.data.promise, commentModel.data.promise ]).then(function(data){
+				self.data.resolve(self.dataProc(data));
+			});
+			Q.all([issueModel.updated.promise, assigneeModel.updated.promise, milestoneModel.updated.promise, labelModel.updated.promise, commentModel.updated.promise ]).then(function(data){
+				self.updated.resolve(self.dataProc(data));
+			});
+		},
+		refetch:this.fetch
+	});
+
+	var editIssueModel = new EditIssueModel("editissue");
+	var EditIssueView = View.extend({
+		edit:false,
+		issue_id:'',
+		templateEngine: mynunjucks,
+		el:$(".facebox-content"),
+		model:editIssueModel,
+		template:"src/templates/edit-issue.html",
+		events:{
+			"submit form:visible":"createIssue",
+			"click #jk-preview":"preview",
+			"click .color-label":"addLabels",
+			"change input[type=file]": "uploadImage"
+		},
+		uploadImage:function(e){
+			var file = e.currentTarget.files[0];
+			var data = {};
+			data.path="images/" + file.name.replace(' ','-');
+			data.message = "upload" + file.name;
+			var reader  = new FileReader();
+			reader.onloadend = function () {
+				data.content = reader.result;
+				data.branch = "gira-images";
+				data.content = data.content.slice(data.content.indexOf(',')+1);
+				github.getRefSha().then(function(refs){
+					var _refs = _(refs);
+					if(_refs.find(function(ref){return ref.ref==="refs/heads/gira-images";})){
+						return github.uploadImage(data);
+					}
+					else{
+						return github.createBranch("refs/heads/gira-images", _refs.first().object.sha).then(function(){
+							github.uploadImage(data);
+						});
+					}
+				})
+					.then(function(resp){
+						var selectionStart = $('#issue_body')[0].selectionStart;
+						var selectionEnd = $('#issue_body')[0].selectionEnd;
+
+						$('#issue_body').val($('#issue_body').val() + '![]('+ resp.content.html_url + '?raw=true)');
+
+						$('#issue_body')[0].selectionStart = selectionStart;
+						$('#issue_body')[0].selectionEnd = selectionEnd;
+					},function(error){
+						console.log("exist",error);
+					});
+			};
+
+			if (file) {
+				reader.readAsDataURL(file);
+			} else {
+				data.content = "";
+			}	
+		},
+		addLabels: function(e){
+			e.preventDefault();
+			$(e.currentTarget).toggleClass('selected');
+		},
+		preview: function () {
+			var data = {text: $('#issue_body').val()};
+			github.markdown(data).then(function (result) {
+				$('.comment-body.markdown-body.js-comment-body p').html(result);
+			});
+		},
+		createIssue: function() {
+			var that = this;
+			var form = $('form:visible');
+			github.newIssue({
+				title: form.find("input[name='issue[title]']").val(),
+				body: form.find("textarea[name='issue[body]']").val(),
+				assignee: form.find(".assignee input[type=radio]:checked").val(),
+				milestone: form.find(".milestone input[type=radio]:checked").val(),
+				labels: form.find("a.selected input").get().map(function (input) {
+					return input.value;
+				})
+			}, form.data('issue-id')).then(function () {
+				that.render();
+				$(".facebox-close").click();
+				kanban && kanban.render() || (kanban = new KanbanView);
+			});
+			return false;
+		},
+		afterRender: function(){
+			if (!!this.edit)
+				$("#jk-preview").click();		
+		}
+	});
+	new EditIssueView({
+		edit:true,
+		issue_id: params.id
+	}).render();
+	
+}
 
 
 var router = new Router();
 router.get(":username/:repo", function(params, data){
+	initKanbanModels(params,window.location.hash.replace("#",""));
 	repoModel.owner = params.username;
 	repoModel.repo = params.repo;
 	var repoView = new RepoSelectorView;
 	repoView.render();
 	var milestoneView = new MilestoneView;
 	milestoneView.render();
+	var kanbanView = new KanbanView;
+	kanbanView.render();
+});
+
+router.get(":username/:repo/issues/:id", function(params){
+	initIssueDetail(params, window.location.hash.replace("#",""));
 });
 
 
@@ -207,104 +360,6 @@ router.get(":username/:repo", function(params, data){
 
 
 
-
-
-// var EditIssueView = View.extend({
-// 	edit:false,
-// 	issue_id:'',
-// 	el:".facebox-content",
-// 	templateName:"src/templates/edit-issue.html",
-// 	events:{
-// 		"submit form:visible":"createIssue",
-// 		"click #jk-preview":"preview",
-// 		"click .color-label":"addLabels",
-// 		"change input[type=file]": "uploadImage"
-// 	},
-// 	uploadImage:function(e){
-// 		var file = e.currentTarget.files[0];
-// 		var data = {};
-// 		data.path="images/" + file.name.replace(' ','-');
-// 		data.message = "upload" + file.name;
-// 		var reader  = new FileReader();
-// 		reader.onloadend = function () {
-// 			data.content = reader.result;
-// 			data.branch = "gira-images";
-// 			data.content = data.content.slice(data.content.indexOf(',')+1);
-// 			github.getRefSha().then(function(refs){
-// 				var _refs = _(refs);
-// 				if(_refs.find(function(ref){return ref.ref==="refs/heads/gira-images";})){
-// 					return github.uploadImage(data);
-// 				}
-// 				else{
-// 					return github.createBranch("refs/heads/gira-images", _refs.first().object.sha).then(function(){
-// 						github.uploadImage(data);
-// 					});
-// 				}
-// 			})
-// 				.then(function(resp){
-// 					var selectionStart = $('#issue_body')[0].selectionStart;
-// 					var selectionEnd = $('#issue_body')[0].selectionEnd;
-
-// 					$('#issue_body').val($('#issue_body').val() + '![]('+ resp.content.html_url + '?raw=true)');
-
-// 					$('#issue_body')[0].selectionStart = selectionStart;
-// 					$('#issue_body')[0].selectionEnd = selectionEnd;
-// 				},function(error){
-// 					console.log("exist",error);
-// 				});
-// 		};
-
-// 		if (file) {
-// 			reader.readAsDataURL(file);
-// 		} else {
-// 			data.content = "";
-// 		}	
-// 	},
-// 	addLabels: function(e){
-//     e.preventDefault();
-//     $(e.currentTarget).toggleClass('selected');
-// 	},
-// 	preview: function () {
-//     var data = {text: $('#issue_body').val()};
-//     github.markdown(data).then(function (result) {
-//       $('.comment-body.markdown-body.js-comment-body p').html(result);
-//     });
-//   },
-// 	modelReady:function(){
-// 		var tasks = [this.edit&&github.getIssues(null,this.issue_id), github.getAssignees(), github.getMilestones(),this.edit&&github.getLabels()];
-// 		return Q.all(tasks).then(function(data) {
-//       console.log(data);
-//       var context = data[0];
-//       context.assignees = data[1];
-//       context.milestones = data[2];
-//       context.all_labels = data[3];
-// 			context.comments = data[4];
-// 			return context;
-//     });
-// 	},
-// 	createIssue: function() {
-//     var that = this;
-//     var form = $('form:visible');
-//     github.newIssue({
-//       title: form.find("input[name='issue[title]']").val(),
-//       body: form.find("textarea[name='issue[body]']").val(),
-//       assignee: form.find(".assignee input[type=radio]:checked").val(),
-//       milestone: form.find(".milestone input[type=radio]:checked").val(),
-//       labels: form.find("a.selected input").get().map(function (input) {
-//         return input.value;
-//       })
-//     }, form.data('issue-id')).then(function () {
-//       that.render();
-//       $(".facebox-close").click();
-// 			kanban && kanban.render() || (kanban = new KanbanView);
-//     });
-//     return false;
-//   },
-// 	afterRender: function(){
-// 		if (!!this.edit)
-// 			$("#jk-preview").click();		
-// 	}
-// });
 
 // var LabelView = View.extend({
 // 	el:".facebox-content",

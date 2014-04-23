@@ -120,13 +120,13 @@
   }
 </style>
 <form method="post" id="new_issue" class="js-new-issue-form" onsubmit="return gira.createIssue()()"
-      accept-charset="UTF-8" data-issue-id="{{number}}">
+      accept-charset="UTF-8" data-issue-id="{{data.number}}">
 	<div style="margin:0;padding:0;display:inline"></div>
 	<div class="columns discussion-timeline-cols">
 		<div class="column main">
 			<div class="discussion-bubble composer">
-				<a href="https://github.com/{{user.login}}"><img width="48" height="48" src="{{user.avatar_url}}"
-																												 class="discussion-bubble-avatar" alt="{{user.full_name}}"></a>
+				<a href="https://github.com/{{data.data.user.login}}"><img width="48" height="48" src="{{data.user.avatar_url}}"
+																												 class="discussion-bubble-avatar" alt="{{data.user.full_name}}"></a>
 
 				<div class="discussion-bubble-content bubble">
 					<div class="discussion-bubble-inner">
@@ -141,7 +141,7 @@
 										<div class="fieldWithErrors"><input type="text" tabindex="1" size="30" required="required"
 																												placeholder="Title" name="issue[title]" id="issue_title"
 																												class="required title js-auto-save" autofocus="autofocus"
-																												value="{{title}}"></div>
+																												value="{{data.title}}"></div>
 									</dd>
 								</dl>
 							</div>
@@ -152,8 +152,8 @@
 
 								<div class="assignee infobar-widget">
 									<span class="css-truncate text js-assignee-infobar-item-wrapper">
-										{% if assignee %}
-										{{assignee.login}} 
+										{% if data.assignee %}
+										{{data.assignee.login}} 
 										{% else %}
 										No one
 										{% endif%}
@@ -201,7 +201,7 @@
 													<!-- /.select-menu-item -->
 
 													<div role="menu" data-filterable-type="fuzzy" data-filterable-for="assignee-filter-field">
-														{% for assignee in assignees %}
+														{% for assignee in data.assignees %}
 														<div role="menuitem" class="select-menu-item js-navigation-item">
 															<input type="radio" value="{{assignee.login}}" name="issue[assignee]">
 															<span class="select-menu-item-icon octicon octicon-check"></span>
@@ -235,14 +235,14 @@
 
 								<div class="milestone infobar-widget">
 									<span class="css-truncate text js-composer-milestone-title">
-                    {% if milestone %}
-                    <strong class="css-truncate-target">{{milestone.title}}</strong>
+                    {% if data.milestone %}
+                    <strong class="css-truncate-target">{{data.milestone.title}}</strong>
                     {% else %}
 										No milestone
                     {% endif %}
 									</span>
 
-									<div class="select-menu js-menu-container js-select-menu js-composer-milestone-picker {% if milestone %}is-showing-clear-item{% endif %}">
+									<div class="select-menu js-menu-container js-select-menu js-composer-milestone-picker {% if data.milestone %}is-showing-clear-item{% endif %}">
 										<span aria-label="Set milestone" role="button"
                           class="minibutton select-menu-button icon-only js-menu-target">
 											<span class="octicon octicon-gear"></span>
@@ -294,7 +294,7 @@
 													<div role="menu" data-filterable-type="substring"
 															 data-filterable-for="context-milestone-filter-field">
 
-														{% for one_milestone in milestones %}
+														{% for one_milestone in data.milestones %}
 														<div role="menuitem"
 																 class="select-menu-item js-navigation-item {% if milestone.number == one_milestone.number %}selected{% endif %}">
 															<input type="radio" value="{{one_milestone.number}}" name="milestone"
@@ -388,7 +388,7 @@
 												<textarea data-suggester="_new_preview_suggester"
 																	class="comment-form-textarea js-comment-field js-size-to-fit js-quote-selection-target  input-with-fullscreen-icon"
 																	placeholder="Leave a comment" id="issue_body" tabindex="1"
-																	name="issue[body]">{{body}}</textarea>
+																	name="issue[body]">{{data.body}}</textarea>
 
 
 												<p class="drag-and-drop">
@@ -464,7 +464,7 @@
 				<div class="form-actions">
 
 					<button data-disable-with="" data-disable-invalid="" tabindex="1" class="button primary" type="submit">
-						{% if comments %}
+						{% if data.comments %}
 						Submit new issues
 						{% else %}
 						Edit issues
@@ -481,7 +481,7 @@
 			<h3>Add Labels</h3>
 			<ul class="js-composer-labels color-label-list filter-list small">
 
-        {% for one_label in all_labels %}
+        {% for one_label in data.all_labels %}
         <li data-name="{{ one_label.name }}" style="{% if one_label.name|hasIndex %}display: none;{% endif %}">
           <a class="filter-item color-label labelstyle-{{one_label.color}}" href="#">
 
