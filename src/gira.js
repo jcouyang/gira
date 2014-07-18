@@ -35,12 +35,24 @@ var issuesModel = new Model("issues");
 var labelModel = new Model("labels");
 var assigneeModel = new Model("assignee");
 function initKanbanModels(params, hash){
-	issuesModel.url =  "get@" + API_BASE + 'repos/' +  hash + "/issues" + concatToken();
-	labelModel.url = "get@" + API_BASE + 'repos/' +  hash + "/labels" + concatToken();
-	milestoneModel.url = "get@" + API_BASE + 'repos/' + hash + "/milestones" + concatToken();
-	assigneeModel.url =  "get@" + API_BASE + 'repos/' +  hash + "/assignees" + concatToken();
+	issuesModel = new Model("issues", "get@" + API_BASE + 'repos/' +  hash + "/issues" + concatToken());
+	labelModel = new Model("labels", "get@" + API_BASE + 'repos/' +  hash + "/labels" + concatToken());
+	milestoneModel = new Model("milestone", "get@" + API_BASE + 'repos/' + hash + "/milestones" + concatToken());
+	assigneeModel =  new Model("assignee", "get@" + API_BASE + 'repos/' +  hash + "/assignees" + concatToken());
 
 }
+
+repoModel.dataProc = function(data){
+	var groupedRepo = _(data).groupBy(function (repo) {
+    return repo.owner.login;
+  });
+	var owner = this.owner || USERNAME;
+  var repo =  this.repo || groupedRepo[owner][0].name;
+  return {checked: owner, checkedRepo: repo, owners: _(groupedRepo).map(function (repos) {
+    return repos[0].owner;
+  }), repos: groupedRepo[owner], origindata:data};
+};
+
 var HeaderView = View.extend({
 	model: userModel,
 	el:$("#header"),
@@ -51,56 +63,6 @@ var HeaderView = View.extend({
 	logout: function(){
 		github.logout();
 	}
-});
-
-var headerView = new HeaderView;
-headerView.render();
-
-
-repoModel.dataProc = function(data){
-	var groupedRepo = _(data).groupBy(function (repo) {
-    return repo.owner.login;
-  });
-	var owner = USERNAME;
-  var repo =  this.repo || groupedRepo[owner][0].name;
-  return {checked: owner, checkedRepo: repo, owners: _(groupedRepo).map(function (repos) {
-    return repos[0].owner;
-  }), repos: groupedRepo[owner]};
-};
-
-var RepoSelectorView = View.extend({
-	owner:"",
-	el: $(".pagehead.repohead h1"),
-	template:"src/templates/repo-selector.html",
-  changeOwner: function (event) {
-    this.model.owner = $(event.currentTarget).attr('name');
-		this.model.repo="";
-    this.render();
-  },
-  changeRepo: function (event) {
-    this.model.repo = $(event.currentTarget).attr('name');
-		window.location.hash = this.model.owner + "/" +  this.model.repo;
-  },
-	model: repoModel,
-	events:{
-		"change .select-menu.owner-select-menu input[type=radio]":"changeOwner",
-		"change .target-repo-menu.select-menu input[type=radio]":"changeRepo"
-	}
-});
-var MilestoneView = View.extend({
-		templateEngine: mynunjucks,
-	milestone:"1.0.0",
-	model: milestoneModel,
-	el: $(".pagehead.repohead div.sidebar-milestone-widget"),
-	template: "src/templates/milestones.html",
-	events:{
-		"click .select-menu a.select-menu-item": "changeMilestone"
-	},
-	changeMilestone:function (e) {
-		e.stopPropagation();
-		this.model.milestone = $(e.currentTarget).data('milestone');
-		this.render();
-  }
 });
 
 var KanbanModel = Model.extend({
@@ -149,6 +111,44 @@ var KanbanModel = Model.extend({
 });
 
 var kanbanModel = new KanbanModel("kanban");
+
+var headerView = new HeaderView;
+headerView.render();
+
+var RepoSelectorView = View.extend({
+	el: $(".pagehead.repohead h1"),
+	template:"src/templates/repo-selector.html",
+  changeOwner: function (event) {
+    this.model.owner = $(event.currentTarget).attr('name');
+		this.model.repo="";
+    this.render(this.model.dataProc(this.model.localData.origindata));
+		window.location.hash = this.model.owner + "/" +  this.model.repo;
+  },
+  changeRepo: function (event) {
+    this.model.repo = $(event.currentTarget).attr('name');
+		window.location.hash = this.model.owner + "/" +  this.model.repo;
+  },
+	model: repoModel,
+	events:{
+		"change .select-menu.owner-select-menu input[type=radio]":"changeOwner",
+		"change .target-repo-menu.select-menu input[type=radio]":"changeRepo"
+	}
+});
+var MilestoneView = View.extend({
+		templateEngine: mynunjucks,
+	milestone:"1.0.0",
+	model: milestoneModel,
+	el: $(".pagehead.repohead div.sidebar-milestone-widget"),
+	template: "src/templates/milestones.html",
+	events:{
+		"click .select-menu a.select-menu-item": "changeMilestone"
+	},
+	changeMilestone:function (e) {
+		e.stopPropagation();
+		this.model.milestone = $(e.currentTarget).data('milestone');
+		this.render();
+  }
+});
 
 var KanbanView = View.extend({
 	templateEngine: mynunjucks,
@@ -221,6 +221,7 @@ function initIssueDetail(params,hash){
 			return context;
 		},
 		fetch:function(){
+			if (!hash) return Q();
 			var self = this;
 			issuesModel.fetch();
 			labelModel.fetch();
@@ -322,17 +323,12 @@ function initIssueDetail(params,hash){
 				kanban && kanban.render() || (kanban = new KanbanView);
 			});
 			return false;
-		},
-		afterRender: function(){
-			if (!!this.edit)
-				$("#jk-preview").click();		
 		}
 	});
 	new EditIssueView({
-		edit:true,
+		edit:hash,
 		issue_id: params.id
-	}).render();
-	
+	}).render();	
 }
 
 
@@ -351,13 +347,13 @@ router.get(":username/:repo", function(params, data){
 
 router.get(":username/:repo/issues/:id", function(params){
 	initIssueDetail(params, window.location.hash.replace("#",""));
+	location = "#" + repoModel.owner + "/" + repoModel.repo;
 });
 
-
-
-
-
-
+router.get("create/new/issue", function(params){
+	initIssueDetail(params, null);
+	location = "#" + repoModel.owner + "/" + repoModel.repo;
+});
 
 
 

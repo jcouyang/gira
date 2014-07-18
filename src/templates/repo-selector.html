@@ -29,9 +29,8 @@
                             <!-- /.select-menu-header -->
                             <div class="select-menu-list">
                                 {% for owner in data.owners %}
-                                <div class="select-menu-item js-navigation-item {{" data.selected
-                                " if owner.login == data.checked}}">
-                                <input type="radio" checked="{{owner.login==checked}}" id="{{owner.login}}"
+                                <div class="select-menu-item js-navigation-item {{"selected" if owner.login == data.checked}}">
+                                <input type="radio" checked="{{owner.login==data.checked}}" id="{{owner.login}}"
                                        name="{{owner.login}}" value="hubot">
                                 <span class="select-menu-item-icon octicon octicon-check"></span>
 
@@ -70,8 +69,7 @@
                         <!-- /.select-menu-header -->
                         <div class="select-menu-list">
                             {% for repo in data.repos %}
-                            <div class="select-menu-item js-navigation-item {{" data.selected
-                            " if repo.name==checkedRepo}}">
+                            <div class="select-menu-item js-navigation-item {{"selected" if repo.name==data.checkedRepo}}">
                             <input type="radio" id="{{repo.id}}" name="{{repo.name}}" value="{{repo.full_name}}"
                                    checked="{{repo.name==data.checkedRepo}}"/>
                             <span class="select-menu-item-icon octicon octicon-check"></span>
