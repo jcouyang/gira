@@ -1,0 +1,326 @@
+<div class="box-body" issues-kanban>
+<div id="contributions-calendar">
+<div class="contrib-details grid lala">
+
+<div class="col" id="0-Backlog">
+<span class="num hide-buttons">Backlog
+      <a class="remove-lane" type="button" data="0-Backlog" href="#">
+          <span class="octicon octicon-remove-close close"></span>
+      </a>
+    </span>
+		<span class="lbl">
+
+			<div ng-repeat="issue in issuectrl.groupedIssues['0-BackLog']" class="blankslate hide-buttons" draggable="true" id="66" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/66" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#/jcouyang/gira/issues/{{issue.number}}" rel="facebox" class="popable" data-issue-id="{{issue.number}}">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right"
+                          href="{{issue.user.html_url}}" original-title="Assigned to {{issue.user.login}}">
+                        <img src="{{issue.user.avatar_url}}" alt="jcouyang" height="16"
+                             width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#{{issue.number}} {{issue.title}}</h4>
+                </a>
+
+					<span ng-repeat="label in issue.labels" class="labels" style="background-color: {{issue.label.color}}">
+                        {{label.name}}
+					</span>
+
+            </div>
+
+		</span>
+</div>
+
+<div class="col" id="">
+    <span class="num hide-buttons">{{label.name}}
+      <a class="remove-lane" type="button" data="1-Ready" href="#">
+          <span class="octicon octicon-remove-close close"></span>
+      </a>
+    </span>
+		<span class="lbl">
+
+			<div class="blankslate hide-buttons" draggable="true" id="67" data-label="1-Ready">
+                <a href="https://github.com/jcouyang/gira/issues/67" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/67" rel="facebox" class="popable" data-issue-id="67">
+
+                    <h4 class="list-group-item-name">#67 list Organizations repos as well </h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;"
+                              data-name="1-Ready">Ready</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="64" data-label="1-Ready">
+                <a href="https://github.com/jcouyang/gira/issues/64" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/64" rel="facebox" class="popable" data-issue-id="64">
+
+                    <h4 class="list-group-item-name">#64 Create New Issue</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;"
+                              data-name="1-Ready">Ready</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="31" data-label="1-Ready">
+                <a href="https://github.com/jcouyang/gira/issues/31" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/31" rel="facebox" class="popable" data-issue-id="31">
+
+                    <h4 class="list-group-item-name">#31 move card in same lane also send request</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;"
+                              data-name="1-Ready">Ready</span>
+
+						<span class="label labelstyle-84b6eb" style="background-color:#84b6eb;" data-name="enhancement">enhancement</span>
+
+						<span class="label labelstyle-e6e6e6" style="background-color:#e6e6e6;" data-name="invalid">invalid</span>
+
+						<span class="label labelstyle-cc317c" style="background-color:#cc317c;" data-name="question">question</span>
+
+					</span>
+
+
+            </div>
+
+		</span>
+</div>
+
+<div class="col" id="2-Working">
+    <span class="num hide-buttons">Working
+      <a class="remove-lane" type="button" data="2-Working" href="#">
+          <span class="octicon octicon-remove-close close"></span>
+      </a>
+    </span>
+		<span class="lbl">
+
+			<div class="blankslate hide-buttons" draggable="true" id="45" data-label="2-Working">
+                <a href="https://github.com/jcouyang/gira/issues/45" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/45" rel="facebox" class="popable" data-issue-id="45">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right"
+                          href="https://api.github.com/users/jcouyang" original-title="Assigned to jcouyang">
+                        <img src="https://avatars.githubusercontent.com/u/1235045?" alt="jcouyang" height="16"
+                             width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#45 Extract View</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-5319e7" style="background-color:#5319e7;display: none;"
+                              data-name="2-Working">Working</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="44" data-label="2-Working">
+                <a href="https://github.com/jcouyang/gira/issues/44" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/44" rel="facebox" class="popable" data-issue-id="44">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right"
+                          href="https://api.github.com/users/jcouyang" original-title="Assigned to jcouyang">
+                        <img src="https://avatars.githubusercontent.com/u/1235045?" alt="jcouyang" height="16"
+                             width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#44 show case</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-5319e7" style="background-color:#5319e7;display: none;"
+                              data-name="2-Working">Working</span>
+
+						<span class="label labelstyle-fc2929" style="background-color:#fc2929;"
+                              data-name="bug">bug</span>
+
+						<span class="label labelstyle-84b6eb" style="background-color:#84b6eb;" data-name="enhancement">enhancement</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="43" data-label="2-Working">
+                <a href="https://github.com/jcouyang/gira/issues/43" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/43" rel="facebox" class="popable" data-issue-id="43">
+
+                    <h4 class="list-group-item-name">#43 add comments support</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-5319e7" style="background-color:#5319e7;display: none;"
+                              data-name="2-Working">Working</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="30" data-label="2-Working">
+                <a href="https://github.com/jcouyang/gira/issues/30" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/30" rel="facebox" class="popable" data-issue-id="30">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right"
+                          href="https://api.github.com/users/jiukunz" original-title="Assigned to jiukunz">
+                        <img src="https://avatars.githubusercontent.com/u/1561543?" alt="jiukunz" height="16"
+                             width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#30 could remove lane</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-5319e7" style="background-color:#5319e7;display: none;"
+                              data-name="2-Working">Working</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="29" data-label="2-Working">
+                <a href="https://github.com/jcouyang/gira/issues/29" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/29" rel="facebox" class="popable" data-issue-id="29">
+
+                    <h4 class="list-group-item-name">#29 card goes back to Backlog when submit</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-5319e7" style="background-color:#5319e7;display: none;"
+                              data-name="2-Working">Working</span>
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;"
+                              data-name="3-done">done</span>
+
+						<span class="label labelstyle-fc2929" style="background-color:#fc2929;"
+                              data-name="bug">bug</span>
+
+					</span>
+
+
+            </div>
+
+		</span>
+</div>
+
+<div class="col" id="3-done">
+    <span class="num hide-buttons">Done
+      <a class="remove-lane" type="button" data="3-done" href="#">
+          <span class="octicon octicon-remove-close close"></span>
+      </a>
+    </span>
+		<span class="lbl">
+
+			<div class="blankslate hide-buttons" draggable="true" id="46" data-label="3-done">
+                <a href="https://github.com/jcouyang/gira/issues/46" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/46" rel="facebox" class="popable" data-issue-id="46">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right"
+                          href="https://api.github.com/users/jcouyang" original-title="Assigned to jcouyang">
+                        <img src="https://avatars.githubusercontent.com/u/1235045?" alt="jcouyang" height="16"
+                             width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#46 add milestone support</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;"
+                              data-name="3-done">done</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="39" data-label="3-done">
+                <a href="https://github.com/jcouyang/gira/issues/39" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/39" rel="facebox" class="popable" data-issue-id="39">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right"
+                          href="https://api.github.com/users/johnelf" original-title="Assigned to johnelf">
+                        <img src="https://avatars.githubusercontent.com/u/2260186?" alt="johnelf" height="16"
+                             width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#39 add more space between issues so that avatar could be seen more
+                        clear</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;"
+                              data-name="3-done">done</span>
+
+						<span class="label labelstyle-c7def8" style="background-color:#c7def8;" data-name="new-labels">new-labels</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="37" data-label="3-done">
+                <a href="https://github.com/jcouyang/gira/issues/37" target="_blank"
+                   class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/37" rel="facebox" class="popable" data-issue-id="37">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right"
+                          href="https://api.github.com/users/JustinFeng" original-title="Assigned to JustinFeng">
+                        <img src="https://avatars.githubusercontent.com/u/1527902?" alt="JustinFeng" height="16"
+                             width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#37 Create New Issue</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;"
+                              data-name="3-done">done</span>
+
+					</span>
+
+
+            </div>
+
+		</span>
+</div>
+
+</div>
+
+</div>
+</div>

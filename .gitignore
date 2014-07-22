@@ -16,5 +16,7 @@ build
 .idea
 
 node_modules
+bower_components
+packages
 src/templates.js
 uploads

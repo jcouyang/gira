@@ -2,9 +2,13 @@ library user;
 
 import 'package:angular/angular.dart';
 import 'package:angular/application_factory.dart';
+import 'package:logging/logging.dart';
 import 'package:gira/repo_selector.dart';
 import 'package:gira/milestone_selector.dart';
+import 'package:gira/issues.dart';
 import 'package:gira/services/repo_service.dart';
+import 'package:gira/services/issue_service.dart';
+import 'package:gira/routing/gira_router.dart';
 import 'package:gira/tokenizer.dart';
 @Controller(
     selector: '[user-data]',
@@ -38,9 +42,16 @@ class UserModel extends Module {
     type(MilestoneController);
     type(RepoService);
     type(Token);
+    type(IssueService);
+    type(IssueController);
+    value(RouteInitializerFn, giraRouteInitializer);
+    factory(NgRoutingUsePushState,
+        (_) => new NgRoutingUsePushState.value(false));
   }
 }
 void main() {
+  Logger.root..level = Level.FINEST
+    ..onRecord.listen((LogRecord r) { print(r.message); });
   applicationFactory()
     .addModule(new UserModel())
     .run();

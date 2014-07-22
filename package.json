@@ -6,20 +6,17 @@
   "author": "jichao ouyang",
   "license": "MPL 2.0",
   "version": "0.1.0",
-  "main": "lib/main.js",
+	"dependencies": {
+    "karma": "^0.11.14",
+    "karma-dart": "^0.2.6",
+    "karma-chrome-launcher": "*",
+    "karma-firefox-launcher": "*",
+    "karma-junit-reporter": "*"
+  },
   "devDependencies": {
-    "nunjucks": "~1.0.1",
-    "grunt-nunjucks": "~0.1.0",
-    "grunt-contrib-copy": "~0.5.0",
-    "grunt": "~0.4.2",
-    "grunt-contrib-concat": "~0.3.0",
-    "mocha": "~1.17.1",
-    "grunt-cli": "~0.1.13",
-    "grunt-mocha": "",
-    "grunt-contrib-uglify": "~0.3.2",
-    "grunt-contrib-watch": "~0.5.3"
+    "karma-chrome-launcher": "^0.1.3"
   },
   "scripts": {
-    "test": "grunt deploy"
+    "test": "karma start"
   }
 }

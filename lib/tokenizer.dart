@@ -8,7 +8,7 @@ Storage localStorage = window.localStorage;
 class Token {
   String token;
   Token(){
-    token = '';
+    token = localStorage['access_token'];
   }
 
   String izer(String url){
