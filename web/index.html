@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html ng-app>
+<head>
+  <title>GIRA!</title>
+	<link media="screen" type="text/css" href="../stylesheets/github.css" rel="stylesheet"></link>
+
+	<link media="screen" type="text/css" href="../stylesheets/github2.css" rel="stylesheet"></link>
+
+	<link media="screen" type="text/css" href="../stylesheets/gira.css" rel="stylesheet"></link>
+	<script type="text/javascript" src="../javascripts/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="../javascripts/frameworks.js"></script>
+		<script type="text/javascript" src="../javascripts/github.js"></script>
+</head>
+<body ng-cloak>
+    <div class="wrapper">
+			<div class="header header-logged-in true" id="header"><div class="container clearfix">
+    <a href="/" class="header-logo-invertocat tooltipped downwards" original-title="Github Issues Really Awesome">
+        <span class="mega-octicon octicon-octoface"></span>
+        <span class="mega-octicon octicon-issue-reopened"></span>
+        <img src="https://a248.e.akamai.net/assets.github.com/images/icons/emoji/metal.png" alt=":metal:" title=":metal:" class="emoji" align="absmiddle" height="40" width="40">
+    </a>
+
+    <ul id="user-links" user-data>
+
+        <li>
+            <a class="name" href="#">
+                <img src="{{userctrl.user.avatar_url}}" alt="Jichao Ouyang" height="20" width="20"> {{userctrl.user.login}}
+            </a>
+        </li>
+        <li>
+            <a aria-label="Sign out" ng-click="userctrl.logOut()" class="tooltipped downwards" original-title="Sign out">
+                <span class="octicon octicon-log-out"></span>
+            </a>
+        </li>
+
+    </ul>
+</div>
+</div>
+			<div class="site clearfix">
+
+				<div class="loggedin">
+				<div id="main_content" class="container">
+					<div class="notification">
+					</div>
+
+					<div class="container">
+
+						<div class="pagehead repohead">
+							<h1 repo-selector>
+								<span class="repo-label">
+									<a href="" target="_blank">public <span class="octicon octicon-link-external"></span></a></span>
+								<span class="mega-octicon octicon-repo"></span> <span class="author">
+									<div class="repo-selector js-repo-selector ">
+										<input type="hidden" ng-model="repoctrl.currentOwner">
+										<div class="repo-entry-form">
+											<div class="entry-content">
+												<div class="select-menu owner-select-menu js-menu-container js-select-menu js-owner-container js-owner-select">
+													<span class="minibutton select-menu-button js-menu-target">
+														<span class="js-select-button">
+															{{repoctrl.currentOwner}}
+														</span>
+													</span>
+
+													<div aria-hidden="true" class="select-menu-modal-holder js-menu-content js-navigation-container">
+														<div class="select-menu-modal">
+															<div class="select-menu-header">
+																<span class="select-menu-title">Choose another owner</span>
+																<span class="octicon octicon-remove-close js-menu-close"></span>
+															</div>
+															<!-- /.select-menu-header -->
+															<div class="select-menu-list">
+
+																<div ng-repeat="owner in repoctrl.repo.owners" class="select-menu-item js-navigation-item" ng-click="repoctrl.changeOwner($event)">
+																	<input value="{{owner.login}}" type="radio" data-repos-url="{{owner.repos_url}}">
+																	<span class="select-menu-item-icon octicon octicon-check"></span>
+
+																	<div class="select-menu-item-gravatar js-select-menu-item-gravatar">
+																		<img alt="{{owner.login}}" src="{{owner.avatar_url}}" height="20" width="20">
+																	</div>
+																	<div class="select-menu-item-text js-select-button-text">
+																		{{owner.login}}
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<div class="nwo-slash">/</div>
+
+												<div class="select-menu js-menu-container js-select-menu js-target-repo-menu owner-is-active" data-owner="hubot">
+													<span class="minibutton select-menu-button js-menu-target">
+														<span class="js-select-button">{{repoctrl.currentRepo}}</span>
+													</span>
+
+													<div aria-hidden="true" class="select-menu-modal-holder js-menu-content js-navigation-container">
+														<div class="select-menu-modal">
+															<div class="select-menu-header">
+																<span class="select-menu-title">Choose repository</span>
+																<span class="octicon octicon-remove-close js-menu-close"></span>
+															</div>
+															<div class="select-menu-list">
+
+																<div class="select-menu-item js-navigation-item" ng-repeat="repo in repoctrl.repo.repos">
+																	<input id="{{repo.id}}" name="{{repo.name}}" value="{{repo.full_name}}" checked="false" type="radio">
+																	<span class="select-menu-item-icon octicon octicon-check"></span>
+
+																	<div class="select-menu-item-text js-select-button-text">{{repo.name}}</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</span>
+							</h1>
+
+							<a id="new-issue" href="#create/new/issue" rel="facebox" class="right button primary popable">New Issue</a>
+							<a id="new-label" href="#create-new-label" rel="facebox" onclick="new LabelView()" class="right button popable">New Lane</a>
+							<!-- <a id="show-diagram" href="#show-diagram" rel="facebox" class="right button popable">Show Diagram</a> -->
+							<div class="sidebar-milestone-widget right" milestone-selector>
+								<div class="select-menu is-showing-clear-item js-menu-container js-select-menu">
+
+									<span class="minibutton select-menu-button icon-only js-menu-target">
+										<span class="octicon octicon-gear"></span>
+									</span>
+
+									<div class="select-menu-modal-holder js-menu-content js-milestone-issue-filter js-navigation-container js-select-menu-pane js-active-navigation-container" data-pjax="" aria-hidden="false" style="right:0;">
+										<div class="select-menu-modal">
+											<div class="select-menu-header">
+												<span class="select-menu-title">Filter issues by milestone</span>
+												<span class="octicon octicon-remove-close js-menu-close"></span>
+											</div>
+											<!-- /.select-menu-header -->
+
+											<div class="select-menu-filters">
+												<div class="select-menu-text-filter">
+													<input type="text" id="issues-list-sidebar-milestones-filter" class="js-filterable-field js-navigation-enable" placeholder="Filter milestones">
+												</div>
+											</div>
+											<!-- /.select-menu-filters -->
+
+											<div class="select-menu-list" data-filterable-for="issues-list-sidebar-milestones-filter" data-filterable-type="substring">
+
+												<a ng-click="milestonectrl.clearMilestone()" class="select-menu-item select-menu-clear-item js-navigation-open js-navigation-item" href="#" data-milestone="">
+													<span class="select-menu-item-icon octicon octicon-remove-close"></span>
+													<span class="select-menu-item-text" data-milestone="">Clear milestone filter</span>
+												</a> <!-- /.select-menu-item -->
+
+												<!-- <a class="select-menu-item js-navigation-open js-navigation-item" href="/jcouyang/gira/issues?milestone=none&amp;page=1&amp;state=open" data-milestone=""> -->
+												<!--   <span class="select-menu-item-icon octicon octicon-check"></span> -->
+												<!--   <span class="select-menu-item-text js-select-button-text" data-milestone="">Issues with no milestone</span> -->
+												<!-- </a> <\!-- /.select-menu-item -\-> -->
+
+												<a ng-repeat="milestone in milestonectrl.milestones" class="select-menu-item js-navigation-item js-navigation-open" href="#" data-milestone="2" ng-click="milestonectrl.changeMilestone($event)">
+													<span class="select-menu-item-icon octicon octicon-check"></span>
+													<span class="select-menu-item-text " data-milestone="2">
+														<h4>{{milestone.title}}</h4>
+
+														<span class="description">{{milestone.due_on}}</span>
+
+													</span>
+												</a> <!-- /.select-menu-item -->
+
+												<div class="select-menu-no-results js-not-filterable">Nothing to show</div>
+											</div>
+											<!-- /.select-menu-list -->
+										</div>
+										<!-- /.select-menu-modal -->
+									</div>
+									<!-- /.select-menu-modal-holder -->
+								</div> <!-- /.select-menu -->
+								<strong class="sidebar-milestone-widget-text">{{milestonectrl.currentMilestone}}</strong>
+
+							</div>
+						</div>
+
+						<div class="box-body">
+							<div id="contributions-calendar"><div class="contrib-details grid lala">
+
+    <div class="col" id="0-Backlog">
+    <span class="num hide-buttons">Backlog
+      <a class="remove-lane" type="button" data="0-Backlog" href="#">
+          <span class="octicon octicon-remove-close close"></span>
+      </a>
+    </span>
+		<span class="lbl">
+
+			<div class="blankslate hide-buttons" draggable="true" id="66" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/66" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/66" rel="facebox" class="popable" data-issue-id="66">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right" href="https://api.github.com/users/jcouyang" original-title="Assigned to jcouyang">
+                        <img src="https://avatars.githubusercontent.com/u/1235045?" alt="jcouyang" height="16" width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#66 add bitbucket support</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="65" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/65" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/65" rel="facebox" class="popable" data-issue-id="65">
+
+                    <h4 class="list-group-item-name">#65 Only 1 page of repos in the list</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="63" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/63" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/63" rel="facebox" class="popable" data-issue-id="63">
+
+                    <h4 class="list-group-item-name">#63 add more space between issues so that avatar could be seen more clear</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="62" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/62" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/62" rel="facebox" class="popable" data-issue-id="62">
+
+                    <h4 class="list-group-item-name">#62 add milestone support</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="61" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/61" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/61" rel="facebox" class="popable" data-issue-id="61">
+
+                    <h4 class="list-group-item-name">#61 ASDA</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="60" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/60" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/60" rel="facebox" class="popable" data-issue-id="60">
+
+                    <h4 class="list-group-item-name">#60 adasda</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="59" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/59" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/59" rel="facebox" class="popable" data-issue-id="59">
+
+                    <h4 class="list-group-item-name">#59 xxx</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="58" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/58" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/58" rel="facebox" class="popable" data-issue-id="58">
+
+                    <h4 class="list-group-item-name">#58 firefox addon</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-ededed" style="background-color:#ededed;display: none;" data-name="0-Backlog">Backlog</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="57" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/57" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/57" rel="facebox" class="popable" data-issue-id="57">
+
+                    <h4 class="list-group-item-name">#57 Github Enterprise support</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="56" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/56" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/56" rel="facebox" class="popable" data-issue-id="56">
+
+                    <h4 class="list-group-item-name">#56 handle duplicate upload error</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-fc2929" style="background-color:#fc2929;" data-name="bug">bug</span>
+
+						<span class="label labelstyle-84b6eb" style="background-color:#84b6eb;" data-name="enhancement">enhancement</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="55" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/55" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/55" rel="facebox" class="popable" data-issue-id="55">
+
+                    <h4 class="list-group-item-name">#55 dropover shadow</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-84b6eb" style="background-color:#84b6eb;" data-name="enhancement">enhancement</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="54" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/54" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/54" rel="facebox" class="popable" data-issue-id="54">
+
+                    <h4 class="list-group-item-name">#54 mangage milestone</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-84b6eb" style="background-color:#84b6eb;" data-name="enhancement">enhancement</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="53" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/53" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/53" rel="facebox" class="popable" data-issue-id="53">
+
+                    <h4 class="list-group-item-name">#53 show owner image in edit issue facebox</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="52" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/52" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/52" rel="facebox" class="popable" data-issue-id="52">
+
+                    <h4 class="list-group-item-name">#52 multiple ajax call enhancement</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-84b6eb" style="background-color:#84b6eb;" data-name="enhancement">enhancement</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="51" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/51" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/51" rel="facebox" class="popable" data-issue-id="51">
+
+                    <h4 class="list-group-item-name">#51 burn up chart</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="50" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/50" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/50" rel="facebox" class="popable" data-issue-id="50">
+
+                    <h4 class="list-group-item-name">#50 add ui test with zombiejs</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="49" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/49" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/49" rel="facebox" class="popable" data-issue-id="49">
+
+                    <h4 class="list-group-item-name">#49 add unit tests</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="48" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/48" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/48" rel="facebox" class="popable" data-issue-id="48">
+
+                    <h4 class="list-group-item-name">#48 the button is edit issues when new issues</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-fc2929" style="background-color:#fc2929;" data-name="bug">bug</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="47" data-label="0-Backlog">
+                <a href="https://github.com/jcouyang/gira/issues/47" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/47" rel="facebox" class="popable" data-issue-id="47">
+
+                    <h4 class="list-group-item-name">#47 Able to add comment</h4>
+                </a>
+
+					<span class="labels">
+
+					</span>
+
+
+            </div>
+
+		</span>
+    </div>
+
+    <div class="col" id="1-Ready">
+    <span class="num hide-buttons">Ready
+      <a class="remove-lane" type="button" data="1-Ready" href="#">
+          <span class="octicon octicon-remove-close close"></span>
+      </a>
+    </span>
+		<span class="lbl">
+
+			<div class="blankslate hide-buttons" draggable="true" id="67" data-label="1-Ready">
+                <a href="https://github.com/jcouyang/gira/issues/67" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/67" rel="facebox" class="popable" data-issue-id="67">
+
+                    <h4 class="list-group-item-name">#67 list Organizations repos as well </h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;" data-name="1-Ready">Ready</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="64" data-label="1-Ready">
+                <a href="https://github.com/jcouyang/gira/issues/64" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/64" rel="facebox" class="popable" data-issue-id="64">
+
+                    <h4 class="list-group-item-name">#64 Create New Issue</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;" data-name="1-Ready">Ready</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="31" data-label="1-Ready">
+                <a href="https://github.com/jcouyang/gira/issues/31" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/31" rel="facebox" class="popable" data-issue-id="31">
+
+                    <h4 class="list-group-item-name">#31 move card in same lane also send request</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;" data-name="1-Ready">Ready</span>
+
+						<span class="label labelstyle-84b6eb" style="background-color:#84b6eb;" data-name="enhancement">enhancement</span>
+
+						<span class="label labelstyle-e6e6e6" style="background-color:#e6e6e6;" data-name="invalid">invalid</span>
+
+						<span class="label labelstyle-cc317c" style="background-color:#cc317c;" data-name="question">question</span>
+
+					</span>
+
+
+            </div>
+
+		</span>
+    </div>
+
+    <div class="col" id="2-Working">
+    <span class="num hide-buttons">Working
+      <a class="remove-lane" type="button" data="2-Working" href="#">
+          <span class="octicon octicon-remove-close close"></span>
+      </a>
+    </span>
+		<span class="lbl">
+
+			<div class="blankslate hide-buttons" draggable="true" id="45" data-label="2-Working">
+                <a href="https://github.com/jcouyang/gira/issues/45" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/45" rel="facebox" class="popable" data-issue-id="45">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right" href="https://api.github.com/users/jcouyang" original-title="Assigned to jcouyang">
+                        <img src="https://avatars.githubusercontent.com/u/1235045?" alt="jcouyang" height="16" width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#45 Extract View</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-5319e7" style="background-color:#5319e7;display: none;" data-name="2-Working">Working</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="44" data-label="2-Working">
+                <a href="https://github.com/jcouyang/gira/issues/44" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/44" rel="facebox" class="popable" data-issue-id="44">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right" href="https://api.github.com/users/jcouyang" original-title="Assigned to jcouyang">
+                        <img src="https://avatars.githubusercontent.com/u/1235045?" alt="jcouyang" height="16" width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#44 show case</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-5319e7" style="background-color:#5319e7;display: none;" data-name="2-Working">Working</span>
+
+						<span class="label labelstyle-fc2929" style="background-color:#fc2929;" data-name="bug">bug</span>
+
+						<span class="label labelstyle-84b6eb" style="background-color:#84b6eb;" data-name="enhancement">enhancement</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="43" data-label="2-Working">
+                <a href="https://github.com/jcouyang/gira/issues/43" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/43" rel="facebox" class="popable" data-issue-id="43">
+
+                    <h4 class="list-group-item-name">#43 add comments support</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-5319e7" style="background-color:#5319e7;display: none;" data-name="2-Working">Working</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="30" data-label="2-Working">
+                <a href="https://github.com/jcouyang/gira/issues/30" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/30" rel="facebox" class="popable" data-issue-id="30">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right" href="https://api.github.com/users/jiukunz" original-title="Assigned to jiukunz">
+                        <img src="https://avatars.githubusercontent.com/u/1561543?" alt="jiukunz" height="16" width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#30 could remove lane</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-5319e7" style="background-color:#5319e7;display: none;" data-name="2-Working">Working</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="29" data-label="2-Working">
+                <a href="https://github.com/jcouyang/gira/issues/29" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/29" rel="facebox" class="popable" data-issue-id="29">
+
+                    <h4 class="list-group-item-name">#29 card goes back to Backlog when submit</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-5319e7" style="background-color:#5319e7;display: none;" data-name="2-Working">Working</span>
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;" data-name="3-done">done</span>
+
+						<span class="label labelstyle-fc2929" style="background-color:#fc2929;" data-name="bug">bug</span>
+
+					</span>
+
+
+            </div>
+
+		</span>
+    </div>
+
+    <div class="col" id="3-done">
+    <span class="num hide-buttons">Done
+      <a class="remove-lane" type="button" data="3-done" href="#">
+          <span class="octicon octicon-remove-close close"></span>
+      </a>
+    </span>
+		<span class="lbl">
+
+			<div class="blankslate hide-buttons" draggable="true" id="46" data-label="3-done">
+                <a href="https://github.com/jcouyang/gira/issues/46" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/46" rel="facebox" class="popable" data-issue-id="46">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right" href="https://api.github.com/users/jcouyang" original-title="Assigned to jcouyang">
+                        <img src="https://avatars.githubusercontent.com/u/1235045?" alt="jcouyang" height="16" width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#46 add milestone support</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;" data-name="3-done">done</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="39" data-label="3-done">
+                <a href="https://github.com/jcouyang/gira/issues/39" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/39" rel="facebox" class="popable" data-issue-id="39">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right" href="https://api.github.com/users/johnelf" original-title="Assigned to johnelf">
+                        <img src="https://avatars.githubusercontent.com/u/2260186?" alt="johnelf" height="16" width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#39 add more space between issues so that avatar could be seen more clear</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;" data-name="3-done">done</span>
+
+						<span class="label labelstyle-c7def8" style="background-color:#c7def8;" data-name="new-labels">new-labels</span>
+
+					</span>
+
+
+            </div>
+
+			<div class="blankslate hide-buttons" draggable="true" id="37" data-label="3-done">
+                <a href="https://github.com/jcouyang/gira/issues/37" target="_blank" class="octicon octicon-link-external link-external right"></a>
+                <a href="#jcouyang/gira/issues/37" rel="facebox" class="popable" data-issue-id="37">
+
+					<span style="margin-right: 5px;" class="assignee tooltipped downwards yours right" href="https://api.github.com/users/JustinFeng" original-title="Assigned to JustinFeng">
+                        <img src="https://avatars.githubusercontent.com/u/1527902?" alt="JustinFeng" height="16" width="16">
+					</span>
+
+                    <h4 class="list-group-item-name">#37 Create New Issue</h4>
+                </a>
+
+					<span class="labels">
+
+						<span class="label labelstyle-CCCCCC" style="background-color:#CCCCCC;display: none;" data-name="3-done">done</span>
+
+					</span>
+
+
+            </div>
+
+		</span>
+    </div>
+
+</div>
+
+</div>
+						</div>
+
+					</div>
+
+					<div class="site-footer">
+						<ul class="site-footer-links right">
+							<li><a href="https://github.com/jcouyang/gira/blob/LICENSE">License</a></li>
+							<li><a href="http://oyanglul.us/blog/categories/gira">Blog</a></li>
+							<li><a href="https://github.com/jcouyang/gira">About</a></li>
+						</ul>
+						<a href="/">
+							<span class="mega-octicon octicon-issue-reopened"></span>
+						</a>
+						<ul class="site-footer-links">
+							<li>© 2014 <span title="0.07061s from github-fe129-cp1-prd.iad.github.net">GIRA</span></li>
+						</ul>
+					</div><!-- /.site-footer -->
+				</div>
+				</div>
+				<div id="create-new-issue" style="display:none;">
+					<img style="margin-left:241px;" src="/images/spinners/octocat-spinner-128.gif">
+				</div>
+
+</div></div>    <div class="facebox" id="facebox" style="display: none; top: 43.7px; left: 330px;">       <div class="facebox-popup">         <div class="facebox-content"><style type="text/css" media="screen">
+  span.labelstyle-CCCCCC, .linked-labelstyle-CCCCCC {
+  background-color: #CCCCCC !important;
+  color: #333333 !important;
+  }
+
+  .labelstyle-CCCCCC.selected {
+  background-color: #CCCCCC !important;
+  color: #333333 !important;
+  }
+
+  .label-select-menu .labelstyle-CCCCCC.selected {
+  background: rgba(204, 204, 204, 0.12) !important;
+  color: #999999 !important;
+  }
+
+  span.labelstyle-ededed, .linked-labelstyle-ededed {
+  background-color: #ededed !important;
+  color: #333333 !important;
+  }
+
+  .labelstyle-ededed.selected {
+  background-color: #ededed !important;
+  color: #333333 !important;
+  }
+
+  .label-select-menu .labelstyle-ededed.selected {
+  background: rgba(237, 237, 237, 0.12) !important;
+  color: #999999 !important;
+  }
+
+  span.labelstyle-fc2929, .linked-labelstyle-fc2929 {
+  background-color: #fc2929 !important;
+  color: #fff !important;
+  }
+
+  .labelstyle-fc2929.selected {
+  background-color: #fc2929 !important;
+  color: #fff !important;
+  }
+
+  .label-select-menu .labelstyle-fc2929.selected {
+  background: rgba(252, 41, 41, 0.12) !important;
+  color: #991818 !important;
+  }
+
+  span.labelstyle-cccccc, .linked-labelstyle-cccccc {
+  background-color: #cccccc !important;
+  color: #333333 !important;
+  }
+
+  .labelstyle-cccccc.selected {
+  background-color: #cccccc !important;
+  color: #333333 !important;
+  }
+
+  .label-select-menu .labelstyle-cccccc.selected {
+  background: rgba(204, 204, 204, 0.12) !important;
+  color: #999999 !important;
+  }
+
+  span.labelstyle-84b6eb, .linked-labelstyle-84b6eb {
+  background-color: #84b6eb !important;
+  color: #1c2733 !important;
+  }
+
+  .labelstyle-84b6eb.selected {
+  background-color: #84b6eb !important;
+  color: #1c2733 !important;
+  }
+
+  .label-select-menu .labelstyle-84b6eb.selected {
+  background: rgba(132, 182, 235, 0.12) !important;
+  color: #557699 !important;
+  }
+
+  span.labelstyle-e6e6e6, .linked-labelstyle-e6e6e6 {
+  background-color: #e6e6e6 !important;
+  color: #333333 !important;
+  }
+
+  .labelstyle-e6e6e6.selected {
+  background-color: #e6e6e6 !important;
+  color: #333333 !important;
+  }
+
+  .label-select-menu .labelstyle-e6e6e6.selected {
+  background: rgba(230, 230, 230, 0.12) !important;
+  color: #999999 !important;
+  }
+
+  span.labelstyle-cc317c, .linked-labelstyle-cc317c {
+  background-color: #cc317c !important;
+  color: #fff !important;
+  }
+
+  .labelstyle-cc317c.selected {
+  background-color: #cc317c !important;
+  color: #fff !important;
+  }
+
+  .label-select-menu .labelstyle-cc317c.selected {
+  background: rgba(204, 49, 124, 0.12) !important;
+  color: #99245c !important;
+  }
+
+  span.labelstyle-ffffff, .linked-labelstyle-ffffff {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  }
+
+  .labelstyle-ffffff.selected {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  }
+
+  .label-select-menu .labelstyle-ffffff.selected {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #999999 !important;
+  }
+</style>
+<form method="post" id="new_issue" class="js-new-issue-form" onsubmit="return gira.createIssue()()" accept-charset="UTF-8" data-issue-id="64">
+	<div style="margin:0;padding:0;display:inline"></div>
+	<div class="columns discussion-timeline-cols">
+		<div class="column main">
+			<div class="discussion-bubble composer">
+				<a href="https://github.com/"><img src="https://avatars.githubusercontent.com/u/6041761?" class="discussion-bubble-avatar" alt="" height="48" width="48"></a>
+
+				<div class="discussion-bubble-content bubble">
+					<div class="discussion-bubble-inner">
+
+						<div class="discussion-topic">
+
+
+							<div class="discussion-topic-header">
+								<dl class="form">
+									<div class="fieldWithErrors"><label for="issue_title" class="discussion-title-label">Title</label></div>
+									<dd>
+										<div class="fieldWithErrors"><input tabindex="1" size="30" required="required" placeholder="Title" name="issue[title]" id="issue_title" class="required title js-auto-save" autofocus="autofocus" value="Create New Issue" type="text"></div>
+									</dd>
+								</dl>
+							</div>
+							<!-- /.topic-comment-header -->
+
+
+							<div class="composer-infobar js-infobar">
+
+								<div class="assignee infobar-widget">
+									<span class="css-truncate text js-assignee-infobar-item-wrapper"><a href="/jcouyang" class="css-truncate-target">jcouyang</a> will be assigned</span>
+
+
+									<div class="select-menu js-menu-container js-select-menu js-composer-assignee-picker is-showing-clear-item">
+										<span aria-label="Assign someone to this issue" role="button" class="minibutton select-menu-button icon-only js-menu-target">
+											<span class="octicon octicon-gear"></span>
+										</span>
+
+										<div aria-hidden="true" class="select-menu-modal-holder js-menu-content js-navigation-container">
+
+											<div class="select-menu-modal">
+												<div class="select-menu-header">
+													<span class="select-menu-title">Assign someone to this issue</span>
+													<span class="octicon octicon-remove-close js-menu-close"></span>
+												</div>
+												<!-- /.select-menu-header -->
+
+
+												<div class="select-menu-error-shell"><span class="select-menu-error js-select-menu-error">Sorry, an error occurred</span>
+												</div>
+
+												<div class="select-menu-filters">
+													<div class="select-menu-text-filter">
+														<input aria-label="Type or choose a name" placeholder="Filter people" class="js-filterable-field js-navigation-enable" id="assignee-filter-field" type="text">
+													</div>
+												</div>
+												<!-- /.select-menu-filters -->
+
+
+												<div class="select-menu-list">
+
+													<div aria-label="Clear assignee" role="button" class="select-menu-clear-item select-menu-item js-navigation-item js-clear-assignee js-no-current-assignee">
+														<input value="" name="issue[assignee]" type="radio">
+														<span class="select-menu-item-icon octicon octicon-remove-close"></span>
+
+														<div class="select-menu-item-text">Clear assignee</div>
+													</div>
+													<!-- /.select-menu-item -->
+
+													<div role="menu" data-filterable-type="fuzzy" data-filterable-for="assignee-filter-field">
+
+
+
+
+
+
+
+
+
+
+
+													<div role="menuitem" class="select-menu-item js-navigation-item">
+															<input value="iambowen" name="issue[assignee]" type="radio">
+															<span class="select-menu-item-icon octicon octicon-check"></span>
+
+															<div class="select-menu-item-gravatar js-select-menu-item-gravatar">
+                                <span class="avatar"><img src="https://avatars.githubusercontent.com/u/920329?" alt="iambowen" height="20" width="20"></span>
+															</div>
+
+															<div class="select-menu-item-text">
+                                <h4>iambowen <span class="description"></span></h4>
+															</div>
+														</div><div role="menuitem" class="select-menu-item js-navigation-item selected">
+															<input value="jcouyang" name="issue[assignee]" type="radio">
+															<span class="select-menu-item-icon octicon octicon-check"></span>
+
+															<div class="select-menu-item-gravatar js-select-menu-item-gravatar">
+                                <span class="avatar"><img src="https://avatars.githubusercontent.com/u/1235045?" alt="jcouyang" height="20" width="20"></span>
+															</div>
+
+															<div class="select-menu-item-text">
+                                <h4>jcouyang <span class="description"></span></h4>
+															</div>
+														</div><div role="menuitem" class="select-menu-item js-navigation-item">
+															<input value="jiukunz" name="issue[assignee]" type="radio">
+															<span class="select-menu-item-icon octicon octicon-check"></span>
+
+															<div class="select-menu-item-gravatar js-select-menu-item-gravatar">
+                                <span class="avatar"><img src="https://avatars.githubusercontent.com/u/1561543?" alt="jiukunz" height="20" width="20"></span>
+															</div>
+
+															<div class="select-menu-item-text">
+                                <h4>jiukunz <span class="description"></span></h4>
+															</div>
+														</div><div role="menuitem" class="select-menu-item js-navigation-item">
+															<input value="johnelf" name="issue[assignee]" type="radio">
+															<span class="select-menu-item-icon octicon octicon-check"></span>
+
+															<div class="select-menu-item-gravatar js-select-menu-item-gravatar">
+                                <span class="avatar"><img src="https://avatars.githubusercontent.com/u/2260186?" alt="johnelf" height="20" width="20"></span>
+															</div>
+
+															<div class="select-menu-item-text">
+                                <h4>johnelf <span class="description"></span></h4>
+															</div>
+														</div><div role="menuitem" class="select-menu-item js-navigation-item last-visible">
+															<input value="JustinFeng" name="issue[assignee]" type="radio">
+															<span class="select-menu-item-icon octicon octicon-check"></span>
+
+															<div class="select-menu-item-gravatar js-select-menu-item-gravatar">
+                                <span class="avatar"><img src="https://avatars.githubusercontent.com/u/1527902?" alt="JustinFeng" height="20" width="20"></span>
+															</div>
+
+															<div class="select-menu-item-text">
+                                <h4>JustinFeng <span class="description"></span></h4>
+															</div>
+														</div></div>
+
+													<div class="select-menu-no-results">Nothing to show</div>
+
+												</div>
+												<!-- /.select-menu-list -->
+
+
+											</div>
+											<!-- /.select-menu-modal -->
+										</div>
+										<!-- /.select-menu-modal-holder -->
+									</div>
+									<!-- /.select-menu -->
+
+								</div>
+
+								<div class="milestone infobar-widget">
+									<span class="css-truncate text js-composer-milestone-title">
+
+                    <strong class="css-truncate-target">v2.0.0</strong>
+
+									</span>
+
+									<div class="select-menu js-menu-container js-select-menu js-composer-milestone-picker is-showing-clear-item">
+										<span aria-label="Set milestone" role="button" class="minibutton select-menu-button icon-only js-menu-target">
+											<span class="octicon octicon-gear"></span>
+										</span>
+
+										<div aria-hidden="true" class="select-menu-modal-holder js-menu-content js-navigation-container">
+
+											<div class="select-menu-modal">
+												<div class="select-menu-header">
+													<span class="select-menu-title">Set milestone</span>
+													<span class="octicon octicon-remove-close js-menu-close"></span>
+												</div>
+												<!-- /.select-menu-header -->
+
+
+												<div class="select-menu-error-shell"><span class="select-menu-error js-select-menu-error">Sorry, an error occurred</span>
+												</div>
+
+												<div class="select-menu-filters">
+													<div class="select-menu-text-filter">
+														<input autocomplete="off" placeholder="Filter milestones" class="js-filterable-field js-navigation-enable" id="context-milestone-filter-field" type="text">
+													</div>
+													<div class="select-menu-tabs">
+														<ul>
+															<li class="select-menu-tab">
+                                <a class="js-select-menu-tab selected" data-tab-filter="tab-open" href="#">Open</a>
+															</li>
+															<li class="select-menu-tab">
+                                <a class="js-select-menu-tab" data-tab-filter="tab-closed" href="#">Closed</a>
+															</li>
+														</ul>
+													</div>
+													<!-- /.select-menu-tabs -->
+												</div>
+												<!-- /.select-menu-filters -->
+
+												<div data-tab-filter="tab-open" class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket selected">
+
+													<div class="select-menu-clear-item select-menu-item js-navigation-item js-clear-milestone">
+														<input value="" name="milestone" id="milestone_clear" type="radio">
+														<span class="select-menu-item-icon octicon octicon-remove-close"></span>
+
+														<div class="select-menu-item-text">Clear this milestone</div>
+													</div>
+													<!-- /.select-menu-item -->
+
+													<div role="menu" data-filterable-type="substring" data-filterable-for="context-milestone-filter-field">
+
+
+														<div role="menuitem" class="select-menu-item js-navigation-item">
+															<input value="2" name="milestone" id="milestone_2" type="radio">
+															<span class="select-menu-item-icon octicon octicon-check"></span>
+
+															<div class="select-menu-item-text">
+                                <h4 class="js-milestone-title js-select-button-text">v1.0.0</h4>
+
+															</div>
+														</div>
+														<!-- /.select-menu-item -->
+
+														<div role="menuitem" class="select-menu-item js-navigation-item last-visible">
+															<input value="3" name="milestone" id="milestone_3" type="radio">
+															<span class="select-menu-item-icon octicon octicon-check"></span>
+
+															<div class="select-menu-item-text">
+                                <h4 class="js-milestone-title js-select-button-text">v2.0.0</h4>
+
+															</div>
+														</div>
+														<!-- /.select-menu-item -->
+
+													</div>
+
+													<div class="select-menu-item select-menu-new-item-form js-navigation-item js-new-item-form">
+														<input value="new" name="milestone" type="radio">
+														<input name="milestone_title" class="js-new-item-value" type="hidden">
+
+														<span class="octicon octicon-milestone select-menu-item-icon"></span>
+
+														<div class="select-menu-item-text">
+															<h4>Create and assign to new milestone:</h4>
+															<span class="description js-new-item-name js-milestone-title"></span>
+														</div>
+													</div>
+
+												</div>
+												<!-- /.select-menu-list -->
+
+												<div data-tab-filter="tab-closed" class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket filterable-empty">
+
+													<div class="filterable-empty" role="menu" data-filterable-type="substring" data-filterable-for="context-milestone-filter-field">
+
+													</div>
+
+													<div class="select-menu-no-results">Nothing to show</div>
+												</div>
+												<!-- /.select-menu-list -->
+
+
+												<div class="fieldWithErrors"><input name="issue[milestone_id]" id="issue_milestone_id" type="hidden"></div>
+												<input name="new_milestone_title" id="new_milestone_title" type="hidden">
+											</div>
+											<!-- /.select-menu-modal -->
+										</div>
+										<!-- /.select-menu-modal-holder -->
+									</div>
+									<!-- /.select-menu -->
+
+								</div>
+							</div>
+
+
+							<div class="comment-content">
+
+								<dl class="form body">
+									<dd>
+
+
+										<div data-preview-url="#" class="js-previewable-comment-form previewable-comment-form write-selected">
+											<div class="comment-form-head tabnav">
+												<ul class="tabnav-tabs">
+													<li><a class="tabnav-tab write-tab js-write-tab selected" href="#write_bucket_">Write</a></li>
+													<li><a id="jk-preview" class="tabnav-tab preview-tab js-preview-tab" href="#preview_bucket_">Preview</a>
+													</li>
+												</ul>
+												<span class="tabnav-right">
+													<span class="tabnav-widget text">Comments are parsed with <a target="_blank" class="gfm-help" href="https://help.github.com/articles/github-flavored-markdown">GitHub
+                              Flavored Markdown</a></span>
+												</span>
+											</div>
+
+											<div style="display:none" class="comment-form-error js-comment-form-error"> There was an error creating
+												your Issue:
+											</div>
+											<div data-model="assets" class="write-content upload-enabled is-default" id="write_bucket_">
+
+												<a class="enable-fullscreen js-enable-fullscreen tooltipped
+																	leftwards " href="#fullscreen_issue_body" original-title="Zen Mode">
+													<span class="octicon octicon-screen-full"></span>
+												</a>
+
+												<textarea data-suggester="_new_preview_suggester" class="comment-form-textarea js-comment-field js-size-to-fit js-quote-selection-target  input-with-fullscreen-icon" placeholder="Leave a comment" id="issue_body" tabindex="1" name="issue[body]"></textarea>
+
+
+												<p class="drag-and-drop">
+													<span class="default">
+														Attach images by
+														<input class="manual-file-chooser js-manual-file-chooser" multiple="multiple" type="file">
+														<a href="#" class="manual-file-chooser-text">selecting them</a>.
+													</span>
+													<span class="loading">
+														<img src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" alt="Octocat-spinner-32" height="16" width="16"> Uploading your images…
+													</span>
+													<span class="error bad-file">
+														Unfortunately we don't support that file type yet. Please use PNG, GIF, or JPG.
+													</span>
+													<span class="error too-big">
+														Yowza, that's a big file. Please submit an image file smaller than 5MB.
+													</span>
+													<span class="error bad-browser">
+														This browser doesn't support image attachments.
+													</span>
+													<span class="error failed-request">
+														Something went really wrong and we can't process that image.
+													</span>
+												</p>
+
+											</div>
+											<div class="preview-content js-preview-bucket" id="preview_bucket_">
+
+
+												<div data-body-version="" class="comment js-comment js-task-list-container" id="openstruct-70192145241500">
+
+													<div class="comment-content">
+
+                            <div class="edit-comment-hide">
+                              <div class="comment-body markdown-body  js-comment-body">
+                                <p>Nothing to preview</p>
+                              </div>
+                            </div>
+
+													</div>
+												</div>
+
+
+											</div>
+
+
+											<div class="suggester-container">
+												<div data-url="/jcouyang/gira/suggestions/issue" id="_new_preview_suggester" class="suggester js-navigation-container">
+												</div>
+											</div>
+										</div>
+
+									</dd>
+								</dl>
+
+							</div>
+							<!-- /.comment-content -->
+						</div>
+						<!-- /.comment -->
+
+
+					</div>
+					<!-- /.discussion-bubble-content -->
+				</div>
+				<!-- /.discussion-bubble-inner -->
+
+				<div class="form-actions">
+
+					<button data-disable-with="" data-disable-invalid="" tabindex="1" class="button primary" type="submit">
+
+						Submit new issues
+
+					</button>
+				</div>
+
+			</div>
+			<!-- /.discussion-bubble -->
+
+		</div>
+		<div class="column sidebar">
+
+			<h3>Add Labels</h3>
+			<ul class="js-composer-labels color-label-list filter-list small">
+
+
+        <li data-name="bug" style="">
+          <a class="filter-item color-label labelstyle-fc2929" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_bug" value="bug" style="display: none" type="checkbox">
+            <span style="background-color:  #fc2929" class="color">&nbsp;</span>
+            <span class="name">bug</span>
+          </a>
+        </li>
+
+        <li data-name="duplicate" style="">
+          <a class="filter-item color-label labelstyle-cccccc" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_duplicate" value="duplicate" style="display: none" type="checkbox">
+            <span style="background-color:  #cccccc" class="color">&nbsp;</span>
+            <span class="name">duplicate</span>
+          </a>
+        </li>
+
+        <li data-name="enhancement" style="">
+          <a class="filter-item color-label labelstyle-84b6eb" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_enhancement" value="enhancement" style="display: none" type="checkbox">
+            <span style="background-color:  #84b6eb" class="color">&nbsp;</span>
+            <span class="name">enhancement</span>
+          </a>
+        </li>
+
+        <li data-name="invalid" style="">
+          <a class="filter-item color-label labelstyle-e6e6e6" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_invalid" value="invalid" style="display: none" type="checkbox">
+            <span style="background-color:  #e6e6e6" class="color">&nbsp;</span>
+            <span class="name">invalid</span>
+          </a>
+        </li>
+
+        <li data-name="question" style="">
+          <a class="filter-item color-label labelstyle-cc317c" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_question" value="question" style="display: none" type="checkbox">
+            <span style="background-color:  #cc317c" class="color">&nbsp;</span>
+            <span class="name">question</span>
+          </a>
+        </li>
+
+        <li data-name="wontfix" style="">
+          <a class="filter-item color-label labelstyle-ffffff" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_wontfix" value="wontfix" style="display: none" type="checkbox">
+            <span style="background-color:  #ffffff" class="color">&nbsp;</span>
+            <span class="name">wontfix</span>
+          </a>
+        </li>
+
+        <li data-name="1-Ready" style="display: none;">
+          <a class="filter-item color-label labelstyle-CCCCCC" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_1-Ready" value="1-Ready" style="display: none" type="checkbox">
+            <span style="background-color:  #CCCCCC" class="color">&nbsp;</span>
+            <span class="name">1-Ready</span>
+          </a>
+        </li>
+
+        <li data-name="3-done" style="display: none;">
+          <a class="filter-item color-label labelstyle-CCCCCC" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_3-done" value="3-done" style="display: none" type="checkbox">
+            <span style="background-color:  #CCCCCC" class="color">&nbsp;</span>
+            <span class="name">3-done</span>
+          </a>
+        </li>
+
+        <li data-name="0-Backlog" style="display: none;">
+          <a class="filter-item color-label labelstyle-ededed" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_0-Backlog" value="0-Backlog" style="display: none" type="checkbox">
+            <span style="background-color:  #ededed" class="color">&nbsp;</span>
+            <span class="name">0-Backlog</span>
+          </a>
+        </li>
+
+        <li data-name="4-" style="display: none;">
+          <a class="filter-item color-label labelstyle-0052cc" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_4-" value="4-" style="display: none" type="checkbox">
+            <span style="background-color:  #0052cc" class="color">&nbsp;</span>
+            <span class="name">4-</span>
+          </a>
+        </li>
+
+        <li data-name="2-Working" style="display: none;">
+          <a class="filter-item color-label labelstyle-5319e7" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_2-Working" value="2-Working" style="display: none" type="checkbox">
+            <span style="background-color:  #5319e7" class="color">&nbsp;</span>
+            <span class="name">2-Working</span>
+          </a>
+        </li>
+
+        <li data-name="new-labels" style="">
+          <a class="filter-item color-label labelstyle-c7def8" href="#">
+
+            <input name="issue[labels][]" id="issue_labels_new-labels" value="new-labels" style="display: none" type="checkbox">
+            <span style="background-color:  #c7def8" class="color">&nbsp;</span>
+            <span class="name">new-labels</span>
+          </a>
+        </li>
+
+			</ul>
+
+		</div>
+
+	</div>
+</form>
+
+<div class="discussion-timeline js-quote-selection-container">
+
+  <div class="js-discussion">
+
+  </div>
+
+  <!-- <div class="discussion-timeline-actions"> -->
+
+
+	<!-- 	<div class="timeline-comment-wrapper timeline-new-comment js-comment-container"> -->
+	<!-- 		<a href="/jcouyang"><img width="48" height="48" src="https://1.gravatar.com/avatar/e181d174303811fefaefb0b3a91ce567?d=https%3A%2F%2Fidenticons.github.com%2Fc43c54ee18db258c3196d69e4ed12d2f.png&amp;r=x&amp;s=140" data-user="1235045" class="timeline-comment-avatar js-avatar" alt="Jichao Ouyang"></a> -->
+
+	<!-- 		<form method="post" data-type="json" data-remote="true" class="js-new-comment-form" action="/jcouyang/gira/issue_comments" accept-charset="UTF-8"><div style="margin:0;padding:0;display:inline"><input type="hidden" value="VG0bXXPMQwa2KmA9h/8XIyElcGXy9m0r/JuoLbToBxQ=" name="authenticity_token"></div> -->
+	<!-- 			<div class="timeline-comment"> -->
+	<!-- 				<input type="hidden" value="42" name="issue"> -->
+
+
+	<!-- 				<div data-preview-url="/preview?repository=15799414" class="js-previewable-comment-form previewable-comment-form write-selected"> -->
+	<!-- 					<div class="comment-form-head tabnav"> -->
+	<!-- 						<ul class="tabnav-tabs"> -->
+	<!-- 							<li><a class="tabnav-tab write-tab js-write-tab selected" href="#write_bucket_653">Write</a></li> -->
+	<!-- 							<li><a class="tabnav-tab preview-tab js-preview-tab" href="#preview_bucket_653">Preview</a></li> -->
+	<!-- 						</ul> -->
+	<!-- 						<span class="tabnav-right"> -->
+	<!-- 							<span class="tabnav-widget text">Comments are parsed with <a target="_blank" class="gfm-help" href="https://help.github.com/articles/github-flavored-markdown">GitHub Flavored Markdown</a></span> -->
+	<!-- 						</span> -->
+	<!-- 					</div> -->
+
+	<!-- 					<div style="display:none" class="comment-form-error js-comment-form-error">    There was an error creating your Issue:  -->
+	<!-- 					</div> -->
+	<!-- 					<div data-model="assets" class="write-content js-write-bucket js-uploadable-container upload-enabled is-default" id="write_bucket_653"> -->
+
+	<!-- 						<a aria-label="Zen Mode" class="enable-fullscreen js-enable-fullscreen tooltipped -->
+	<!-- 																						leftwards " href="#fullscreen_comment_body_653" original-title=""> -->
+	<!-- 							<span class="octicon octicon-screen-full"></span> -->
+	<!-- 						</a> -->
+
+	<!-- 						<textarea data-suggester="653_new_preview_suggester" class="comment-form-textarea js-comment-field js-size-to-fit js-quote-selection-target input-with-fullscreen-icon" placeholder="Leave a comment" id="comment_body_653" tabindex="1" name="comment[body]"></textarea> -->
+
+
+	<!-- 						<p class="drag-and-drop"> -->
+	<!-- 							<span class="default"> -->
+	<!-- 								Attach images by dragging &amp; dropping or -->
+	<!-- 								<input type="file" class="manual-file-chooser js-manual-file-chooser" multiple="multiple"> -->
+	<!-- 								<a href="#" class="manual-file-chooser-text">selecting them</a>. -->
+	<!-- 							</span> -->
+	<!-- 							<span class="loading"> -->
+	<!-- 								<img width="16" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" alt="Octocat-spinner-32"> Uploading your images… -->
+	<!-- 							</span> -->
+	<!-- 							<span class="error bad-file"> -->
+	<!-- 								Unfortunately we don't support that file type yet. Please use PNG, GIF, or JPG. -->
+	<!-- 							</span> -->
+	<!-- 							<span class="error too-big"> -->
+	<!-- 								Yowza, that's a big file. Please submit an image file smaller than 5MB. -->
+	<!-- 							</span> -->
+	<!-- 							<span class="error bad-browser"> -->
+	<!-- 								This browser doesn't support image attachments. -->
+	<!-- 							</span> -->
+	<!-- 							<span class="error failed-request"> -->
+	<!-- 								Something went really wrong and we can't process that image. -->
+	<!-- 							</span> -->
+	<!-- 						</p> -->
+
+	<!-- 					</div> -->
+	<!-- 					<div class="preview-content js-preview-bucket" id="preview_bucket_653"> -->
+
+
+	<!-- 						<div data-body-version="" class="comment js-comment js-task-list-container" id="openstruct-69992243325700"> -->
+
+	<!-- 							<div class="comment-content"> -->
+
+	<!-- 								<div class="edit-comment-hide"> -->
+	<!-- 									<div class="comment-body markdown-body  js-comment-body"> -->
+	<!-- 										<p>Nothing to preview</p> -->
+	<!-- 									</div> -->
+	<!-- 								</div> -->
+
+	<!-- 							</div> -->
+	<!-- 						</div> -->
+
+
+	<!-- 					</div> -->
+
+
+	<!-- 					<div class="suggester-container"> -->
+	<!-- 						<div data-url="/jcouyang/gira/suggestions/issue/27574851" id="653_new_preview_suggester" class="suggester js-navigation-container"> -->
+	<!-- 						</div> -->
+	<!-- 					</div> -->
+	<!-- 				</div> -->
+
+	<!-- 				<div class="form-actions"> -->
+
+	<!-- 					<div data-url="/jcouyang/gira/issues/42/show_partial?partial=form_actions" data-channel="jcouyang/gira:issue:27574851:state" class="js-socket-channel js-updatable-content" id="js-new-comment-form-actions"> -->
+
+
+
+	<!-- 						<button data-disable-with="" tabindex="3" data-comment-text="Close &amp; Comment" data-original-text="Close" class="button js-comment-and-button" value="1" name="comment_and_close" type="submit"> -->
+	<!-- 							Close -->
+	<!-- 						</button> -->
+
+
+	<!-- 						<button data-disable-with="" tabindex="2" class="button primary" type="submit"> -->
+	<!-- 							Comment -->
+	<!-- 						</button> -->
+	<!-- 					</div> -->
+
+	<!-- 				</div> -->
+	<!-- 			</div> -->
+	<!-- 	</form></div> -->
+
+  <!-- </div> -->
+</div>
+				</div>         <button type="button" class="facebox-close">           <span class="octicon octicon-remove-close"></span>         </button>       </div>     </div>
+<script src="packages/shadow_dom/shadow_dom.min.js"></script>
+  <script type="application/dart" src="main.dart"></script>
+  <script type="text/javascript" src="packages/browser/dart.js"></script>
+</body>
+</html>
