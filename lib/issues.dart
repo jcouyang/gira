@@ -9,7 +9,7 @@ import 'package:gira/services/issue_service.dart';
     publishAs: 'issuectrl')
 class IssueController {
   var groupedIssues;
-  List labels;
+  var labels;
   Scope scope;
   IssueService issueService;
   IssueController(this.scope ,this.issueService) {
@@ -17,11 +17,6 @@ class IssueController {
   }
 
   void _loadData() {
-//    groupedIssues = {
-//      '0-BackLog': [{'title': 'title3 lala', 'labels': [{'name': 'Ready'}]}],
-//  '1-Ready': [{'title': 'title lala', 'labels': [{'name': '1-Ready'}]}],
-//  '2-Doing': [{'title': 'title2 lala', 'labels': [{'name': '2-Doing'}]}]
-//};
     issueService.loaded.then((_) {
       groupedIssues = issueService.processData();
       labels = issueService.giraLabels();

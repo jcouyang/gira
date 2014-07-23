@@ -12,7 +12,6 @@ class IssueService {
   var issues;
   var labels;
   var result;
-  var giraLabel;
   String owner;
   String repo;
   final Http _http;
@@ -41,10 +40,13 @@ class IssueService {
   }
 
   giraLabels(){
-    labels.takeWhile((label) => label['name'].startsWith(new RegExp(r"\d+-(\w+)")));
+    List giraTagedLabel = labels.where((label) => label['name'].startsWith(new RegExp(r"\d+-(\w+)"))).toList();
+    giraTagedLabel.sort((x,y)=>x['name'].split("-").first.compareTo(y['name'].split('-').first));
+    return giraTagedLabel;
   }
 
   Map processData() {
+    labels.takeWhile((label) => label['name'].startsWith(new RegExp(r"\d+-(\w+)")));
     return issues.fold({"0-BackLog":[]}, (current, next){
       var giraLabel = next['labels'].takeWhile((label) => label['name'].startsWith(new RegExp(r"\d+-(\w+)")));
       if (giraLabel.isEmpty) {
