@@ -33,7 +33,7 @@
 		</span>
 </div>
 
-<div class="col" ng-repeat="label in issuectrl.labels" ng-dragover="issuectrl.dragOver($event)" ng-drop="issuectrl.drop($event)">
+<div class="col" ng-repeat="label in issuectrl.labels" data-name="{{label.name}}" ng-dragover="issuectrl.dragOver($event)" ng-drop="issuectrl.drop($event)">
     <span class="num hide-buttons">{{label.name}}
       <a class="remove-lane" type="button" href="#">
           <span class="octicon octicon-remove-close close"></span>

@@ -26,11 +26,14 @@ class IssueController {
 
   bool drop(e) {
     e.stopPropagation();
+    if (e.dataTransfer.getData('text/plain').isEmpty) return false;
     var column = e.currentTarget;
     var issue = document.querySelector("#${e.dataTransfer.getData('text/plain')}");
     print(issue.dataset["label"]);
     issueService.removeLabel(issue.dataset['number'], issue.dataset["label"])
-      .then((labels)=>issueService.addLabels(issue.dataset['number'], labels.map((_)=>_['name']).add(column.dataSet["name"]).toList()));
+      .then((_)=> issueService.addLabels(issue.dataset['number'], [column.dataset["name"]]))
+      .then((_)=>column.querySelector(".lbl").append(issue));
+
 
     print("droped--------");
     return false;

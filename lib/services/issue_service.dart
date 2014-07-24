@@ -46,14 +46,14 @@ class IssueService {
   }
 
   Future addLabels(issueid, labels) {
-    print(labels);
-    _http.post(token.izer("${_repoApi}/${owner}/${repo}/issues/${issueid}/labels}"), JSON.encode(labels));
+    print("${labels}=====lables");
+    return _http.post(token.izer("${_repoApi}/${owner}/${repo}/issues/${issueid}/labels"), JSON.encode(labels));
   }
 
 
   Future removeLabel(issueNumber, labelName) {
     print("${_repoApi}/${owner}/${repo}/issues/${issueNumber}/labels/${labelName}");
-    _http.delete(token.izer("${_repoApi}/${owner}/${repo}/issues/${issueNumber}/labels/${labelName}"));
+    return _http.delete(token.izer("${_repoApi}/${owner}/${repo}/issues/${issueNumber}/labels/${labelName}"));
   }
 
 
