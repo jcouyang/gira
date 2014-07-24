@@ -33,7 +33,7 @@
 		</span>
 </div>
 
-<div class="col" ng-repeat="label in issuectrl.labels">
+<div class="col" ng-repeat="label in issuectrl.labels" ng-dragover="issuectrl.dragOver($event)" ng-drop="issuectrl.drop($event)">
     <span class="num hide-buttons">{{label.name}}
       <a class="remove-lane" type="button" href="#">
           <span class="octicon octicon-remove-close close"></span>
@@ -41,7 +41,7 @@
     </span>
 		<span class="lbl">
 
-		<div ng-repeat="issue in issuectrl.groupedIssues[label.name]" class="blankslate hide-buttons" draggable="true" id="66" data-label="0-Backlog">
+		<div ng-repeat="issue in issuectrl.groupedIssues[label.name]" class="blankslate hide-buttons" draggable="true" ng-dragstart="issuectrl.dragStart($event)" id="issue{{issue.id}}" data-number="{{issue.number}}" data-label="{{label.name}}">
                 <a href="https://github.com/jcouyang/gira/issues/66" target="_blank"
                    class="octicon octicon-link-external link-external right"></a>
                 <a href="#/jcouyang/gira/issues/{{issue.number}}" rel="facebox" class="popable" data-issue-id="{{issue.number}}">

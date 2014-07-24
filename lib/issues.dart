@@ -2,6 +2,7 @@ library issues;
 
 import 'package:angular/angular.dart';
 import 'dart:convert';
+import 'dart:html';
 import 'package:gira/services/issue_service.dart';
 
 @Controller(
@@ -22,4 +23,29 @@ class IssueController {
       labels = issueService.giraLabels();
     });
   }
+
+  bool drop(e) {
+    e.stopPropagation();
+    var column = e.currentTarget;
+    var issue = document.querySelector("#${e.dataTransfer.getData('text/plain')}");
+    print(issue.dataset["label"]);
+    issueService.removeLabel(issue.dataset['number'], issue.dataset["label"])
+      .then((labels)=>issueService.addLabels(issue.dataset['number'], labels.map((_)=>_['name']).add(column.dataSet["name"]).toList()));
+
+    print("droped--------");
+    return false;
+  }
+
+  void dragStart(e) {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', e.currentTarget.id);
+    print("transfet${e.currentTarget.id}");
+  }
+  bool dragOver(e) {
+    e.preventDefault(); // allows us to drop
+//    $(e.currentTarget).removeClass("over").addClass('over');
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+  }
+
 }

@@ -3,7 +3,7 @@ library issue_service;
 import 'dart:async';
 import 'package:gira/tokenizer.dart';
 import 'package:angular/angular.dart';
-
+import 'dart:convert';
 @Injectable()
 class IssueService {
   static const String _repoApi = 'https://api.github.com/repos';
@@ -44,6 +44,18 @@ class IssueService {
     giraTagedLabel.sort((x,y)=>x['name'].split("-").first.compareTo(y['name'].split('-').first));
     return giraTagedLabel;
   }
+
+  Future addLabels(issueid, labels) {
+    print(labels);
+    _http.post(token.izer("${_repoApi}/${owner}/${repo}/issues/${issueid}/labels}"), JSON.encode(labels));
+  }
+
+
+  Future removeLabel(issueNumber, labelName) {
+    print("${_repoApi}/${owner}/${repo}/issues/${issueNumber}/labels/${labelName}");
+    _http.delete(token.izer("${_repoApi}/${owner}/${repo}/issues/${issueNumber}/labels/${labelName}"));
+  }
+
 
   Map processData() {
     labels.takeWhile((label) => label['name'].startsWith(new RegExp(r"\d+-(\w+)")));
