@@ -10,6 +10,7 @@ class IssueService {
   Future loaded;
 
   var issues;
+  var issue;
   var labels;
   var result;
   String owner;
@@ -36,6 +37,12 @@ class IssueService {
   Future _loadLabels() {
     return _http.get(token.izer("${_repoApi}/${owner}/${repo}/labels")).then((HttpResponse response) {
       labels = response.data;
+    });
+  }
+
+  Future getIssue(issueNumber){
+    return _http.get(token.izer("${_repoApi}/${owner}/${repo}/issues/${issueNumber}")).then((HttpResponse response) {
+      issue = response.data;
     });
   }
 

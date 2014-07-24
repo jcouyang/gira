@@ -33,9 +33,6 @@ class IssueController {
     issueService.removeLabel(issue.dataset['number'], issue.dataset["label"])
       .then((_)=> issueService.addLabels(issue.dataset['number'], [column.dataset["name"]]))
       .then((_)=>column.querySelector(".lbl").append(issue));
-
-
-    print("droped--------");
     return false;
   }
 
