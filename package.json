@@ -8,18 +8,23 @@
   "version": "0.1.0",
   "main": "lib/main.js",
   "devDependencies": {
-    "nunjucks": "~1.0.1",
-    "grunt-nunjucks": "~0.1.0",
     "grunt-contrib-copy": "~0.5.0",
     "grunt": "~0.4.2",
     "grunt-contrib-concat": "~0.3.0",
-    "mocha": "~1.17.1",
     "grunt-cli": "~0.1.13",
-    "grunt-mocha": "",
     "grunt-contrib-uglify": "~0.3.2",
-    "grunt-contrib-watch": "~0.5.3"
+    "grunt-contrib-watch": "~0.5.3",
+    "gulp": "^3.8.6",
+    "gulp-concat": "^2.3.4",
+    "gulp-uglify": "^0.3.1",
+    "gulp-browserify": "^0.5.0",
+    "gulp-sourcemaps": "^1.1.0",
+    "gulp-react": "^0.5.0"
   },
   "scripts": {
     "test": "grunt deploy"
+  },
+  "dependencies": {
+    "react": "^0.11.1"
   }
 }
