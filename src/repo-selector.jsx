@@ -25,10 +25,13 @@ var Owner = React.createClass({
 });
 
 var Repo = React.createClass({
+	changeRepo: function(e){
+		$(document).trigger('gira.changeRepo', [$(e.currentTarget).find('input').attr('name')]);
+	},
 	render: function(){
 		return (
-			<div className="select-menu-item js-navigation-item ">
-				<input type="radio" value={this.props.name} name={this.props.name} id={this.props.name} checked="false" />
+			<div className="select-menu-item js-navigation-item " onClick={this.changeRepo}>
+				<input type="radio" value={this.props.name} name={this.props.name} checked="false" />
         <span className="select-menu-item-icon octicon octicon-check"></span>
 
         <div className="select-menu-item-text js-select-button-text">
@@ -89,6 +92,8 @@ var RepoSelector = React.createClass({
 					});
 				}
 			})
+		}).on('gira.changeRepo', (_, repo) => {
+			console.log(this.currentOwner, repo);
 		});
 		$.get("tests/data/user.json", (result) => {
       if (this.isMounted()) {
