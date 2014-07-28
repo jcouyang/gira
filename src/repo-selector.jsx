@@ -2,10 +2,15 @@ var React = require('react');
 var $ = require('jquery');
 
 var Owner = React.createClass({
+	changeOwner: function(e){
+		e.stopPropagation();
+		console.log(e.currentTarget);
+		$(document).trigger("gira.changeOwner", [$(e.currentTarget).find('input').attr('name')])
+	},
 	render: function(){
 		return (
-			<div className="select-menu-item js-navigation-item ">
-				<input type="radio" value="hubot" name={this.props.owner} id={this.props.owner} checked="false" />
+			<div className="select-menu-item js-navigation-item" onClick={this.changeOwner}>
+				<input type="radio" value="hubot" name={this.props.owner}  checked="false" />
 				<span className="select-menu-item-icon octicon octicon-check"></span>
 
 				<div className="select-menu-item-gravatar js-select-menu-item-gravatar">
@@ -74,6 +79,17 @@ var RepoSelector = React.createClass({
 		}
 	},
 	componentDidMount: function(){
+		$(document).on("gira.changeOwner", (_, owner)=>{
+			this.state.currentOwner = owner;
+			$.get("tests/data/repo-blogist.json", (result) => {
+				if (this.isMounted()) {
+					this.setState({
+						currentRepo: result[0].name,
+						repos: result
+					});
+				}
+			})
+		});
 		$.get("tests/data/user.json", (result) => {
       if (this.isMounted()) {
         this.setState({
