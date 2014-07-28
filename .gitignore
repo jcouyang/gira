@@ -16,5 +16,5 @@ build
 .idea
 
 node_modules
-src/templates.js
+src/*.js
 uploads

@@ -3,24 +3,40 @@ var $ = require('jquery');
 
 var Owner = React.createClass({
 	render: function(){
-		return (<div className="select-menu-item js-navigation-item ">
-										<input type="radio" value="hubot" name={this.props.owner} id={this.props.owner} checked="false" />
-                    <span className="select-menu-item-icon octicon octicon-check"></span>
+		return (
+			<div className="select-menu-item js-navigation-item ">
+				<input type="radio" value="hubot" name={this.props.owner} id={this.props.owner} checked="false" />
+				<span className="select-menu-item-icon octicon octicon-check"></span>
 
-                    <div className="select-menu-item-gravatar js-select-menu-item-gravatar">
-											<img height="20" width="20" src={this.props.avatar} />
-                    </div>
-                    <div className="select-menu-item-text js-select-button-text">
-											{this.props.owner}
-                    </div>
-		</div>
+				<div className="select-menu-item-gravatar js-select-menu-item-gravatar">
+					<img height="20" width="20" src={this.props.avatar} />
+				</div>
+				<div className="select-menu-item-text js-select-button-text">
+					{this.props.owner}
+				</div>
+			</div>
 						);
 	}
 });
 
+var Repo = React.createClass({
+	render: function(){
+		return (
+			<div className="select-menu-item js-navigation-item ">
+				<input type="radio" value={this.props.name} name={this.props.name} id={this.props.name} checked="false" />
+        <span className="select-menu-item-icon octicon octicon-check"></span>
+
+        <div className="select-menu-item-text js-select-button-text">
+					{this.props.name}
+        </div>
+			</div>
+						);
+	}
+})
+
 var OwnersList = React.createClass({
 	render: function(){
-		 var ownerNodes = this.props.data.map(function(owner, index) {
+		 var ownerNodes = this.props.data.map((owner, index) => {
       return (
         <Owner owner={owner.login} avatar={owner.avatar_url} />
       );
@@ -33,24 +49,50 @@ var OwnersList = React.createClass({
 	}
 });
 
+var ReposList = React.createClass({
+	render: function(){
+		 var repoNodes = this.props.data.map((repo, index) => {
+      return (
+        <Repo name={repo.name} />
+      );
+    });
+    return (
+			<div className="select-menu-list">
+				{repoNodes}
+			</div>
+    );
+	}
+});
+
 var RepoSelector = React.createClass({
 	getInitialState: function() {
 		return {
-		currentOwner:'',
-		owners: []			
+			currentOwner:'',
+			owners: [],
+			currentRepo:'',
+			repos: []			
 		}
 	},
 	componentDidMount: function(){
-		$.get("tests/data/user.json", function(result) {
+		$.get("tests/data/user.json", (result) => {
       if (this.isMounted()) {
         this.setState({
           currentOwner: result[0].login,
           owners: result
         });
       }
-    }.bind(this));
+    }).then(
+			$.get("tests/data/repos.json", (result) => {
+      if (this.isMounted()) {
+        this.setState({
+          currentRepo: result[0].name,
+          repos: result
+        });
+      }
+    })
+		);
 	},
-	render: function(){
+	render: function() {
 		return (
 			<div className="repo-selector js-repo-selector ">
 				<div className="repo-entry-form">
@@ -58,7 +100,7 @@ var RepoSelector = React.createClass({
 						<div className="select-menu owner-select-menu js-menu-container js-select-menu js-owner-container js-owner-select">
 							<span className="minibutton select-menu-button js-menu-target">
 								<span className="js-select-button">
-									jcouyang
+									{this.state.currentOwner}
 								</span>
 							</span>
 							<div className="select-menu-modal-holder js-menu-content js-navigation-container" aria-hidden="true">
@@ -69,6 +111,23 @@ var RepoSelector = React.createClass({
 									</div>
 									<OwnersList data={this.state.owners} />
 								</div>
+							</div>
+						</div>
+					</div>
+					<div className="nwo-slash">/</div>
+					<div className="select-menu owner-select-menu js-menu-container js-select-menu js-owner-container js-owner-select">
+						<span className="minibutton select-menu-button js-menu-target">
+							<span className="js-select-button">
+								{this.state.currentRepo}
+							</span>
+						</span>
+						<div className="select-menu-modal-holder js-menu-content js-navigation-container" aria-hidden="true">
+							<div className="select-menu-modal">
+								<div className="select-menu-header">
+									<span className="select-menu-title">Choose another owner</span>
+									<span className="octicon octicon-remove-close js-menu-close"></span>
+								</div>
+								<ReposList data={this.state.repos} />
 							</div>
 						</div>
 					</div>
