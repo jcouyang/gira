@@ -5,15 +5,18 @@ var sourcemaps = require('gulp-sourcemaps');
 var react = require('gulp-react');
 var browserify = require('gulp-browserify');
 var paths = {
-  scripts: ['src/**/*.jsx']
+  scripts: ['src/**/*.js']
 };
 
-gulp.task('scripts', function() {
-  return gulp.src(paths.scripts)
+gulp.task('reactify', function(){
+	gulp.src("src/**.jsx")
+		.pipe(react({"harmony":true}))
+	.pipe(gulp.dest('src'));
+});
 
-    // .pipe(sourcemaps.init())
+gulp.task('scripts', ['reactify'], function() {
+  return gulp.src(paths.scripts)
 		.pipe(browserify())
-		.pipe(react())
       // .pipe(uglify())
       // .pipe(concat('gira.min.js'))
     // .pipe(sourcemaps.write())
@@ -21,5 +24,5 @@ gulp.task('scripts', function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(paths.scripts, ['scripts']);
+  gulp.watch("src/**/*.jsx", ['reactify', 'scripts']);
 });

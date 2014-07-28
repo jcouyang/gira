@@ -25,6 +25,7 @@
     "test": "grunt deploy"
   },
   "dependencies": {
-    "react": "^0.11.1"
+    "react": "^0.11.1",
+    "jquery": "^2.1.1"
   }
 }

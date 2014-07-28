@@ -1,0 +1,42 @@
+[
+  {
+    "login": "TWU34-Team-A2",
+    "id": 5782884,
+    "url": "https://api.github.com/orgs/TWU34-Team-A2",
+    "repos_url": "https://api.github.com/orgs/TWU34-Team-A2/repos",
+    "events_url": "https://api.github.com/orgs/TWU34-Team-A2/events",
+    "members_url": "https://api.github.com/orgs/TWU34-Team-A2/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/TWU34-Team-A2/public_members{/member}",
+    "avatar_url": "https://avatars.githubusercontent.com/u/5782884?"
+  },
+  {
+    "login": "getgira",
+    "id": 6711625,
+    "url": "https://api.github.com/orgs/getgira",
+    "repos_url": "https://api.github.com/orgs/getgira/repos",
+    "events_url": "https://api.github.com/orgs/getgira/events",
+    "members_url": "https://api.github.com/orgs/getgira/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/getgira/public_members{/member}",
+    "avatar_url": "https://avatars.githubusercontent.com/u/6711625?"
+  },
+  {
+    "login": "blogist",
+    "id": 6811825,
+    "url": "https://api.github.com/orgs/blogist",
+    "repos_url": "https://api.github.com/orgs/blogist/repos",
+    "events_url": "https://api.github.com/orgs/blogist/events",
+    "members_url": "https://api.github.com/orgs/blogist/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/blogist/public_members{/member}",
+    "avatar_url": "https://avatars.githubusercontent.com/u/6811825?"
+  },
+  {
+    "login": "tw-scala-workshop",
+    "id": 8044621,
+    "url": "https://api.github.com/orgs/tw-scala-workshop",
+    "repos_url": "https://api.github.com/orgs/tw-scala-workshop/repos",
+    "events_url": "https://api.github.com/orgs/tw-scala-workshop/events",
+    "members_url": "https://api.github.com/orgs/tw-scala-workshop/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/tw-scala-workshop/public_members{/member}",
+    "avatar_url": "https://avatars.githubusercontent.com/u/8044621?"
+  }
+]

@@ -1,0 +1,63 @@
+[
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/bug",
+    "name": "bug",
+    "color": "fc2929"
+  },
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/duplicate",
+    "name": "duplicate",
+    "color": "cccccc"
+  },
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/enhancement",
+    "name": "enhancement",
+    "color": "84b6eb"
+  },
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/invalid",
+    "name": "invalid",
+    "color": "e6e6e6"
+  },
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/question",
+    "name": "question",
+    "color": "cc317c"
+  },
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/wontfix",
+    "name": "wontfix",
+    "color": "ffffff"
+  },
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/1-Ready",
+    "name": "1-Ready",
+    "color": "CCCCCC"
+  },
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/3-done",
+    "name": "3-done",
+    "color": "CCCCCC"
+  },
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/0-Backlog",
+    "name": "0-Backlog",
+    "color": "ededed"
+  },
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/4-",
+    "name": "4-",
+    "color": "0052cc"
+  },
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/2-Working",
+    "name": "2-Working",
+    "color": "5319e7"
+  },
+  {
+    "url": "https://api.github.com/repos/jcouyang/gira/labels/new-labels",
+    "name": "new-labels",
+    "color": "c7def8"
+  }
+]
+
