@@ -2,7 +2,7 @@ var gulp = require('gulp');
 var react = require('gulp-react');
 var browserify = require('gulp-browserify');
 var paths = {
-  scripts: ['src/gira.js'],
+  scripts: ['src/**/*.js'],
 	jsx: ['src/**/*.jsx']
 };
 
