@@ -1,5 +1,8 @@
 var React = require('react');
 var $ = require('jquery');
+var G = require('./github-api')
+
+var g = new G('jcouyang','gira')
 
 var Owner = React.createClass({
 	changeOwner: function(e){
@@ -84,7 +87,7 @@ var RepoSelector = React.createClass({
 	componentDidMount: function(){
 		$(document).on("gira.changeOwner", (_, owner)=>{
 			this.state.currentOwner = owner;
-			$.get("tests/data/repo-blogist.json", (result) => {
+			g.getRepos().then((result) => {
 				if (this.isMounted()) {
 					this.setState({
 						currentRepo: result[0].name,
@@ -95,7 +98,7 @@ var RepoSelector = React.createClass({
 		}).on('gira.changeRepo', (_, repo) => {
 			console.log(this.currentOwner, repo);
 		});
-		$.get("tests/data/user.json", (result) => {
+		g.getOrgs().then((result) => {
       if (this.isMounted()) {
         this.setState({
           currentOwner: result[0].login,
@@ -103,7 +106,7 @@ var RepoSelector = React.createClass({
         });
       }
     }).then(
-			$.get("tests/data/repos.json", (result) => {
+			g.getRepos().then((result) => {
       if (this.isMounted()) {
         this.setState({
           currentRepo: result[0].name,

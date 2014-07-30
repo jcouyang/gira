@@ -129,7 +129,7 @@ var IssueDetail = React.createClass({
 
 
 											<div className="composer-infobar js-infobar">
-
+												<AssigneeSelector />
 												<div className="assignee infobar-widget">
 													<span className="css-truncate text js-assignee-infobar-item-wrapper">No one will be assigned</span>
 

@@ -2,14 +2,12 @@ var React = require('react');
 var $ = require('jquery');
 var r = require('ramda');
 var IssueDetail = require('./issue-detail')
-
+var G = require('./github-api');
+var g = new G('jcouyang','gira')
 var Issue = React.createClass({
-	changeHash: function(){
-		React.renderComponent(
-			<IssueDetail />,
-			document.querySelector('.facebox-content')
-		)
-
+	revealIssue: function(e){
+		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
+		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
 	},
 	render: function(){
 		var labelNodes = this.props.labels.map((label)=>{
@@ -25,7 +23,7 @@ var Issue = React.createClass({
 		return (
 			<div data-label={this.props.label} draggable="true" className="blankslate hide-buttons">
         <a className="octicon octicon-link-external link-external right" target="_blank" href={this.props.url}></a>
-        <a data-issue-id={this.props.number} className="popable" rel="facebox" href={detailLink} onClick={this.changeHash}>
+        <a data-issue-id={this.props.number} className="popable" rel="facebox" href={detailLink} onClick={this.revealIssue}>
           
           <h4 className="list-group-item-name">{this.props.title}</h4>
         </a>
@@ -43,7 +41,7 @@ var IssueColumn = React.createClass({
 			)
 		})
 		return (
-			<div id={this.props.columnName} className="col">
+			<div id={this.props.columnName} className="table-column">
 				<span className="num hide-buttons">{this.props.columnName}
 					<a href="#" data={this.props.columnName} type="button" className="remove-lane">
 						<span className="octicon octicon-remove-close close"></span>
@@ -67,7 +65,7 @@ var IssueBoard = React.createClass({
 	},
 	componentDidMount: function(){
 		var getColumnLabel = r.filter((_)=>/\d+-(\w+)/.test(_.name))
-		$.get("tests/data/labels.json", (result) => {
+		g.getLabels().then((result) => {
       if (this.isMounted()) {
         this.setState({
           columns: r.pluck("name", getColumnLabel(result)).sort(),
@@ -75,7 +73,7 @@ var IssueBoard = React.createClass({
         });
       }
     }).then(
-			$.get("tests/data/issues.json", (result) => {
+			g.getIssues()((result) => {
 				if (this.isMounted()) {
 					var groupedIssue = r.foldl(
 						(acc, column) => {

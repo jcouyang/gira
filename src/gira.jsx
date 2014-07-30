@@ -3,14 +3,11 @@ var $ = require('jquery');
 var RepoSelector = require('./repo-selector');
 var IssueBoard = require('./issue-board')
 
-
+console.log('asdf')
 React.renderComponent(
   <RepoSelector/>,
-  document.querySelector('.repo-select-box')
+  document.querySelector('.entry-title')
 );
-
-
-React.renderComponent(
-  <IssueBoard />,
-  document.querySelector('#issue-board')
-)
+//   <IssueBoard />,
+//   document.querySelector('#issue-board')
+// )
