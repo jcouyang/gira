@@ -41,6 +41,7 @@ var Issue = React.createClass({
 
 var IssueColumn = React.createClass({
 	dragover: function (e) {
+		console.log('over me')
       if (e.preventDefault) e.preventDefault(); // allows us to drop
       $(e.currentTarget).removeClass("over").addClass('over');
       e.dataTransfer.dropEffect = 'move';
@@ -131,6 +132,11 @@ var IssueBoard = React.createClass({
 			})
 		);
 	},
+	createIssue: function(e){
+		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
+		console.log(issueLocation);
+		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
+	},
 	render: function() {
 		var columns = this.state.columns;
 		if(this.state.groupedIssues['0-Backlog'])
@@ -145,7 +151,7 @@ var IssueBoard = React.createClass({
 		return (
 			<div>
 				<div className="subnav">
-					<a href="issues/new" className="button primary right" data-hotkey="c">
+					<a href="#issues/new" className="button primary right" data-hotkey="c" rel="facebox" onClick={this.createIssue}>
 						New issue
 					</a>
 				</div>
