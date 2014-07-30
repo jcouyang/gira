@@ -6,12 +6,19 @@ var Github = function (owner, repo) {
   this.REPO_BASE = 'https://api.github.com/';
   this.access_token = localStorage.getItem("access_token");
 };
-var xhr = XMLHttpRequest
-if(typeof GM_xmlhttpRequest != 'undefined') xhr = GM_xmlhttpRequest;
+
 var request = function(url){
+	return $.ajax({
+      url: url,
+      type: 'GET',
+      dataType: 'json'
+    });
+};
+if(typeof GM_xmlhttpRequest != 'undefined'){
+ request = function(url){
 	console.log('requesting', url);
 	var result = $.Deferred();
-	xhr({
+	GM_xmlhttpRequest({
 		method: "GET",
 		headers: {"Accept": "application/json"},
 		url: url,
@@ -23,7 +30,8 @@ var request = function(url){
 		}
 	});
 	return result;
-};
+ };	
+}
 
 Github.prototype = {
   getAccessToken: function () {
