@@ -8,7 +8,7 @@ var Issue = React.createClass({
 	dragStart: function(e) {
 		console.log('dragStart')
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', e.currentTarget.id);
+    e.dataTransfer.setData('text/plain', $(e.currentTarget).data('issue-id'));
   },
 	revealIssue: function(e){
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
@@ -26,8 +26,9 @@ var Issue = React.createClass({
 			)
 		})
 		var detailLink = "#/" + this.props.owner + "/" + this.props.repo + "/issues/" + this.props.number;
+		var issueid = "issue-" + this.props.number
 		return (
-			<div data-label={this.props.label} draggable="true" className="blankslate hide-buttons" onDragStart={this.dragStart}>
+			<div id={issueid} data-issue-id={this.props.number} data-label={this.props.column} draggable="true" className="blankslate hide-buttons" onDragStart={this.dragStart}>
         <a data-issue-id={this.props.number} className="popable" rel="facebox" href={detailLink} onClick={this.revealIssue}>
           
           <h4 className="list-group-item-name">{this.props.title}</h4>
@@ -47,9 +48,10 @@ var IssueColumn = React.createClass({
   },
 	drop: function (e) {
     e.stopPropagation();
+		console.log('drop',e.dataTransfer.getData('text/plain'))
     var column = e.currentTarget;
-    var $issue = $('#' + e.dataTransfer.getData('text/plain'));
-    g.deleteLabel($issue.attr('id'), $issue.data('label'))
+    var $issue = $('#issue-' + e.dataTransfer.getData('text/plain'));
+    g.deleteLabel($issue.data('issue-id'), $issue.data('label'))
       .then(function (labels) {
         g.addLabel($issue.attr('id'), _(labels).pluck('name').concat(column.id));
       });
@@ -61,7 +63,7 @@ var IssueColumn = React.createClass({
 	render: function(){
 		var issueNodes = this.props.issues.map((issue) => {
 			return (
-				<Issue labels={issue.labels} name={issue.name} number={issue.number} url={issue.html_url} title={issue.title} repo={this.props.repo} owner={this.props.owner}/>
+				<Issue labels={issue.labels} name={issue.name} number={issue.number} url={issue.html_url} title={issue.title} repo={this.props.repo} owner={this.props.owner} label={this.props.columnName}/>
 			)
 		})
 		return (
