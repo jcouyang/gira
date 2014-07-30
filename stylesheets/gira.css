@@ -14,9 +14,7 @@
     margin-bottom: 12px;
     padding: 5px;
 }
-.box-body {
-		margin-top:52px;
-}
+
 #contributions-calendar .contrib-details span.lbl div.blankslate .octicon-remove-close {
     position: absolute;
     bottom: 5px;
@@ -51,7 +49,8 @@
 }
 
 .facebox-content {
-		width:680px;
+    padding-top: 40px;
+		width:800px;
 }
 
 .facebox-content .column.main {

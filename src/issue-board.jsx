@@ -5,8 +5,14 @@ var IssueDetail = require('./issue-detail')
 var G = require('./github-api');
 var g = new G('jcouyang','gira')
 var Issue = React.createClass({
+	dragStart: function(e) {
+		console.log('dragStart')
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', e.currentTarget.id);
+  },
 	revealIssue: function(e){
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
+		console.log(issueLocation)
 		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
 	},
 	render: function(){
@@ -19,10 +25,9 @@ var Issue = React.createClass({
 				</span>
 			)
 		})
-		var detailLink = "#/" + this.props.owner + "/" + this.props.repo + "/" + this.props.number;
+		var detailLink = "#/" + this.props.owner + "/" + this.props.repo + "/issues/" + this.props.number;
 		return (
-			<div data-label={this.props.label} draggable="true" className="blankslate hide-buttons">
-        <a className="octicon octicon-link-external link-external right" target="_blank" href={this.props.url}></a>
+			<div data-label={this.props.label} draggable="true" className="blankslate hide-buttons" onDragStart={this.dragStart}>
         <a data-issue-id={this.props.number} className="popable" rel="facebox" href={detailLink} onClick={this.revealIssue}>
           
           <h4 className="list-group-item-name">{this.props.title}</h4>
@@ -34,6 +39,25 @@ var Issue = React.createClass({
 });
 
 var IssueColumn = React.createClass({
+	dragover: function (e) {
+      if (e.preventDefault) e.preventDefault(); // allows us to drop
+      $(e.currentTarget).removeClass("over").addClass('over');
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+  },
+	drop: function (e) {
+    e.stopPropagation();
+    var column = e.currentTarget;
+    var $issue = $('#' + e.dataTransfer.getData('text/plain'));
+    g.deleteLabel($issue.attr('id'), $issue.data('label'))
+      .then(function (labels) {
+        g.addLabel($issue.attr('id'), _(labels).pluck('name').concat(column.id));
+      });
+    $(e.currentTarget).removeClass("over")
+      .find('span.lbl')
+      .append($($issue));
+    return false;
+  },
 	render: function(){
 		var issueNodes = this.props.issues.map((issue) => {
 			return (
@@ -41,7 +65,7 @@ var IssueColumn = React.createClass({
 			)
 		})
 		return (
-			<div id={this.props.columnName} className="table-column">
+			<div id={this.props.columnName} className="table-column" onDrop={this.drop} onDragOver={this.dragover}>
 				<span className="num hide-buttons">{this.props.columnName}
 					<a href="#" data={this.props.columnName} type="button" className="remove-lane">
 						<span className="octicon octicon-remove-close close"></span>
@@ -64,6 +88,8 @@ var IssueBoard = React.createClass({
 		}
 	},
 	componentDidMount: function(){
+		g.repo=this.props.repo;
+		g.owner=this.props.owner;
 		var getColumnLabel = r.filter((_)=>/\d+-(\w+)/.test(_.name))
 		g.getLabels().then((result) => {
       if (this.isMounted()) {
@@ -104,20 +130,31 @@ var IssueBoard = React.createClass({
 		);
 	},
 	render: function() {
-		var columnNodes = this.state.columns.map( (column)=>{
+		var columns = this.state.columns;
+		if(this.state.groupedIssues['0-Backlog'])
+			columns.unshift('0-Backlog')
+		var columnNodes = r.uniq(columns).map( (column)=>{
 			issueInColumn = this.state.groupedIssues[column]
+			console.log('new column', column, issueInColumn)
 			return (
 				<IssueColumn columnName={column} issues={issueInColumn} owner='jcouyang' repo='gira'/>
 			);
 		});
 		return (
-			<div className="box-body">
-			<div id="contributions-calendar">
-				<div className="contrib-details grid lala">
-				{columnNodes}
+			<div>
+				<div className="subnav">
+					<a href="issues/new" className="button primary right" data-hotkey="c">
+						New issue
+					</a>
 				</div>
-			</div>
-			</div>
+				<div className="box-body">
+					<div id="contributions-calendar">
+						<div className="contrib-details grid lala">
+							{columnNodes}
+						</div>
+					</div>
+				</div>				
+			</div> 
 		);
 	}
 });
