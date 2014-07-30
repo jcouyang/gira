@@ -73,7 +73,8 @@ var IssueBoard = React.createClass({
         });
       }
     }).then(
-			g.getIssues()((result) => {
+			g.getIssues().then((result) => {
+				console.log('issue',result)
 				if (this.isMounted()) {
 					var groupedIssue = r.foldl(
 						(acc, column) => {
@@ -82,6 +83,7 @@ var IssueBoard = React.createClass({
 						},
 						{"0-Backlog":[]},
 						this.state.columns)
+					console.log("grouped", groupedIssue)
 					this.setState({
 						groupedIssues:  r.foldl(
 							(acc, issue)=>{
@@ -109,10 +111,12 @@ var IssueBoard = React.createClass({
 			);
 		});
 		return (
+			<div className="box-body">
 			<div id="contributions-calendar">
 				<div className="contrib-details grid lala">
 				{columnNodes}
 				</div>
+			</div>
 			</div>
 		);
 	}

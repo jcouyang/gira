@@ -3,11 +3,13 @@ var $ = require('jquery');
 var RepoSelector = require('./repo-selector');
 var IssueBoard = require('./issue-board')
 
-console.log('asdf')
+// console.log('asdf')
+// React.renderComponent(
+//   <RepoSelector/>,
+//   document.querySelector('.entry-title')
+// );
+
 React.renderComponent(
-  <RepoSelector/>,
-  document.querySelector('.entry-title')
-);
-//   <IssueBoard />,
-//   document.querySelector('#issue-board')
-// )
+  <IssueBoard />,
+  document.querySelector('#js-repo-pjax-container')
+)

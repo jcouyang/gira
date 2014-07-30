@@ -91,11 +91,7 @@ Github.prototype = {
     window.location.reload();
   },
   getLabels: function () {
-    return $.ajax({
-      url: this.getReposUrl() + "/labels" + this.concatToken(),
-      type: 'GET',
-      dataType: 'json'
-    });
+    return request(this.getReposUrl() + "/labels" + this.concatToken());
   },
   getMilestones: function () {
     return $.ajax({
@@ -106,11 +102,7 @@ Github.prototype = {
   },
   getIssues: function (id) {
     id = (typeof id !== "undefined" && id !== null) ? id : '';
-    return $.ajax({
-      url: this.getReposUrl() + "/issues" + (id && '/' + id) + this.concatToken() + (this.milestone ? ("&milestone=" + this.milestone) : ''),
-      type: 'GET',
-      dataType: 'json'
-    });
+    return request(this.getReposUrl() + "/issues" + (id && '/' + id) + this.concatToken() + (this.milestone ? ("&milestone=" + this.milestone) : ''));
   },
   getAssignees: function () {
     return $.ajax({
