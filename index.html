@@ -9,26 +9,163 @@
 		<link rel="stylesheet" href="stylesheets/github.css" type="text/css" media="screen" />
 		<link rel="stylesheet" href="stylesheets/github2.css" type="text/css" media="screen" />
 		<link rel="stylesheet" href="stylesheets/gira.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="libs/frameworks.js"></script>
-		<script type="text/javascript" src="libs/github.js"></script>
+
 		<!--[if lt IE 9]> 
-		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-		<![endif]-->
+				<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+				<![endif]-->
     <title>Gira by jcouyang</title>
   </head>
 
   <body>
-		<div class="repo-select-box entry-title">
-			
-		</div>
+    <div class="wrapper">
+			<div class="header header-logged-in true" id="header">
+				
+			</div>
+			<div class="site clearfix">
+				<div class="intro">
+					<a href="https://github.com/jcouyang/gira"><img style="position: absolute; top: 0; right: 0; border: 0;z-index:9999"
+																													src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"
+																													alt="Fork me on GitHub"></a>
+					<div data-pjax-container="" class="context-loader-container" id="site-container">
+						<div class="marketing-section marketing-section-signup">
+							<div class="container">
+								<form method="post" class="form-signup-home js-form-signup-home" autocomplete="off" action="/join"
+											accept-charset="UTF-8">
 
-		<div id="js-repo-pjax-container">
-		</div>
-		<div class="facebox" id="facebox" style="display:none;">       <div class="facebox-popup">         <div class="facebox-content">         </div>         <button type="button" class="facebox-close">           <span class="octicon octicon-remove-close"></span>         </button>       </div>     </div>
-		<script src="javascripts/gira.js"></script>
-		<script type="text/javascript">
 
+									<img width="320px"
+											 src="https://github-camo.global.ssl.fastly.net/dbf5c065a2351c45eff08176351af29716fe7bec/687474703a2f2f6769746875622d696d616765732e73332e616d617a6f6e6177732e636f6d2f626c6f672f323031312f6973737565732d6e6578742f746e672e706e67">
 
-		</script>
+									<div style="margin: 10px 0px 0px; padding: 0px; display: block;"></div>
+									<a href="https://github.com/login/oauth/authorize?client_id=666dc0b3b994cc362ca2&amp;scope=public_repo,user"
+										 class="button primary button-block">Sign in GIRA with Github Account</a>
+
+								</form>
+								<h1 class="heading">Github Issues Really Awesome!</h1>
+
+								<p class="subheading">GIRA demonstrates instant Github project visibility by summoning the real power of
+									Github Issues through Github API with JavaScript and Github Pages.</p>
+								<p><script id='fbvkkhw'>(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=jcouyang&button=compact&url='+encodeURIComponent(document.URL);f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('fbvkkhw');</script></p>
+							</div>
+							<!-- /.container -->
+
+							<div class="marketing-section-depth"></div>
+						</div>
+						<!-- /.jumbotron -->
+
+						<div class="marketing-section marketing-benefits">
+							<div class="container">
+								<div class="marketing-header">
+									<h1>Why GIRA?</h1>
+
+									<p class="lead">Powerful features to make software development management more collaborative.</p>
+								</div>
+								<div class="row">
+									<div class="one-third column">
+                    <div class="teaser-icon">
+                      <span class="mega-octicon octicon-cloud-upload"></span>
+                    </div>
+                    <h3>Safe and FREE</h3>
+
+                    <p>GIRA is build using pure Github API with pure JavaScript witch hosted on Github Pages, so all of
+                      your data is stored right in Github and your browser.</p>
+									</div>
+									<div class="one-third column">
+                    <div class="teaser-icon">
+                      <span class="mega-octicon octicon-mark-github"></span>
+                    </div>
+                    <h3>Github Lightweight Kanban</h3>
+
+                    <p>Fully customizable task board gives developers instant feedback into the status of tasks
+                      thoughout your progress. And Awesome build-in features from Github like Commits + Issues and
+                      Email + Issues.</p>
+									</div>
+									<div class="one-third column">
+                    <div class="teaser-icon">
+                      <span class="mega-octicon octicon-milestone"></span>
+                    </div>
+                    <h3>Github Milestones Support</h3>
+
+                    <p>You've always been able to add labels to an issue or assign someone to the issue, now you can it
+                      to a milestone. See example of twitter bootstrap.</p>
+									</div>
+								</div>
+							</div>
+							<!-- /.container -->
+						</div>
+						<!-- /.marketing-section -->
+
+						<!-- /.marketing-section -->
+
+						<!-- /.marketing-section -->
+						<div class="marketing-section marketing-section-enterprise">
+							<div class="container">
+								<div class="marketing-header">
+									<h1>Bring GIRA right to work.</h1>
+
+<a
+																																																													 class="button primary"
+																																																													 href="https://github.com/login/oauth/authorize?client_id=666dc0b3b994cc362ca2&amp;scope=public_repo,user">Sign
+										In</a>
+								</div>
+<img alt="GitHub Enterprise" src="/images/Gira by jcouyang.png" class="marketing-section-img">
+							</div>
+							<!-- /.container -->
+
+						</div>
+						
+					</div>
+				</div>
+				<div class="loggedin hidden">
+				<div id="main_content" class="container">
+					<div class="notification">
+					</div>
+
+					<div class="container">
+						
+						<div class="pagehead repohead">
+							<h1></h1>
+							<a id="new-issue" href="#create-new-issue" onclick="new EditIssueView(false);" rel="facebox" class="right button primary popable">New Issue</a>
+							<a id="new-label" href="#create-new-label" rel="facebox" onclick="new LabelView()" class="right button popable">New Lane</a>
+							<!-- <a id="show-diagram" href="#show-diagram" rel="facebox" class="right button popable">Show Diagram</a> -->
+							<div class="sidebar-milestone-widget right">
+							</div>
+						</div>
+						
+						<div class="box-body">
+							<div id="contributions-calendar">
+							</div>
+						</div>
+
+					</div>
+					
+					<div class="site-footer">
+						<ul class="site-footer-links right">
+							<li><a href="https://github.com/jcouyang/gira/blob/LICENSE">License</a></li>
+							<li><a href="http://oyanglul.us/blog/categories/gira">Blog</a></li>
+							<li><a href="https://github.com/jcouyang/gira">About</a></li>
+						</ul>
+						<a href="/">
+							<span class="mega-octicon octicon-issue-reopened"></span>
+						</a>
+						<ul class="site-footer-links">
+							<li>&copy; 2014 <span title="0.07061s from github-fe129-cp1-prd.iad.github.net">GIRA</span></li>
+						</ul>
+					</div><!-- /.site-footer -->
+				</div>
+				</div>
+				<div id="create-new-issue" style="display:none;">
+					<img style="margin-left:241px;" src="/images/spinners/octocat-spinner-128.gif">
+				</div>
+				<script>
+					(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+					(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+					m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+					})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+					ga('create', 'UA-32314154-3', 'oyanglul.us');
+					ga('send', 'pageview');
+
+				</script>
 	</body>
 </html>
