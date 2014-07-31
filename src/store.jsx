@@ -2,6 +2,7 @@ var store = function(){
 };
 
 store.get = function(key){
+	console.log('store get')
 	if (typeof GM_getValue != "undefined"){
 		console.log('get from gm',GM_getValue(key),key)
 		return GM_getValue(key);
@@ -12,12 +13,13 @@ store.get = function(key){
 };
 
 store.set = function(key, val){
+		console.log('store get')
 	if (typeof GM_setValue != "undefined"){
-		console.log('get to gm')
-		return GM_setValue(key,val);
+		console.log('set to gm', val)
+		GM_setValue(key,val);
 	}else {
 		console.log('set to ls')
-		return localStorage.setItem(key,val);
+		localStorage.setItem(key,val);
 	}
 }
 

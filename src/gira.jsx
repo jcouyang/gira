@@ -1,14 +1,15 @@
 var React = require('react');
-var $ = require('jquery');
 var IssueBoard = require('./issue-board')
 var G = require('./github-api')
+var g = new G();
 g.getAccessToken().then(function (login) {
-	if (!login)
-		console.log("auth done, try gira in you github issue");
+	if (login==='token seted')
+		window.location = 'http://getgira.github.io/auth-done.html'
 	else{
 		var [,owner,repo,] = window.location.pathname.split("/");
 		console.log('loading issue board for ',owner,repo )
-		var g = new G(owner, repo);
+		g.owner = owner;
+		g.repo = repo;
 
 		React.renderComponent(
 			<IssueBoard owner={owner} repo={repo}/>,

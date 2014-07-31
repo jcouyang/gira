@@ -1,7 +1,6 @@
 var React = require('react');
 var $ = require('jquery');
 var r = require('ramda');
-var IssueDetail = require('./issue-detail')
 var G = require('./github-api');
 var g = new G('jcouyang','gira')
 var Issue = React.createClass({

@@ -36,16 +36,18 @@ if(typeof GM_xmlhttpRequest != 'undefined'){
 
 Github.prototype = {
   getAccessToken: function () {
+		var that = this;
 		if(this.access_token) return $.Deferred().resolve(this.access_token);
     var r = /\?code=([^\/]+)\/?/;
     if (window.location.search && r.test(window.location.search)) {
 
       var m = r.exec(location.search);
-      return request("http://query.yahooapis.com/v1/public/yql?q=env%20%22store%3A%2F%2F0zaLUaPXLo4GWBb1koVqO6%22%3Bselect%20OAuth%20from%20github%20where%20CODE%3D%22" + m.pop() + "%22&format=json&diagnostics=true&callback=?")
+      return request("http://query.yahooapis.com/v1/public/yql?q=env%20%22store%3A%2F%2F0zaLUaPXLo4GWBb1koVqO6%22%3Bselect%20OAuth%20from%20github%20where%20CODE%3D%22" + m.pop() + "%22&format=json&diagnostics=true")
 				.then(function (data) {
 					store.set("access_token", data.query.results.token.OAuth.access_token);
-					location.search = '';
+					that.access_token=store.get('access_token');
 					console.log("token seted");
+					return "token seted";
       }, function (error) {
         console.log("invalid code", error);
       });
