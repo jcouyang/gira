@@ -1,10 +1,11 @@
 var $ = require('jquery');
+var store = require('./store');
 var Github = function (owner, repo) {
 	this.owner = owner;
 	this.repo = repo;
 	this.milestone = "";
   this.REPO_BASE = 'https://api.github.com/';
-  this.access_token = localStorage.getItem("access_token");
+  this.access_token = store.get('access_token');
 };
 
 var request = function(url){
@@ -35,22 +36,21 @@ if(typeof GM_xmlhttpRequest != 'undefined'){
 
 Github.prototype = {
   getAccessToken: function () {
+		if(this.access_token) return $.Deferred().resolve(this.access_token);
     var r = /\?code=([^\/]+)\/?/;
     if (window.location.search && r.test(window.location.search)) {
 
       var m = r.exec(location.search);
-      return $.ajax({
-        url: "http://query.yahooapis.com/v1/public/yql?q=env%20%22store%3A%2F%2F0zaLUaPXLo4GWBb1koVqO6%22%3Bselect%20OAuth%20from%20github%20where%20CODE%3D%22" + m.pop() + "%22&format=json&diagnostics=true&callback=?",
-        type: 'GET',
-        dataType: 'json'
-      }).then(function (data) {
-        localStorage.setItem("access_token", data.query.results.token.OAuth.access_token);
-        location.search = '';
+      return request("http://query.yahooapis.com/v1/public/yql?q=env%20%22store%3A%2F%2F0zaLUaPXLo4GWBb1koVqO6%22%3Bselect%20OAuth%20from%20github%20where%20CODE%3D%22" + m.pop() + "%22&format=json&diagnostics=true&callback=?")
+				.then(function (data) {
+					store.set("access_token", data.query.results.token.OAuth.access_token);
+					location.search = '';
+					console.log("token seted");
       }, function (error) {
         console.log("invalid code", error);
       });
     } else {
-      return this.access_token;
+      return $.Deferred().resolve(this.access_token);
     }
   },
 	getComments: function(issueId){
