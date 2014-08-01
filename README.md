@@ -6,7 +6,7 @@ install [GreaseMonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonk
 - for Chrome user 
 install [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en) first
 
-then install by just click  [gira.user.js]()
+then install gira plugin by just click  [gira.user.js](https://rawgit.com/jcouyang/gira/master/greasemonkey/gira.user.js)
 
 goto [getgira.github.com](http://getgira.github.com) click  login
 
@@ -14,7 +14,7 @@ or login by click[here](https://github.com/login/oauth/authorize?client_id=666dc
 
 or login [here](https://github.com/login/oauth/authorize?client_id=666dc0b3b994cc362ca2&scope=private_repo,user) for **private** repo access
 
-## DEVEPLOMENT
+## FOR DEVEPLOMENT
 ### install dependency
 ```
 npm install -g gulp
