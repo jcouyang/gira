@@ -90,8 +90,6 @@ var IssueBoard = React.createClass({
 		}
 	},
 	componentDidMount: function(){
-		g.repo=this.props.repo;
-		g.owner=this.props.owner;
 		var getColumnLabel = r.filter((_)=>/\d+-(\w+)/.test(_.name))
 		g.getLabels().then((result) => {
       if (this.isMounted()) {
