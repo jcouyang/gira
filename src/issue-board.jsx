@@ -85,14 +85,12 @@ var IssueBoard = React.createClass({
 	handleFilterSubmit: function(creteria){
 		console.log('refresh issue')
 		var creteriaFilter = r.filter((_) => {
-			console.log('filtering',_.title.indexOf(creteria) >=0, creteria)
 			return _.title.indexOf(creteria) >=0;
 		})
 		var originalIssues = this.state.originalGroupedIssues;
 		this.setState({
 			groupedIssues:r.foldl(
 			(acc, column) =>{
-				console.log(acc,column)
 				acc[column] = creteriaFilter(originalIssues[column])
 				return acc
 			},
@@ -152,11 +150,6 @@ var IssueBoard = React.createClass({
 			})
 		);
 	},
-	createIssue: function(e){
-		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
-		console.log(issueLocation);
-		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
-	},
 	render: function() {
 		var columns = this.state.columns;
 		if(this.state.groupedIssues['0-Backlog'])
@@ -186,13 +179,27 @@ var IssueBoard = React.createClass({
 });
 
 FilterForm = React.createClass({
-	filterIssues: function() {
-		var creteria = this.refs.creteria.getDOMNode().value;		
+	getInitialState: function() {
+    return {value: ''};
+  },
+	createIssue: function(e){
+		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
+		console.log(issueLocation);
+		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
+	},
+	filterIssues: function(e) {
+		e.stopPropagation();
+		var creteria = this.refs.creteria.getDOMNode().value;
+
 		this.props.onFilterSubmit(creteria);
-		console.log('im here')
+		this.state.setState({value:creteria});
 		return false;
 	},
-
+	handleFilterButton:function(type){
+		var creteria='is:'+type;
+		this.props.onFilterSubmit(creteria)
+		this.state.setState({value:creteria});
+	},
 	render:function(){
 		return (
 			<div className="subnav">
@@ -202,13 +209,13 @@ FilterForm = React.createClass({
 				<div className="right">
 					<div className="left select-menu js-menu-container js-select-menu subnav-search-context active">
 						<form className="subnav-search subnav-divider-right left" onSubmit={this.filterIssues}>
-							<input name="q" className="subnav-search-input input-contrast" placeholder="Search all issues" type="text" ref="creteria" />
+							<input name="q" id='issue-filter' value={this.state.value} className="subnav-search-input input-contrast" placeholder="Search all issues" type="text" ref="creteria" onChange={this.filterIssues}/>
 							<span className="octicon octicon-search subnav-search-icon"></span>
 						</form>
 					</div>
 				</div>
 				<div className="subnav-links left">
-					<a href="#issue" className="selected js-selected-navigation-item subnav-item">Issues</a>
+					<a href="#issue" className="selected js-selected-navigation-item subnav-item" onClick={this.handleFilterButton.bind(this, 'issue')}>Issues</a>
 					<a href="#pullrequest" className="js-selected-navigation-item subnav-item" >Pull requests</a>
 					<a href="/jcouyang/gira/labels" className="js-selected-navigation-item subnav-item" data-selected-links="repo_labels /jcouyang/gira/labels">Labels</a>
 					<a href="/jcouyang/gira/milestones" className="js-selected-navigation-item subnav-item" data-selected-links="repo_milestones /jcouyang/gira/milestones">Milestones</a>
