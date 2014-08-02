@@ -8,8 +8,6 @@ g.getAccessToken().then(function (login) {
 	else{
 		var [,owner,repo,] = window.location.pathname.split("/");
 		console.log('loading issue board for ',owner,repo )
-		g.owner = owner;
-		g.repo = repo;
 
 		React.renderComponent(
 			<IssueBoard owner={owner} repo={repo}/>,
