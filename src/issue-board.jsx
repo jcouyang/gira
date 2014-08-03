@@ -83,9 +83,9 @@ var IssueColumn = React.createClass({
 
 var IssueBoard = React.createClass({
 	handleFilterSubmit: function(creteria){
-		console.log('refresh issue')
+		var exp = new RegExp(creteria,"ig");
 		var creteriaFilter = r.filter((_) => {
-			return _.title.indexOf(creteria) >=0;
+			return exp.test(_.title) || exp.test(_.body);
 		})
 		var originalIssues = this.state.originalGroupedIssues;
 		this.setState({
@@ -190,7 +190,7 @@ FilterForm = React.createClass({
 	filterIssues: function(e) {
 		e.stopPropagation();
 		var creteria = this.refs.creteria.getDOMNode().value;
-
+		
 		this.props.onFilterSubmit(creteria);
 		this.state.setState({value:creteria});
 		return false;
@@ -216,7 +216,7 @@ FilterForm = React.createClass({
 				</div>
 				<div className="subnav-links left">
 					<a href="#issue" className="selected js-selected-navigation-item subnav-item" onClick={this.handleFilterButton.bind(this, 'issue')}>Issues</a>
-					<a href="#pullrequest" className="js-selected-navigation-item subnav-item" >Pull requests</a>
+					<a href="#pullrequest" className="js-selected-navigation-item subnav-item" onClick={this.handleFilterButton.bind(this, 'pullrequest')}>Pull requests</a>
 					<a href="/jcouyang/gira/labels" className="js-selected-navigation-item subnav-item" data-selected-links="repo_labels /jcouyang/gira/labels">Labels</a>
 					<a href="/jcouyang/gira/milestones" className="js-selected-navigation-item subnav-item" data-selected-links="repo_milestones /jcouyang/gira/milestones">Milestones</a>
 				</div>
