@@ -81,25 +81,86 @@ var IssueColumn = React.createClass({
 	}
 });
 
+
+var getColumnLabel = r.filter((_)=>/\d+-(\w+)/.test(_.name))
+
+var columnizeIssues = r.foldl(
+	(acc, column) => {
+		acc[column] = [];
+		return	acc;
+	},
+	{"0-Backlog":[]});
+
+var groupIssues = r.foldl(
+	(acc, issue)=>{
+		var columnlabel = getColumnLabel(issue.labels)
+		if(columnlabel.length) {
+			acc[columnlabel[0].name] = acc[columnlabel[0].name].concat(issue);
+		}else{
+			acc['0-Backlog'] = acc['0-Backlog'].concat(issue);
+		}
+		return acc;
+	});
+
 var IssueBoard = React.createClass({
-	handleFilterSubmit: function(creteria){
-		var exp = new RegExp(creteria,"ig");
-		var creteriaFilter = r.filter((_) => {
-			return exp.test(_.title) || exp.test(_.body);
+	fetchIssues: function(){
+		console.log('fetching issue')
+		return g.getIssues(this.state.filter).then((result) => {
+			if (this.isMounted()) {
+				var groupedIssues = groupIssues(columnizeIssues(this.state.columns))(result);
+				this.setState({
+					originalGroupedIssues: groupedIssues,
+					groupedIssues:  groupedIssues
+				});
+			}
 		})
-		var originalIssues = this.state.originalGroupedIssues;
-		this.setState({
-			groupedIssues:r.foldl(
-			(acc, column) =>{
-				acc[column] = creteriaFilter(originalIssues[column])
-				return acc
-			},
-			{},
-				this.state.columns)
-			})
+	},
+	handleFilterSubmit: function(creteria){
+		creteria = creteria.replace(/ +(?= )/g,'');
+		var filters = r.filter((_)=>{
+			return _.indexOf(':') >= 0;	
+		})(creteria.split(' '));
+		var keyword = r.filter((_)=>{
+			return _.indexOf(':') < 0;	
+		})(creteria.split(' '));
+
+		if(filters.length>0){
+			this.setState({
+				filter: r.foldl((acc, filter) => {
+					console.log(filter);
+					var [key, val] = filter.split(':')
+					acc[key] = val;
+					return acc;
+				}, {}, filters)
+			});
+			this.fetchIssues().then(()=>{
+				if(keyword.length>0){
+					console.log(keyword)
+					var searchIn = function(text){
+						return r.foldl((acc, _)=>{
+							return acc && new RegExp(_,"ig").test(text);
+						}, true)
+					}
+					var creteriaFilter = r.filter((_) => {
+						return searchIn(_.title.concat(_.body))(keyword);
+					})
+					var originalIssues = this.state.originalGroupedIssues;
+					this.setState({
+						groupedIssues:r.foldl(
+							(acc, column) =>{
+								acc[column] = creteriaFilter(originalIssues[column])
+								return acc
+							},
+							{},
+							this.state.columns)
+					})
+				}				
+			});
+		}
 	},
 	getInitialState: function() {
 		return {
+			filter:{state:'open'},
 			originalIssues:{},
 			groupedIssues:{},
 			columns: [],
@@ -107,48 +168,27 @@ var IssueBoard = React.createClass({
 		}
 	},
 	componentDidMount: function(){
-		var getColumnLabel = r.filter((_)=>/\d+-(\w+)/.test(_.name))
 		g.owner = this.props.owner;
 		g.repo = this.props.repo;
-
-		g.getLabels().then((result) => {
-      if (this.isMounted()) {
+		if (this.isMounted()) {
+			g.getLabels().then((result) => {		
         this.setState({
           columns: r.pluck("name", getColumnLabel(result)).sort(),
           labels: result
         });
-      }
-    }).then(
-			g.getIssues().then((result) => {
-				console.log('issue',result)
-				if (this.isMounted()) {
-					var groupIssue = r.foldl(
-						(acc, column) => {
-							acc[column] = [];
-							return	acc;
-						},
-						{"0-Backlog":[]},
-						this.state.columns)
-					var groupedIssues = r.foldl(
-							(acc, issue)=>{
-								var columnlabel = getColumnLabel(issue.labels)
-								if(columnlabel.length) {
-									console.log(acc, columnlabel)
-									acc[columnlabel[0].name] = acc[columnlabel[0].name].concat(issue);
-								}else{
-									acc['0-Backlog'] = acc['0-Backlog'].concat(issue);
-								}
-								return acc;
-							},
-							groupIssue,
-							result);
-					this.setState({
-						originalGroupedIssues: groupedIssues,
-						groupedIssues:  groupedIssues
-					});
-				}
-			})
-		);
+
+			}).then(
+				g.getIssues(this.state.filter).then((result) => {
+					if (this.isMounted()) {
+						var groupedIssues = groupIssues(columnizeIssues(this.state.columns))(result);
+						this.setState({
+							originalGroupedIssues: groupedIssues,
+							groupedIssues:  groupedIssues
+						});
+					}
+				})
+			);
+		}
 	},
 	render: function() {
 		var columns = this.state.columns;
@@ -156,7 +196,6 @@ var IssueBoard = React.createClass({
 			columns.unshift('0-Backlog')
 		var columnNodes = r.uniq(columns).map( (column)=>{
 			issueInColumn = this.state.groupedIssues[column]
-			console.log('new column', column, issueInColumn)
 			return (
 				<IssueColumn columnName={column} issues={issueInColumn} owner='jcouyang' repo='gira'/>
 			);
@@ -182,9 +221,12 @@ FilterForm = React.createClass({
 	getInitialState: function() {
     return {value: ''};
   },
+	createLabel: function(e){
+		var labelLocation = $(e.currentTarget).attr('href').replace('#','')
+		$(".facebox-content").load(labelLocation.concat(" #new_label"))
+	},
 	createIssue: function(e){
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
-		console.log(issueLocation);
 		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
 	},
 	filterIssues: function(e) {
@@ -206,19 +248,58 @@ FilterForm = React.createClass({
 				<a href="#issues/new" className="button primary right" data-hotkey="c" rel="facebox" onClick={this.createIssue}>
 					New issue
 				</a>
+				<a href="#/jcouyang/gira/labels" className="button primary right" data-hotkey="c" rel="facebox" onClick={this.createLabel}>
+					New Label
+				</a>
 				<div className="right">
-					<div className="left select-menu js-menu-container js-select-menu subnav-search-context active">
+					<div className="left select-menu js-menu-container js-select-menu subnav-search-context">
+						<div className="left select-menu js-menu-container js-select-menu subnav-search-context">
+							<button aria-haspopup="true" type="button" className="button select-menu-button js-menu-target">
+								Filters
+							</button>
+							<div aria-hidden="false" className="select-menu-modal-holder js-menu-content js-navigation-container js-active-navigation-container">
+								<div className="select-menu-modal">
+									<div className="select-menu-list">
+										<a className="select-menu-item js-navigation-item" href="#">
+											<div className="select-menu-item-text">
+												Open issues and pull requests
+											</div>
+										</a>
+										<a className="select-menu-item js-navigation-item navigation-focus" href="#">
+											<div className="select-menu-item-text">
+												Your issues
+											</div>
+										</a>
+										<a className="select-menu-item js-navigation-item" href="/jcouyang/gira/issues?q=is%3Aopen+is%3Apr+author%3Ajcouyang">
+											<div className="select-menu-item-text">
+												Your pull requests
+											</div>
+										</a>
+										<a className="select-menu-item js-navigation-item" href="/jcouyang/gira/issues?q=is%3Aopen+assignee%3Ajcouyang">
+											<div className="select-menu-item-text">
+												Everything assigned to you
+											</div>
+										</a>
+										<a className="select-menu-item js-navigation-item" href="/jcouyang/gira/issues?q=is%3Aopen+mentions%3Ajcouyang">
+											<div className="select-menu-item-text">
+												Everything mentioning you
+											</div>
+										</a>
+										<a target="_blank" className="select-menu-item js-navigation-item" href="https://help.github.com/articles/searching-issues">
+											<span className="select-menu-item-icon octicon octicon-link-external"></span>
+											<div className="select-menu-item-text">
+												<strong>View advanced search syntax</strong>
+											</div>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
 						<form className="subnav-search subnav-divider-right left" onSubmit={this.filterIssues}>
 							<input name="q" id='issue-filter' value={this.state.value} className="subnav-search-input input-contrast" placeholder="Search all issues" type="text" ref="creteria" onChange={this.filterIssues}/>
 							<span className="octicon octicon-search subnav-search-icon"></span>
 						</form>
 					</div>
-				</div>
-				<div className="subnav-links left">
-					<a href="#issue" className="selected js-selected-navigation-item subnav-item" onClick={this.handleFilterButton.bind(this, 'issue')}>Issues</a>
-					<a href="#pullrequest" className="js-selected-navigation-item subnav-item" onClick={this.handleFilterButton.bind(this, 'pullrequest')}>Pull requests</a>
-					<a href="/jcouyang/gira/labels" className="js-selected-navigation-item subnav-item" data-selected-links="repo_labels /jcouyang/gira/labels">Labels</a>
-					<a href="/jcouyang/gira/milestones" className="js-selected-navigation-item subnav-item" data-selected-links="repo_milestones /jcouyang/gira/milestones">Milestones</a>
 				</div>
 			</div>
 		)
