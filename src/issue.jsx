@@ -9,7 +9,6 @@ var Issue = React.createClass({
   },
 	revealIssue: function(e){
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
-		console.log(issueLocation)
 		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
 	},
 	render: function(){

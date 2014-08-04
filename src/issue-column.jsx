@@ -1,5 +1,6 @@
 var React = require('react');
 var $ = require('jquery');
+var r = require('ramda');
 var Issue = require('./issue')
 var IssueColumn = React.createClass({
 	dragover: function (e) {
@@ -11,14 +12,14 @@ var IssueColumn = React.createClass({
   },
 	drop: function (e) {
     e.stopPropagation();
-		console.log('drop',e.dataTransfer.getData('text/plain'))
     var column = e.currentTarget;
+		console.log("----------------")
     var $issue = $('#issue-' + e.dataTransfer.getData('text/plain'));
     this.props.g.deleteLabel($issue.data('issue-id'), $issue.data('label'))
-      .then(function (labels) {
-        this.props.g.addLabel($issue.attr('id'), _(labels).pluck('name').concat(column.id));
+      .then((labels) => {
+        this.props.g.addLabel($issue.attr('id'), r.pluck('name')(labels).concat(column.id));
       });
-    $(e.currentTarget).removeClass("over")
+    $(e.currentTarget)
       .find('span.lbl')
       .append($($issue));
     return false;

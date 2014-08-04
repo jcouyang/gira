@@ -2,7 +2,7 @@
   "name": "gira",
   "title": "gira",
   "id": "jid1-KwytV5omzALDXw",
-  "description": "a basic add-on",
+  "description": "turn your github issue into a lightweight Kanban",
   "author": "jichao ouyang",
   "license": "MPL 2.0",
   "version": "0.1.0",
@@ -17,8 +17,12 @@
     "jest-cli": "^0.1.17"
   },
   "scripts": {
-    "test": "grunt deploy"
+    "test": "jest"
   },
+		"jest":
+		{
+			"unmockedModulePathPatterns": ["<rootDir>/node_modules/react"]
+		},
   "dependencies": {
     "react": "^0.11.1",
     "jquery": "^2.1.1",
