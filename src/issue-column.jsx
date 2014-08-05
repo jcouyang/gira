@@ -13,7 +13,6 @@ var IssueColumn = React.createClass({
 	drop: function (e) {
     e.stopPropagation();
     var column = e.currentTarget;
-		console.log("----------------")
     var $issue = $('#issue-' + e.dataTransfer.getData('text/plain'));
     this.props.g.deleteLabel($issue.data('issue-id'), $issue.data('label'))
       .then((labels) => {

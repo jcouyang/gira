@@ -1,8 +1,6 @@
 var React = require('react');
 var $ = require('jquery');
 var r = require('ramda');
-var G = require('./github-api');
-var g = new G('jcouyang','gira')
 var IssueColumn = require('./issue-column')
 var FilterForm = require('./filter-form')
 var getColumnLabel = r.filter((_)=>/\d+-(\w+)/.test(_.name))
@@ -28,7 +26,7 @@ var groupIssues = r.foldl(
 var IssueBoard = React.createClass({
 	fetchIssues: function(){
 		console.log('fetching issue')
-		return g.getIssues(this.state.filter).then((result) => {
+		return this.props.g.getIssues(this.state.filter).then((result) => {
 			if (this.isMounted()) {
 				var groupedIssues = groupIssues(columnizeIssues(this.state.columns))(result);
 				this.setState({
@@ -92,22 +90,20 @@ var IssueBoard = React.createClass({
 		}
 	},
 	componentDidMount: function(){
-		g.owner = this.props.owner;
-		g.repo = this.props.repo;
 		if (this.isMounted()) {
-			g.getLabels().then((result) => {		
+			this.props.g.getLabels().then((result) => {		
         this.setState({
           columns: r.pluck("name", getColumnLabel(result)).sort(),
           labels: result
         });
 
 			}).then(
-				g.getIssues(this.state.filter).then((result) => {
+				this.props.g.getIssues(this.state.filter).then((result) => {
 					if (this.isMounted()) {
 						var groupedIssues = groupIssues(columnizeIssues(this.state.columns))(result);
 						this.setState({
 							originalGroupedIssues: groupedIssues,
-							groupedIssues:  groupedIssues
+							groupedIssues: groupedIssues
 						});
 					}
 				})
@@ -119,9 +115,9 @@ var IssueBoard = React.createClass({
 		if(this.state.groupedIssues['0-Backlog'])
 			columns.unshift('0-Backlog')
 		var columnNodes = r.uniq(columns).map( (column)=>{
-			issueInColumn = this.state.groupedIssues[column]
+			var issueInColumn = this.state.groupedIssues[column]
 			return (
-				<IssueColumn g={g} columnName={column} issues={issueInColumn} owner='jcouyang' repo='gira'/>
+				<IssueColumn g={this.props.g} columnName={column} issues={issueInColumn} owner='jcouyang' repo='gira'/>
 			);
 		});
 		return (

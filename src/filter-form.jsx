@@ -1,3 +1,4 @@
+	var React = require('react');
 var FilterForm = React.createClass({
 	getInitialState: function() {
     return {value: ''};
