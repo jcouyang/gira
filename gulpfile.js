@@ -9,7 +9,7 @@ var paths = {
 
 var GM_location = '/Users/twer/Library/Application Support/Firefox/Profiles/d294ojk6.default/gm_scripts/gira_test-1';
 gulp.task('reactify', function(){
-	gulp.src(paths.jsx)
+	return gulp.src(paths.jsx)
 		.pipe(react({"harmony":true}))
 	.pipe(gulp.dest('src'));
 });
@@ -22,7 +22,7 @@ gulp.task('scripts', ['reactify'], function() {
 });
 
 gulp.task('tests', function(){
-		gulp.src(paths.tests)
+		return gulp.src(paths.tests)
 		.pipe(react({"harmony":true}))
 	.pipe(gulp.dest('__tests__'));
 });
