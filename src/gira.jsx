@@ -8,8 +8,8 @@ g.getAccessToken().then(function (login) {
 	else{
 		var [,owner,repo,] = window.location.pathname.split("/");
 		console.log('loading issue board for ',owner,repo )
- 		g.owner = this.props.owner;
-		g.repo = this.props.repo;
+ 		g.owner = owner;
+		g.repo = repo;
 		React.renderComponent(
 			<IssueBoard g={g} owner={owner} repo={repo}/>,
 			document.querySelector('#js-repo-pjax-container')

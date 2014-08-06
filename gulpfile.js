@@ -17,7 +17,8 @@ gulp.task('reactify', function(){
 gulp.task('scripts', ['reactify'], function() {
   return gulp.src(paths.scripts)
 		.pipe(browserify())
-    .pipe(gulp.dest(GM_location));
+    .pipe(gulp.dest(GM_location))
+	  .pipe(gulp.dest("javascripts"));
 });
 
 gulp.task('tests', function(){

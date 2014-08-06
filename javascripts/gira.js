@@ -31180,7 +31180,6 @@ module.exports = require('./lib/React');
 },{"./lib/React":30}],148:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
-var $ = require('jquery');
 var IssueBoard = require('./issue-board')
 var G = require('./github-api')
 var g = new G();
@@ -31189,14 +31188,15 @@ g.getAccessToken().then(function (login) {
 		window.location = 'http://getgira.github.io/auth-done.html'
 	else{
 		var $__0=  window.location.pathname.split("/"),owner=$__0[1],repo=$__0[2];
-		console.log('loading issue board for ',owner,repo )
-		g.owner = owner;
-		g.repo = repo;
-
+		console.log('loading issues board for ',owner,repo )
+ 		g.owner = owner;
+			g.repo = repo;
+			console.log('-------------')
 		React.renderComponent(
-			IssueBoard({owner: owner, repo: repo}),
+			IssueBoard({g: g, owner: owner, repo: repo}),
 			document.querySelector('#js-repo-pjax-container')
 		)
+
 	}
 
 }, function (error) {
@@ -31205,7 +31205,102 @@ g.getAccessToken().then(function (login) {
 
 
 
-},{"./github-api":149,"./issue-board":150,"jquery":2,"react":147}],149:[function(require,module,exports){
+},{"./github-api":150,"./issue-board":151,"react":147}],149:[function(require,module,exports){
+/** @jsx React.DOM */
+	var React = require('react');
+var FilterForm = React.createClass({displayName: 'FilterForm',
+	getInitialState: function() {
+    return {value: ''};
+  },
+	createLabel: function(e){
+		var labelLocation = $(e.currentTarget).attr('href').replace('#','')
+		$(".facebox-content").load(labelLocation.concat(" #new_label"))
+	},
+	createIssue: function(e){
+		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
+		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
+	},
+	filterIssues: function(e) {
+		e.stopPropagation();
+		var creteria = e.target.value;		
+		this.props.onFilterSubmit(creteria);
+		this.state.setState({value:creteria});
+		return false;
+	},
+	handleFilterButton:function(type){
+		var creteria='is:'+type;
+		this.props.onFilterSubmit(creteria)
+		this.state.setState({value:creteria});
+	},
+	addFilter: function(){
+		this.state.setState({value:'state:close'})
+	},
+	render:function(){
+		return (
+			React.DOM.div({className: "subnav"}, 
+				React.DOM.a({href: "#issues/new", className: "button primary right", 'data-hotkey': "c", rel: "facebox", onClick: this.createIssue}, 
+					"New issue"
+				), 
+				React.DOM.a({href: "#/jcouyang/gira/labels", className: "button primary right", 'data-hotkey': "c", rel: "facebox", onClick: this.createLabel}, 
+					"New Label"
+				), 
+				React.DOM.div({className: "right"}, 
+					React.DOM.div({className: "left select-menu js-menu-container js-select-menu subnav-search-context"}, 
+						React.DOM.div({className: "left select-menu js-menu-container js-select-menu subnav-search-context"}, 
+							React.DOM.button({'aria-haspopup': "true", type: "button", className: "button select-menu-button js-menu-target"}, 
+								"Filters"
+							), 
+							React.DOM.div({'aria-hidden': "false", className: "select-menu-modal-holder js-menu-content js-navigation-container js-active-navigation-container"}, 
+								React.DOM.div({className: "select-menu-modal"}, 
+									React.DOM.div({className: "select-menu-list"}, 
+										React.DOM.a({className: "select-menu-item js-navigation-item", href: "#"}, 
+											React.DOM.div({className: "select-menu-item-text"}, 
+												"Open issues and pull requests"
+											)
+										), 
+										React.DOM.a({className: "select-menu-item js-navigation-item navigation-focus", href: "#"}, 
+											React.DOM.div({className: "select-menu-item-text"}, 
+												"Your issues"
+											)
+										), 
+										React.DOM.a({className: "select-menu-item js-navigation-item", href: "#", onChange: this.addFilter}, 
+											React.DOM.div({className: "select-menu-item-text"}, 
+												"Your pull requests"
+											)
+										), 
+										React.DOM.a({className: "select-menu-item js-navigation-item", href: "/jcouyang/gira/issues?q=is%3Aopen+assignee%3Ajcouyang"}, 
+											React.DOM.div({className: "select-menu-item-text"}, 
+												"Everything assigned to you"
+											)
+										), 
+										React.DOM.a({className: "select-menu-item js-navigation-item", href: "/jcouyang/gira/issues?q=is%3Aopen+mentions%3Ajcouyang"}, 
+											React.DOM.div({className: "select-menu-item-text"}, 
+												"Everything mentioning you"
+											)
+										), 
+										React.DOM.a({target: "_blank", className: "select-menu-item js-navigation-item", href: "https://help.github.com/articles/searching-issues"}, 
+											React.DOM.span({className: "select-menu-item-icon octicon octicon-link-external"}), 
+											React.DOM.div({className: "select-menu-item-text"}, 
+												React.DOM.strong(null, "View advanced search syntax")
+											)
+										)
+									)
+								)
+							)
+						), 
+						React.DOM.form({className: "subnav-search subnav-divider-right left", onSubmit: this.filterIssues}, 
+							React.DOM.input({name: "q", id: "issue-filter", value: this.state.value, className: "subnav-search-input input-contrast", placeholder: "Search all issues", type: "text", ref: "creteria", onChange: this.filterIssues}), 
+							React.DOM.span({className: "octicon octicon-search subnav-search-icon"})
+						)
+					)
+				)
+			)
+		)
+	}
+})
+module.exports = FilterForm;
+
+},{"react":147}],150:[function(require,module,exports){
 var $ = require('jquery');
 var store = require('./store');
 var Github = function (owner, repo) {
@@ -31218,10 +31313,10 @@ var Github = function (owner, repo) {
 
 var request = function(url){
 	return $.ajax({
-      url: url,
-      type: 'GET',
-      dataType: 'json'
-    });
+    url: url,
+    type: 'GET',
+    dataType: 'json'
+  });
 };
 if(typeof GM_xmlhttpRequest != 'undefined'){
  request = function(url){
@@ -31310,9 +31405,9 @@ Github.prototype = {
       dataType: 'json'
     });
   },
-  getIssues: function (id) {
-    id = (typeof id !== "undefined" && id !== null) ? id : '';
-    return request(this.getReposUrl() + "/issues" + (id && '/' + id) + this.concatToken() + (this.milestone ? ("&milestone=" + this.milestone) : ''));
+  getIssues: function (filter) {
+		var params = $.param(filter);
+    return request(this.getReposUrl() + "/issues" + this.concatToken() +"&"+ params);
   },
   getAssignees: function () {
     return $.ajax({
@@ -31407,13 +31502,207 @@ Github.prototype = {
 
 module.exports = Github;
 
-},{"./store":151,"jquery":2}],150:[function(require,module,exports){
+},{"./store":154,"jquery":2}],151:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 var $ = require('jquery');
 var r = require('ramda');
-var G = require('./github-api');
-var g = new G('jcouyang','gira')
+var IssueColumn = require('./issue-column')
+var FilterForm = require('./filter-form')
+var getColumnLabel = r.filter(function(_){return /\d+-(\w+)/.test(_.name);})
+
+var columnizeIssues = r.foldl(
+	function(acc, column)  {
+		acc[column] = [];
+		return	acc;
+	},
+	{"0-Backlog":[]});
+
+var groupIssues = r.foldl(
+	function(acc, issue){
+		var columnlabel = getColumnLabel(issue.labels)
+		if(columnlabel.length) {
+			acc[columnlabel[0].name] = acc[columnlabel[0].name].concat(issue);
+		}else{
+			acc['0-Backlog'] = acc['0-Backlog'].concat(issue);
+		}
+		return acc;
+	});
+
+var IssueBoard = React.createClass({displayName: 'IssueBoard',
+	fetchIssues: function(){
+		console.log('fetching issue')
+		return this.props.g.getIssues(this.state.filter).then(function(result)  {
+			if (this.isMounted()) {
+				var groupedIssues = groupIssues(columnizeIssues(this.state.columns))(result);
+				this.setState({
+					originalGroupedIssues: groupedIssues,
+					groupedIssues:  groupedIssues
+				});
+			}
+		}.bind(this))
+	},
+	handleFilterSubmit: function(creteria){
+		creteria = creteria.replace(/ +(?= )/g,'');
+		var filters = r.filter(function(_){
+			return _.indexOf(':') >= 0;	
+		})(creteria.split(' '));
+		var keyword = r.filter(function(_){
+			return _.indexOf(':') < 0;	
+		})(creteria.split(' '));
+		var fetchedIssues = $.Deferred().resolve('hehe');
+		if(filters.length>0){
+			this.setState({
+				filter: r.foldl(function(acc, filter)  {
+					console.log(filter);
+					var $__0=   filter.split(':'),key=$__0[0],val=$__0[1]
+					acc[key] = val;
+					return acc;
+				}, {}, filters)
+			});
+			fetchedIssues = this.fetchIssues();
+		}
+		if(keyword.length>0){
+			console.log(keyword)
+			fetchedIssues.then(function(){
+				var searchIn = function(text){
+					return r.foldl(function(acc, _){
+						return acc && new RegExp(_,"ig").test(text);
+					}, true)
+				}
+				var creteriaFilter = r.filter(function(_)  {
+					return searchIn(_.title.concat(_.body))(keyword);
+				})
+				var originalIssues = this.state.originalGroupedIssues;
+				this.setState({
+					groupedIssues:r.foldl(
+						function(acc, column) {
+							acc[column] = creteriaFilter(originalIssues[column])
+							return acc
+						},
+						{},
+						this.state.columns)
+				})
+			}.bind(this))
+		}
+	},
+																		getInitialState: function() {
+																																console.log("rendering board - init state")
+		return {
+			filter:{state:'open'},
+			originalIssues:{},
+			groupedIssues:{},
+			columns: [],
+			labels: []
+		}
+	},
+																		componentDidMount: function(){
+																			console.log("rendering board")
+		if (this.isMounted()) {
+			this.props.g.getLabels().then(function(result)  {		
+        this.setState({
+          columns: r.pluck("name", getColumnLabel(result)).sort(),
+          labels: result
+        });
+
+			}.bind(this)).then(
+				this.props.g.getIssues(this.state.filter).then(function(result)  {
+					if (this.isMounted()) {
+						var groupedIssues = groupIssues(columnizeIssues(this.state.columns))(result);
+						this.setState({
+							originalGroupedIssues: groupedIssues,
+							groupedIssues: groupedIssues
+						});
+					}
+				}.bind(this))
+			);
+		}
+	},
+																		render: function() {
+																																							console.log("rendering board")
+		var columns = this.state.columns;
+		if(this.state.groupedIssues['0-Backlog'])
+			columns.unshift('0-Backlog')
+		var columnNodes = r.uniq(columns).map( function(column){
+			var issueInColumn = this.state.groupedIssues[column]
+			return (
+				IssueColumn({g: this.props.g, columnName: column, issues: issueInColumn, owner: "jcouyang", repo: "gira"})
+			);
+		}.bind(this));
+		return (
+			React.DOM.div(null, 
+				FilterForm({onFilterSubmit: this.handleFilterSubmit}), 
+				
+				React.DOM.div({className: "box-body"}, 
+					React.DOM.div({id: "contributions-calendar"}, 
+						React.DOM.div({className: "contrib-details grid lala"}, 
+							columnNodes
+						)
+					)
+				)
+
+			) 
+		);
+	}
+});
+
+module.exports = IssueBoard;
+
+},{"./filter-form":149,"./issue-column":152,"jquery":2,"ramda":3,"react":147}],152:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react');
+var $ = require('jquery');
+var r = require('ramda');
+var Issue = require('./issue')
+var IssueColumn = React.createClass({displayName: 'IssueColumn',
+	dragover: function (e) {
+		console.log('over me')
+      if (e.preventDefault) e.preventDefault(); // allows us to drop
+      $(e.currentTarget).removeClass("over").addClass('over');
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+  },
+	drop: function (e) {
+    e.stopPropagation();
+    var column = e.currentTarget;
+    var $issue = $('#issue-' + e.dataTransfer.getData('text/plain'));
+    this.props.g.deleteLabel($issue.data('issue-id'), $issue.data('label'))
+      .then(function(labels)  {
+        this.props.g.addLabel($issue.attr('id'), r.pluck('name')(labels).concat(column.id));
+      }.bind(this));
+    $(e.currentTarget)
+      .find('span.lbl')
+      .append($($issue));
+    return false;
+  },
+																		 render: function(){
+																				 																			console.log("rendering column")
+		var issueNodes = this.props.issues.map(function(issue)  {
+			return (
+				Issue({labels: issue.labels, name: issue.name, number: issue.number, url: issue.html_url, title: issue.title, repo: this.props.repo, owner: this.props.owner, label: this.props.columnName})
+			)
+		}.bind(this))
+		return (
+			React.DOM.div({id: this.props.columnName, className: "table-column", onDrop: this.drop, onDragOver: this.dragover}, 
+				React.DOM.span({className: "num hide-buttons"}, this.props.columnName, 
+					React.DOM.a({href: "#", data: this.props.columnName, type: "button", className: "remove-lane"}, 
+						React.DOM.span({className: "octicon octicon-remove-close close"})
+					)
+				), 
+				React.DOM.span({className: "lbl"}, 
+					issueNodes
+				)
+			)
+		)
+	}
+});
+module.exports = IssueColumn;
+
+},{"./issue":153,"jquery":2,"ramda":3,"react":147}],153:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react');
+var $ = require('jquery');
+
 var Issue = React.createClass({displayName: 'Issue',
 	dragStart: function(e) {
 		console.log('dragStart')
@@ -31422,10 +31711,10 @@ var Issue = React.createClass({displayName: 'Issue',
   },
 	revealIssue: function(e){
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
-		console.log(issueLocation)
 		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
 	},
-	render: function(){
+															 render: function(){
+																	 																			console.log("rendering issue")
 		var labelNodes = this.props.labels.map(function(label){
 			var colorClass = "label labelstyle-#".concat(label.color);
 			var colorStyle = {"background-color":"#".concat(label.color)};
@@ -31448,138 +31737,9 @@ var Issue = React.createClass({displayName: 'Issue',
 						);
 	}
 });
+module.exports = Issue;
 
-var IssueColumn = React.createClass({displayName: 'IssueColumn',
-	dragover: function (e) {
-		console.log('over me')
-      if (e.preventDefault) e.preventDefault(); // allows us to drop
-      $(e.currentTarget).removeClass("over").addClass('over');
-      e.dataTransfer.dropEffect = 'move';
-      return false;
-  },
-	drop: function (e) {
-    e.stopPropagation();
-		console.log('drop',e.dataTransfer.getData('text/plain'))
-    var column = e.currentTarget;
-    var $issue = $('#issue-' + e.dataTransfer.getData('text/plain'));
-    g.deleteLabel($issue.data('issue-id'), $issue.data('label'))
-      .then(function (labels) {
-        g.addLabel($issue.attr('id'), _(labels).pluck('name').concat(column.id));
-      });
-    $(e.currentTarget).removeClass("over")
-      .find('span.lbl')
-      .append($($issue));
-    return false;
-  },
-	render: function(){
-		var issueNodes = this.props.issues.map(function(issue)  {
-			return (
-				Issue({labels: issue.labels, name: issue.name, number: issue.number, url: issue.html_url, title: issue.title, repo: this.props.repo, owner: this.props.owner, label: this.props.columnName})
-			)
-		}.bind(this))
-		return (
-			React.DOM.div({id: this.props.columnName, className: "table-column", onDrop: this.drop, onDragOver: this.dragover}, 
-				React.DOM.span({className: "num hide-buttons"}, this.props.columnName, 
-					React.DOM.a({href: "#", data: this.props.columnName, type: "button", className: "remove-lane"}, 
-						React.DOM.span({className: "octicon octicon-remove-close close"})
-					)
-				), 
-				React.DOM.span({className: "lbl"}, 
-					issueNodes
-				)
-			)
-		)
-	}
-});
-
-var IssueBoard = React.createClass({displayName: 'IssueBoard',
-	getInitialState: function() {
-		return {
-			groupedIssues:[],
-			columns: [],
-			labels: []
-		}
-	},
-	componentDidMount: function(){
-		g.repo=this.props.repo;
-		g.owner=this.props.owner;
-		var getColumnLabel = r.filter(function(_){return /\d+-(\w+)/.test(_.name);})
-		g.getLabels().then(function(result)  {
-      if (this.isMounted()) {
-        this.setState({
-          columns: r.pluck("name", getColumnLabel(result)).sort(),
-          labels: result
-        });
-      }
-    }.bind(this)).then(
-			g.getIssues().then(function(result)  {
-				console.log('issue',result)
-				if (this.isMounted()) {
-					var groupedIssue = r.foldl(
-						function(acc, column)  {
-							acc[column] = [];
-							return	acc;
-						},
-						{"0-Backlog":[]},
-						this.state.columns)
-					console.log("grouped", groupedIssue)
-					this.setState({
-						groupedIssues:  r.foldl(
-							function(acc, issue){
-								var columnlabel = getColumnLabel(issue.labels)
-								if(columnlabel.length) {
-									console.log(acc, columnlabel)
-									acc[columnlabel[0].name] = acc[columnlabel[0].name].concat(issue);
-								}else{
-									acc['0-Backlog'] = acc['0-Backlog'].concat(issue);
-								}
-								return acc;
-							},
-							groupedIssue,
-							result)
-					});
-				}
-			}.bind(this))
-		);
-	},
-	createIssue: function(e){
-		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
-		console.log(issueLocation);
-		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
-	},
-	render: function() {
-		var columns = this.state.columns;
-		if(this.state.groupedIssues['0-Backlog'])
-			columns.unshift('0-Backlog')
-		var columnNodes = r.uniq(columns).map( function(column){
-			issueInColumn = this.state.groupedIssues[column]
-			console.log('new column', column, issueInColumn)
-			return (
-				IssueColumn({columnName: column, issues: issueInColumn, owner: "jcouyang", repo: "gira"})
-			);
-		}.bind(this));
-		return (
-			React.DOM.div(null, 
-				React.DOM.div({className: "subnav"}, 
-					React.DOM.a({href: "#issues/new", className: "button primary right", 'data-hotkey': "c", rel: "facebox", onClick: this.createIssue}, 
-						"New issue"
-					)
-				), 
-				React.DOM.div({className: "box-body"}, 
-					React.DOM.div({id: "contributions-calendar"}, 
-						React.DOM.div({className: "contrib-details grid lala"}, 
-							columnNodes
-						)
-					)
-				)				
-			) 
-		);
-	}
-});
-
-module.exports = IssueBoard;
-
-},{"./github-api":149,"jquery":2,"ramda":3,"react":147}],151:[function(require,module,exports){
+},{"jquery":2,"react":147}],154:[function(require,module,exports){
 /** @jsx React.DOM */
 var store = function(){
 };

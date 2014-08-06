@@ -9203,10 +9203,10 @@ var Github = function (owner, repo) {
 
 var request = function(url){
 	return $.ajax({
-      url: url,
-      type: 'GET',
-      dataType: 'json'
-    });
+    url: url,
+    type: 'GET',
+    dataType: 'json'
+  });
 };
 if(typeof GM_xmlhttpRequest != 'undefined'){
  request = function(url){
@@ -9295,9 +9295,9 @@ Github.prototype = {
       dataType: 'json'
     });
   },
-  getIssues: function (id) {
-    id = (typeof id !== "undefined" && id !== null) ? id : '';
-    return request(this.getReposUrl() + "/issues" + (id && '/' + id) + this.concatToken() + (this.milestone ? ("&milestone=" + this.milestone) : ''));
+  getIssues: function (filter) {
+		var params = $.param(filter);
+    return request(this.getReposUrl() + "/issues" + this.concatToken() +"&"+ params);
   },
   getAssignees: function () {
     return $.ajax({
