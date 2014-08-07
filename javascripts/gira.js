@@ -31188,15 +31188,13 @@ g.getAccessToken().then(function (login) {
 		window.location = 'http://getgira.github.io/auth-done.html'
 	else{
 		var $__0=  window.location.pathname.split("/"),owner=$__0[1],repo=$__0[2];
-		console.log('loading issues board for ',owner,repo )
+		console.log('loading issue board for ',owner,repo )
  		g.owner = owner;
-			g.repo = repo;
-			console.log('-------------')
+		g.repo = repo;
 		React.renderComponent(
 			IssueBoard({g: g, owner: owner, repo: repo}),
 			document.querySelector('#js-repo-pjax-container')
 		)
-
 	}
 
 }, function (error) {
@@ -31586,8 +31584,7 @@ var IssueBoard = React.createClass({displayName: 'IssueBoard',
 			}.bind(this))
 		}
 	},
-																		getInitialState: function() {
-																																console.log("rendering board - init state")
+	getInitialState: function() {
 		return {
 			filter:{state:'open'},
 			originalIssues:{},
@@ -31596,8 +31593,7 @@ var IssueBoard = React.createClass({displayName: 'IssueBoard',
 			labels: []
 		}
 	},
-																		componentDidMount: function(){
-																			console.log("rendering board")
+	componentDidMount: function(){
 		if (this.isMounted()) {
 			this.props.g.getLabels().then(function(result)  {		
         this.setState({
@@ -31618,8 +31614,7 @@ var IssueBoard = React.createClass({displayName: 'IssueBoard',
 			);
 		}
 	},
-																		render: function() {
-																																							console.log("rendering board")
+	render: function() {
 		var columns = this.state.columns;
 		if(this.state.groupedIssues['0-Backlog'])
 			columns.unshift('0-Backlog')
@@ -31675,8 +31670,7 @@ var IssueColumn = React.createClass({displayName: 'IssueColumn',
       .append($($issue));
     return false;
   },
-																		 render: function(){
-																				 																			console.log("rendering column")
+	render: function(){
 		var issueNodes = this.props.issues.map(function(issue)  {
 			return (
 				Issue({labels: issue.labels, name: issue.name, number: issue.number, url: issue.html_url, title: issue.title, repo: this.props.repo, owner: this.props.owner, label: this.props.columnName})
@@ -31713,8 +31707,7 @@ var Issue = React.createClass({displayName: 'Issue',
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
 		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
 	},
-															 render: function(){
-																	 																			console.log("rendering issue")
+	render: function(){
 		var labelNodes = this.props.labels.map(function(label){
 			var colorClass = "label labelstyle-#".concat(label.color);
 			var colorStyle = {"background-color":"#".concat(label.color)};

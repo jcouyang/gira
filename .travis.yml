@@ -7,5 +7,5 @@ branches:
 node_js:
 - '0.10'
 script:
-- gulp scripts
+- gulp
 - npm test

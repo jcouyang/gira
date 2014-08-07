@@ -21,6 +21,12 @@ gulp.task('scripts', ['reactify'], function() {
 	  .pipe(gulp.dest("javascripts"));
 });
 
+gulp.task('default', ['reactify'], function() {
+  return gulp.src(paths.scripts)
+		.pipe(browserify())
+	  .pipe(gulp.dest("javascripts"));
+});
+
 gulp.task('tests', function(){
 		return gulp.src(paths.tests)
 		.pipe(react({"harmony":true}))
