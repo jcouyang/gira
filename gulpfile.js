@@ -21,7 +21,7 @@ gulp.task('scripts', ['reactify'], function() {
 	  .pipe(gulp.dest("javascripts"));
 });
 
-gulp.task('default', ['reactify'], function() {
+gulp.task('default', ['reactify', 'tests'], function() {
   return gulp.src(paths.scripts)
 		.pipe(browserify())
 	  .pipe(gulp.dest("javascripts"));
