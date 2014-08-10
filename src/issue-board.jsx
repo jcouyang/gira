@@ -100,6 +100,7 @@ var IssueBoard = React.createClass({
 			}).then(
 				this.props.g.getIssues(this.state.filter).then((result) => {
 					if (this.isMounted()) {
+
 						var groupedIssues = groupIssues(columnizeIssues(this.state.columns))(result);
 						this.setState({
 							originalGroupedIssues: groupedIssues,

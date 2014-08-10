@@ -31281,6 +31281,7 @@ var IssueBoard = React.createClass({displayName: 'IssueBoard',
 			}.bind(this)).then(
 				this.props.g.getIssues(this.state.filter).then(function(result)  {
 					if (this.isMounted()) {
+
 						var groupedIssues = groupIssues(columnizeIssues(this.state.columns))(result);
 						this.setState({
 							originalGroupedIssues: groupedIssues,
@@ -31435,7 +31436,7 @@ var IssueColumn = React.createClass({displayName: 'IssueColumn',
     var $issue = $('#issue-' + e.dataTransfer.getData('text/plain'));
     this.props.g.deleteLabel($issue.data('issue-id'), $issue.data('label'))
       .then(function(labels)  {
-        this.props.g.addLabel($issue.attr('id'), r.pluck('name')(labels).concat(column.id));
+        this.props.g.addLabel($issue.data('issue-id'), r.pluck('name')(labels).concat(column.id));
       }.bind(this));
     $(e.currentTarget)
       .find('span.lbl')
@@ -31492,7 +31493,7 @@ var Issue = React.createClass({displayName: 'Issue',
 		var detailLink = "#/" + this.props.owner + "/" + this.props.repo + "/issues/" + this.props.number;
 		var issueid = "issue-" + this.props.number
 		return (
-			React.DOM.div({id: issueid, 'data-issue-id': this.props.number, 'data-label': this.props.column, draggable: "true", className: "blankslate hide-buttons", onDragStart: this.dragStart}, 
+			React.DOM.div({id: issueid, 'data-issue-id': this.props.number, 'data-label': this.props.label, draggable: "true", className: "blankslate hide-buttons", onDragStart: this.dragStart}, 
         React.DOM.a({'data-issue-id': this.props.number, className: "popable", rel: "facebox", href: detailLink, onClick: this.revealIssue}, 
           
           React.DOM.h4({className: "list-group-item-name"}, this.props.title)

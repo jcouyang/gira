@@ -24,7 +24,7 @@ var Issue = React.createClass({
 		var detailLink = "#/" + this.props.owner + "/" + this.props.repo + "/issues/" + this.props.number;
 		var issueid = "issue-" + this.props.number
 		return (
-			<div id={issueid} data-issue-id={this.props.number} data-label={this.props.column} draggable="true" className="blankslate hide-buttons" onDragStart={this.dragStart}>
+			<div id={issueid} data-issue-id={this.props.number} data-label={this.props.label} draggable="true" className="blankslate hide-buttons" onDragStart={this.dragStart}>
         <a data-issue-id={this.props.number} className="popable" rel="facebox" href={detailLink} onClick={this.revealIssue}>
           
           <h4 className="list-group-item-name">{this.props.title}</h4>

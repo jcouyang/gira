@@ -31309,30 +31309,56 @@ var Github = function (owner, repo) {
   this.access_token = store.get('access_token');
 };
 
-var request = function(url){
+var request = function(url, method){
 	return $.ajax({
     url: url,
-    type: 'GET',
+    type: method,
     dataType: 'json'
   });
 };
+var post = function(url, method, data){
+	return $.ajax({
+    url: url,
+    type: method,
+		data:data,
+    dataType: 'json'
+  });
+};
+
 if(typeof GM_xmlhttpRequest != 'undefined'){
- request = function(url){
-	console.log('requesting', url);
-	var result = $.Deferred();
-	GM_xmlhttpRequest({
-		method: "GET",
-		headers: {"Accept": "application/json"},
-		url: url,
-		onload: function(res) {
-			result.resolve(JSON.parse(res.response));
-		},
-		onerror: function(res){
-			console.log('err');
-		}
-	});
-	return result;
- };	
+	request = function(url, method){
+		console.log('requesting', url);
+		var result = $.Deferred();
+		GM_xmlhttpRequest({
+			method: method,
+			headers: {"Accept": "application/json"},
+			url: url,
+			onload: function(res) {
+				result.resolve(JSON.parse(res.response));
+			},
+			onerror: function(res){
+				console.log('err');
+			}
+		});
+		return result;
+	};
+	post = function(url, method, data){
+		console.log('requesting', url);
+		var result = $.Deferred();
+		GM_xmlhttpRequest({
+			method: method,
+			headers: {"Accept": "application/json"},
+			url: url,
+			data: data,
+			onload: function(res) {
+				result.resolve(JSON.parse(res.response));
+			},
+			onerror: function(res){
+				console.log('err');
+			}
+		});
+		return result;
+	};
 }
 
 Github.prototype = {
@@ -31394,18 +31420,11 @@ Github.prototype = {
     window.location.reload();
   },
   getLabels: function () {
-    return request(this.getReposUrl() + "/labels" + this.concatToken());
-  },
-  getMilestones: function () {
-    return $.ajax({
-      url: this.getReposUrl() + '/milestones' + this.concatToken(),
-      type: 'GET',
-      dataType: 'json'
-    });
+    return request(this.getReposUrl() + "/labels" + this.concatToken(), 'get');
   },
   getIssues: function (filter) {
 		var params = $.param(filter);
-    return request(this.getReposUrl() + "/issues" + this.concatToken() +"&"+ params);
+    return request(this.getReposUrl() + "/issues" + this.concatToken() +"&"+ params, 'get');
   },
   getAssignees: function () {
     return $.ajax({
@@ -31415,87 +31434,20 @@ Github.prototype = {
     });
   },
   getRepos: function () {
-		return request(this.REPO_BASE + 'user/repos' + this.concatToken());
+		return request(this.REPO_BASE + 'user/repos' + this.concatToken(), "get");
   },
 	getOrgs: function () {
-		return request(this.REPO_BASE + 'user/orgs' + this.concatToken());
+		return request(this.REPO_BASE + 'user/orgs' + this.concatToken(), 'get');
   },
   addLabel: function (id, label) {
-    return $.ajax({
-      url: [this.getReposUrl(), 'issues', id, 'labels'].join('/') + '?access_token=' + this.access_token,
-      type: 'put',
-      data: JSON.stringify(label),
-      dataType: 'json'
-    });
+		return post([this.getReposUrl(), 'issues', id, 'labels'].join('/') + '?access_token=' + this.access_token, 'put',JSON.stringify(label));
   },
   createLabel: function (label) {
-    return $.ajax({
-      url: this.getReposUrl() +  '/labels' + this.concatToken(),
-      type: 'post',
-      data: JSON.stringify(label),
-      dataType: 'json'
-    });
+		return post(this.getReposUrl() +  '/labels' + this.concatToken(), 'post',JSON.stringify(label));
   },
   deleteLabel: function (id, label) {
-    return $.ajax({
-      url: this.getReposUrl() + "/issues/" + id + "/labels/" + label + this.concatToken(),
-      type: 'delete'
-    });
+		return request(this.getReposUrl() + "/issues/" + id + "/labels/" + label + this.concatToken(), 'delete');
   },
-  newIssue: function (issue, id) {
-    id = (typeof id !== "undefined" && id !== null) ? id : '';
-    return $.ajax({
-      url: this.getReposUrl() + "/issues" +  this.concatToken(),
-			type: 'post',
-      dataType: 'json',
-      data: JSON.stringify(issue)
-    });
-  },
-  editIssue: function (issue, id) {
-    id = (typeof id !== "undefined" && id !== null) ? id : '';
-    return $.ajax({
-      url: this.REPO_BASE + ['repos', 'issues'].join('/') + (id && ('/' + id)) + this.concatToken(),
-      type: 'patch',
-      dataType: 'json',
-      data: JSON.stringify(issue)
-    });
-  },
-  markdown: function (data) {
-    return $.post(this.REPO_BASE + "markdown" + "?access_token=" + this.access_token,
-										JSON.stringify(data));
-  },
-  deleteLane: function (label) {
-    $.ajax({
-      url: [this.getReposUrl(), 'labels', label].join('/') + this.concatToken(),
-      type: 'delete'
-    });
-  },
-	uploadImage:function(data){
-		return $.ajax({
-			url:this.getReposUrl() + '/contents/'+ data.path + this.concatToken(),
-			type: 'put',
-			dataType: 'json',
-			data: JSON.stringify(data)
-		});
-	},
-	createBranch:function(branch,sha){
-		return $.ajax({
-			url:this.getReposUrl() + '/git/refs' + this.concatToken(),
-			type: 'post',
-			dataType: 'json',
-			data: JSON.stringify({
-				ref:branch,
-				sha:sha
-				})
-		});
-	},
-	getRefSha:function(branch){
-		return $.ajax({
-						url:this.getReposUrl() + '/git/refs' + this.concatToken(),
-			type: 'get',
-			dataType: 'json'
-		});
-	}
 };
 
 module.exports = Github;
@@ -31604,6 +31556,7 @@ var IssueBoard = React.createClass({displayName: 'IssueBoard',
 			}.bind(this)).then(
 				this.props.g.getIssues(this.state.filter).then(function(result)  {
 					if (this.isMounted()) {
+
 						var groupedIssues = groupIssues(columnizeIssues(this.state.columns))(result);
 						this.setState({
 							originalGroupedIssues: groupedIssues,
@@ -31663,7 +31616,7 @@ var IssueColumn = React.createClass({displayName: 'IssueColumn',
     var $issue = $('#issue-' + e.dataTransfer.getData('text/plain'));
     this.props.g.deleteLabel($issue.data('issue-id'), $issue.data('label'))
       .then(function(labels)  {
-        this.props.g.addLabel($issue.attr('id'), r.pluck('name')(labels).concat(column.id));
+        this.props.g.addLabel($issue.data('issue-id'), r.pluck('name')(labels).concat(column.id));
       }.bind(this));
     $(e.currentTarget)
       .find('span.lbl')
@@ -31720,7 +31673,7 @@ var Issue = React.createClass({displayName: 'Issue',
 		var detailLink = "#/" + this.props.owner + "/" + this.props.repo + "/issues/" + this.props.number;
 		var issueid = "issue-" + this.props.number
 		return (
-			React.DOM.div({id: issueid, 'data-issue-id': this.props.number, 'data-label': this.props.column, draggable: "true", className: "blankslate hide-buttons", onDragStart: this.dragStart}, 
+			React.DOM.div({id: issueid, 'data-issue-id': this.props.number, 'data-label': this.props.label, draggable: "true", className: "blankslate hide-buttons", onDragStart: this.dragStart}, 
         React.DOM.a({'data-issue-id': this.props.number, className: "popable", rel: "facebox", href: detailLink, onClick: this.revealIssue}, 
           
           React.DOM.h4({className: "list-group-item-name"}, this.props.title)
