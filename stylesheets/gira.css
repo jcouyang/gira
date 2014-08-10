@@ -1,3 +1,6 @@
+.new-label {
+		display:block;
+}
 .list-group-item-name {
     font-size: 15px;
     line-height: 1.3;

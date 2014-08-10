@@ -24,9 +24,9 @@ var groupIssues = r.foldl(
 	});
 
 var IssueBoard = React.createClass({
-	fetchIssues: function(){
+	fetchIssues: function(newfilter){
 		console.log('fetching issue')
-		return this.props.g.getIssues(this.state.filter).then((result) => {
+		return this.props.g.getIssues(newfilter).then((result) => {
 			if (this.isMounted()) {
 				var groupedIssues = groupIssues(columnizeIssues(this.state.columns))(result);
 				this.setState({
@@ -46,15 +46,16 @@ var IssueBoard = React.createClass({
 		})(creteria.split(' '));
 		var fetchedIssues = $.Deferred().resolve('hehe');
 		if(filters.length>0){
-			this.setState({
-				filter: r.foldl((acc, filter) => {
+			var newfilter = r.foldl((acc, filter) => {
 					console.log(filter);
 					var [key, val] = filter.split(':')
 					acc[key] = val;
 					return acc;
 				}, {}, filters)
+			this.setState({
+				filter: newfilter
 			});
-			fetchedIssues = this.fetchIssues();
+			fetchedIssues = this.fetchIssues(newfilter);
 		}
 		if(keyword.length>0){
 			console.log(keyword)

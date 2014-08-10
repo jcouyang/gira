@@ -31205,9 +31205,9 @@ var groupIssues = r.foldl(
 	});
 
 var IssueBoard = React.createClass({displayName: 'IssueBoard',
-	fetchIssues: function(){
+	fetchIssues: function(newfilter){
 		console.log('fetching issue')
-		return this.props.g.getIssues(this.state.filter).then(function(result)  {
+		return this.props.g.getIssues(newfilter).then(function(result)  {
 			if (this.isMounted()) {
 				var groupedIssues = groupIssues(columnizeIssues(this.state.columns))(result);
 				this.setState({
@@ -31227,15 +31227,16 @@ var IssueBoard = React.createClass({displayName: 'IssueBoard',
 		})(creteria.split(' '));
 		var fetchedIssues = $.Deferred().resolve('hehe');
 		if(filters.length>0){
-			this.setState({
-				filter: r.foldl(function(acc, filter)  {
+			var newfilter = r.foldl(function(acc, filter)  {
 					console.log(filter);
 					var $__0=   filter.split(':'),key=$__0[0],val=$__0[1]
 					acc[key] = val;
 					return acc;
 				}, {}, filters)
+			this.setState({
+				filter: newfilter
 			});
-			fetchedIssues = this.fetchIssues();
+			fetchedIssues = this.fetchIssues(newfilter);
 		}
 		if(keyword.length>0){
 			console.log(keyword)
@@ -31323,22 +31324,26 @@ module.exports = IssueBoard;
 
 },{"./filter-form":149,"./issue-column":150,"jquery":2,"ramda":3,"react":147}],149:[function(require,module,exports){
 /** @jsx React.DOM */
-	var React = require('react');
+var React = require('react');
+var $ = require('jquery');
 var FilterForm = React.createClass({displayName: 'FilterForm',
 	getInitialState: function() {
     return {value: ''};
   },
 	createLabel: function(e){
+		console.log('create label')
 		var labelLocation = $(e.currentTarget).attr('href').replace('#','')
 		$(".facebox-content").load(labelLocation.concat(" #new_label"))
 	},
 	createIssue: function(e){
+		console.debug('create issue')
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
+		console.debug(issueLocation)
 		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
 	},
 	filterIssues: function(e) {
 		e.stopPropagation();
-		var creteria = e.target.value;		
+		var creteria = $('#issue-filter').val();		
 		this.props.onFilterSubmit(creteria);
 		this.state.setState({value:creteria});
 		return false;
@@ -31351,59 +31356,23 @@ var FilterForm = React.createClass({displayName: 'FilterForm',
 	addFilter: function(){
 		this.state.setState({value:'state:close'})
 	},
+	componentDidMount: function(){
+		$(document).on("close.facebox", function(){
+			console.log('closed facebox')
+		})
+	},
 	render:function(){
 		return (
 			React.DOM.div({className: "subnav"}, 
-				React.DOM.a({href: "#issues/new", className: "button primary right", 'data-hotkey': "c", rel: "facebox", onClick: this.createIssue}, 
+				React.DOM.a({className: "button primary right", 'data-hotkey': "l", rel: "facebox", href: "#issues/new", onClick: this.createIssue}, 
 					"New issue"
 				), 
-				React.DOM.a({href: "#/jcouyang/gira/labels", className: "button primary right", 'data-hotkey': "c", rel: "facebox", onClick: this.createLabel}, 
+				React.DOM.a({href: "#labels", rel: "facebox", href: "#/jcouyang/gira/labels", className: "button primary right", 'data-hotkey': "c", onClick: this.createLabel}, 
 					"New Label"
 				), 
 				React.DOM.div({className: "right"}, 
 					React.DOM.div({className: "left select-menu js-menu-container js-select-menu subnav-search-context"}, 
-						React.DOM.div({className: "left select-menu js-menu-container js-select-menu subnav-search-context"}, 
-							React.DOM.button({'aria-haspopup': "true", type: "button", className: "button select-menu-button js-menu-target"}, 
-								"Filters"
-							), 
-							React.DOM.div({'aria-hidden': "false", className: "select-menu-modal-holder js-menu-content js-navigation-container js-active-navigation-container"}, 
-								React.DOM.div({className: "select-menu-modal"}, 
-									React.DOM.div({className: "select-menu-list"}, 
-										React.DOM.a({className: "select-menu-item js-navigation-item", href: "#"}, 
-											React.DOM.div({className: "select-menu-item-text"}, 
-												"Open issues and pull requests"
-											)
-										), 
-										React.DOM.a({className: "select-menu-item js-navigation-item navigation-focus", href: "#"}, 
-											React.DOM.div({className: "select-menu-item-text"}, 
-												"Your issues"
-											)
-										), 
-										React.DOM.a({className: "select-menu-item js-navigation-item", href: "#", onChange: this.addFilter}, 
-											React.DOM.div({className: "select-menu-item-text"}, 
-												"Your pull requests"
-											)
-										), 
-										React.DOM.a({className: "select-menu-item js-navigation-item", href: "/jcouyang/gira/issues?q=is%3Aopen+assignee%3Ajcouyang"}, 
-											React.DOM.div({className: "select-menu-item-text"}, 
-												"Everything assigned to you"
-											)
-										), 
-										React.DOM.a({className: "select-menu-item js-navigation-item", href: "/jcouyang/gira/issues?q=is%3Aopen+mentions%3Ajcouyang"}, 
-											React.DOM.div({className: "select-menu-item-text"}, 
-												"Everything mentioning you"
-											)
-										), 
-										React.DOM.a({target: "_blank", className: "select-menu-item js-navigation-item", href: "https://help.github.com/articles/searching-issues"}, 
-											React.DOM.span({className: "select-menu-item-icon octicon octicon-link-external"}), 
-											React.DOM.div({className: "select-menu-item-text"}, 
-												React.DOM.strong(null, "View advanced search syntax")
-											)
-										)
-									)
-								)
-							)
-						), 
+		
 						React.DOM.form({className: "subnav-search subnav-divider-right left", onSubmit: this.filterIssues}, 
 							React.DOM.input({name: "q", id: "issue-filter", value: this.state.value, className: "subnav-search-input input-contrast", placeholder: "Search all issues", type: "text", ref: "creteria", onChange: this.filterIssues}), 
 							React.DOM.span({className: "octicon octicon-search subnav-search-icon"})
@@ -31416,7 +31385,7 @@ var FilterForm = React.createClass({displayName: 'FilterForm',
 })
 module.exports = FilterForm;
 
-},{"react":147}],150:[function(require,module,exports){
+},{"jquery":2,"react":147}],150:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 var $ = require('jquery');
