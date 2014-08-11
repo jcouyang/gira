@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var react = require('gulp-react');
+var concat = require('gulp-concat');
 var browserify = require('gulp-browserify');
 var paths = {
   scripts: ['src/**/*.js'],
@@ -17,7 +18,6 @@ gulp.task('reactify', function(){
 gulp.task('scripts', ['reactify'], function() {
   return gulp.src(paths.scripts)
 		.pipe(browserify())
-    .pipe(gulp.dest(GM_location))
 	  .pipe(gulp.dest("javascripts"));
 });
 
@@ -25,6 +25,12 @@ gulp.task('default', ['reactify', 'tests'], function() {
   return gulp.src(paths.scripts)
 		.pipe(browserify())
 	  .pipe(gulp.dest("javascripts"));
+});
+
+gulp.task('grease', ['default'], function(){
+	return gulp.src(['javascripts/gira.user.js', 'javascripts/gira.js'])
+		.pipe(concat('gira.user.js'))
+		.pipe(gulp.dest('greasemonkey'));
 });
 
 gulp.task('tests', function(){

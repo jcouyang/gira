@@ -31367,10 +31367,12 @@ Github.prototype = {
     if (window.location.search && r.test(window.location.search)) {
 
       var m = r.exec(location.search);
-      return request("http://query.yahooapis.com/v1/public/yql?q=env%20%22store%3A%2F%2F0zaLUaPXLo4GWBb1koVqO6%22%3Bselect%20OAuth%20from%20github%20where%20CODE%3D%22" + m.pop() + "%22&format=json&diagnostics=true")
+      return request("http://query.yahooapis.com/v1/public/yql?q=env%20%22store%3A%2F%2F0zaLUaPXLo4GWBb1koVqO6%22%3Bselect%20OAuth%20from%20github%20where%20CODE%3D%22" + m.pop() + "%22&format=json&diagnostics=true",'get')
 				.then(function (data) {
-					store.set("access_token", data.query.results.token.OAuth.access_token);
-					that.access_token=store.get('access_token');
+					var token = data.query.results.token.OAuth.access_token;
+					console.log(token);
+					store.set("access_token", token);
+					that.access_token=token;
 					console.log("token seted");
 					return "token seted";
       }, function (error) {
