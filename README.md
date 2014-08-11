@@ -1,3 +1,5 @@
+![](https://travis-ci.org/jcouyang/gira.svg?branch=master)
+
 ## HOW TO USE
 
 #### 1 install Grease Monkey :monkey:
