@@ -26,15 +26,12 @@ var IssueColumn = React.createClass({
 	render: function(){
 		var issueNodes = this.props.issues.map((issue) => {
 			return (
-				<Issue labels={issue.labels} name={issue.name} number={issue.number} url={issue.html_url} title={issue.title} repo={this.props.repo} owner={this.props.owner} label={this.props.columnName}/>
+				<Issue labels={issue.labels} name={issue.name} number={issue.number} url={issue.html_url} title={issue.title} repo={this.props.repo} owner={this.props.owner} label={this.props.columnName} milestone={issue.milestone} comments={issue.comments} user={issue.user}/>
 			)
 		})
 		return (
 			<div id={this.props.columnName} className="table-column" onDrop={this.drop} onDragOver={this.dragover}>
 				<span className="num hide-buttons">{this.props.columnName}
-					<a href="#" data={this.props.columnName} type="button" className="remove-lane">
-						<span className="octicon octicon-remove-close close"></span>
-					</a>
 				</span>
 				<span className="lbl">
 					{issueNodes}

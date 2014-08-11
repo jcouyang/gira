@@ -31415,15 +31415,12 @@ var IssueColumn = React.createClass({displayName: 'IssueColumn',
 	render: function(){
 		var issueNodes = this.props.issues.map(function(issue)  {
 			return (
-				Issue({labels: issue.labels, name: issue.name, number: issue.number, url: issue.html_url, title: issue.title, repo: this.props.repo, owner: this.props.owner, label: this.props.columnName})
+				Issue({labels: issue.labels, name: issue.name, number: issue.number, url: issue.html_url, title: issue.title, repo: this.props.repo, owner: this.props.owner, label: this.props.columnName, milestone: issue.milestone, comments: issue.comments, user: issue.user})
 			)
 		}.bind(this))
 		return (
 			React.DOM.div({id: this.props.columnName, className: "table-column", onDrop: this.drop, onDragOver: this.dragover}, 
-				React.DOM.span({className: "num hide-buttons"}, this.props.columnName, 
-					React.DOM.a({href: "#", data: this.props.columnName, type: "button", className: "remove-lane"}, 
-						React.DOM.span({className: "octicon octicon-remove-close close"})
-					)
+				React.DOM.span({className: "num hide-buttons"}, this.props.columnName
 				), 
 				React.DOM.span({className: "lbl"}, 
 					issueNodes
@@ -31438,6 +31435,8 @@ module.exports = IssueColumn;
 /** @jsx React.DOM */
 var React = require('react');
 var $ = require('jquery');
+var r = require('ramda')
+var rejectColumnLabel = r.filter(function(label){return !(/\d+-(\w+)/.test(label.name));})
 
 var Issue = React.createClass({displayName: 'Issue',
 	dragStart: function(e) {
@@ -31450,7 +31449,7 @@ var Issue = React.createClass({displayName: 'Issue',
 		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
 	},
 	render: function(){
-		var labelNodes = this.props.labels.map(function(label){
+		var labelNodes = rejectColumnLabel(this.props.labels).map(function(label){
 			var colorClass = "label labelstyle-#".concat(label.color);
 			var colorStyle = {"background-color":"#".concat(label.color)};
 			return (
@@ -31459,19 +31458,41 @@ var Issue = React.createClass({displayName: 'Issue',
 				)
 			)
 		})
+		
 		var detailLink = "#/" + this.props.owner + "/" + this.props.repo + "/issues/" + this.props.number;
 		var issueid = "issue-" + this.props.number
+		var showMilestone = {
+			display: "block"
+		}
+		var milestoneNode = this.props.milestone? (
+			React.DOM.a({className: "milestone-link css-truncate tooltipped tooltipped-n", 'aria-label': "View all issues in this milestone", href: "#"}, 
+        React.DOM.span({className: "octicon octicon-milestone"}), 
+        React.DOM.span({className: "css-truncate-target"}, 
+					this.props.milestone.title
+        )
+      )
+		):""
+		var commentClass = this.props.comments > 0?"issue-comments-link left":"issue-comments-link left no-comment"
 		return (
 			React.DOM.div({id: issueid, 'data-issue-id': this.props.number, 'data-label': this.props.label, draggable: "true", className: "blankslate hide-buttons", onDragStart: this.dragStart}, 
         React.DOM.a({'data-issue-id': this.props.number, className: "popable", rel: "facebox", href: detailLink, onClick: this.revealIssue}, 
-          
           React.DOM.h4({className: "list-group-item-name"}, this.props.title)
         ), 
-				labelNodes	
+				labelNodes, 
+				milestoneNode, 
+				
+				React.DOM.a({href: "#", className: commentClass}, 
+					React.DOM.span({className: "octicon octicon-comment"}), 
+					this.props.comments
+				), 
+
+				React.DOM.a({href: "#", 'aria-label': "View everything assigned to jcouyang", className: "tooltipped tooltipped-s right"}, 
+          React.DOM.img({alt: this.props.user.login, src: this.props.user.avatar_url, height: "16", width: "16"})
+				)
       )
 						);
 	}
 });
 module.exports = Issue;
 
-},{"jquery":2,"react":147}]},{},[148])
+},{"jquery":2,"ramda":3,"react":147}]},{},[148])

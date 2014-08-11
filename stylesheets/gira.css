@@ -1,3 +1,21 @@
+.issue-comments-link.no-comment {
+		color:#eee;
+}
+
+.issue-comments-link{
+		color:#999;
+}
+
+.issue-comments-link .octicon-comment {
+		margin-right:3px;
+}
+.milestone-link .octicon-milestone {
+		margin-left: 5px;
+}
+.milestone-link .css-truncate-target {
+		margin-top: 5px;
+}
+
 .new-label {
 		display:block;
 }
@@ -46,6 +64,10 @@
 		margin-top:-5px;
 }
 
+.issue-comments-link {
+    color: #999;
+		margin:5px
+}
 .sidebar-milestone-widget {
 		margin:5px;
 		width:200px;
