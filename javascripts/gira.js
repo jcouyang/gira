@@ -31226,16 +31226,17 @@ var FilterForm = React.createClass({displayName: 'FilterForm',
 		e.stopPropagation();
 		var creteria = $('#issue-filter').val();		
 		this.props.onFilterSubmit(creteria);
-		this.state.setState({value:creteria});
+		this.setState({value:creteria});
 		return false;
 	},
-	handleFilterButton:function(type){
-		var creteria='is:'+type;
+	handleFilterButton:function(creteria){
+		this.setState({value:creteria});
 		this.props.onFilterSubmit(creteria)
-		this.state.setState({value:creteria});
 	},
 	addFilter: function(){
-		this.state.setState({value:'state:close'})
+		console.debug('adding filter')
+		this.setState({value:'state:close'})
+		this.props.onFilterSubmit('state:close')
 	},
 	componentDidMount: function(){
 		$(document).on("close.facebox", function(){
@@ -31253,12 +31254,36 @@ var FilterForm = React.createClass({displayName: 'FilterForm',
 				), 
 				React.DOM.div({className: "right"}, 
 					React.DOM.div({className: "left select-menu js-menu-container js-select-menu subnav-search-context"}, 
+						React.DOM.button({className: "button select-menu-button js-menu-target", type: "button", 'aria-haspopup': "true"}, 
+							"Filters"
+						), 
+						React.DOM.div({className: "select-menu-modal-holder js-menu-content js-navigation-container", 'aria-hidden': "false"}, 
+							React.DOM.div({className: "select-menu-modal"}, 
+								React.DOM.div({className: "select-menu-list"}, 
+									React.DOM.a({href: "#", className: "select-menu-item js-navigation-item", onClick: this.handleFilterButton.bind(this,'creator:' + this.props.owner)}, 
+										React.DOM.div({className: "select-menu-item-text"}, 
+											"Your Issues"
+										)
+									), 
+									React.DOM.a({href: "#", className: "select-menu-item js-navigation-item", onClick: this.handleFilterButton.bind(this,'mentioned:' + this.props.owner)}, 
+										React.DOM.div({className: "select-menu-item-text"}, 
+											"Everything mentioning you"
+										)
+									), 
+									React.DOM.a({href: "#", className: "select-menu-item js-navigation-item", onClick: this.handleFilterButton.bind(this,'assignee:' + this.props.owner)}, 
+										React.DOM.div({className: "select-menu-item-text"}, 
+											"Everything assigned to you"
+										)
+									)
+								)
+							)
+						)
+					), 
 		
 						React.DOM.form({className: "subnav-search subnav-divider-right left", onSubmit: this.filterIssues}, 
-							React.DOM.input({name: "q", id: "issue-filter", value: this.state.value, className: "subnav-search-input input-contrast", placeholder: "Search all issues", type: "text", ref: "creteria", onChange: this.filterIssues}), 
+							React.DOM.input({name: "q", id: "issue-filter", value: this.state.value, className: "subnav-search-input input-contrast", placeholder: "Search all issues", type: "text", value: this.state.value, ref: "creteria", onChange: this.filterIssues}), 
 							React.DOM.span({className: "octicon octicon-search subnav-search-icon"})
 						)
-					)
 				)
 			)
 		)
@@ -31543,12 +31568,12 @@ var IssueBoard = React.createClass({displayName: 'IssueBoard',
 		var columnNodes = r.uniq(columns).map( function(column){
 			var issueInColumn = this.state.groupedIssues[column]
 			return (
-				IssueColumn({g: this.props.g, columnName: column, issues: issueInColumn, owner: "jcouyang", repo: "gira"})
+				IssueColumn({g: this.props.g, columnName: column, issues: issueInColumn, owner: this.props.g.owner, repo: this.props.g.repo})
 			);
 		}.bind(this));
 		return (
 			React.DOM.div(null, 
-				FilterForm({onFilterSubmit: this.handleFilterSubmit}), 
+				FilterForm({onFilterSubmit: this.handleFilterSubmit, owner: this.props.g.owner}), 
 				
 				React.DOM.div({className: "box-body"}, 
 					React.DOM.div({id: "contributions-calendar"}, 
@@ -31645,7 +31670,7 @@ var Issue = React.createClass({displayName: 'Issue',
 			display: "block"
 		}
 		var milestoneNode = this.props.milestone? (
-			React.DOM.a({className: "milestone-link css-truncate tooltipped tooltipped-n", 'aria-label': "View all issues in this milestone", href: "#"}, 
+			React.DOM.a({className: "milestone-link css-truncate tooltipped tooltipped-n", 'aria-label': "View all issues in this milestone", href: '/'+ this.props.owner + '/'+ this.props.repo + '/milestones/' + this.props.milestone.title}, 
         React.DOM.span({className: "octicon octicon-milestone"}), 
         React.DOM.span({className: "css-truncate-target"}, 
 					this.props.milestone.title
@@ -31661,7 +31686,7 @@ var Issue = React.createClass({displayName: 'Issue',
 				labelNodes, 
 				milestoneNode, 
 				
-				React.DOM.a({href: "#", className: commentClass}, 
+				React.DOM.a({className: commentClass}, 
 					React.DOM.span({className: "octicon octicon-comment"}), 
 					this.props.comments
 				), 

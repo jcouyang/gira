@@ -30,7 +30,7 @@ var Issue = React.createClass({
 			display: "block"
 		}
 		var milestoneNode = this.props.milestone? (
-			<a className="milestone-link css-truncate tooltipped tooltipped-n" aria-label="View all issues in this milestone" href="#">
+			<a className="milestone-link css-truncate tooltipped tooltipped-n" aria-label="View all issues in this milestone" href={'/'+ this.props.owner + '/'+ this.props.repo + '/milestones/' + this.props.milestone.title }>
         <span className="octicon octicon-milestone"></span>
         <span className="css-truncate-target">
 					{this.props.milestone.title}
@@ -46,12 +46,12 @@ var Issue = React.createClass({
 				{labelNodes}
 				{milestoneNode}
 				
-				<a href="#" className={commentClass}>
+				<a className={commentClass}>
 					<span className="octicon octicon-comment"></span>
 					{this.props.comments}
 				</a>
 
-				<a href="#" aria-label={"View everything assigned to" + this.props.user.login} className="tooltipped tooltipped-s right">
+				<a href='#' aria-label={"View everything assigned to" + this.props.user.login} className="tooltipped tooltipped-s right">
           <img alt={this.props.user.login}  src={this.props.user.avatar_url} height="16" width="16"/>
 				</a>
       </div>

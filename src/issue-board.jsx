@@ -119,12 +119,12 @@ var IssueBoard = React.createClass({
 		var columnNodes = r.uniq(columns).map( (column)=>{
 			var issueInColumn = this.state.groupedIssues[column]
 			return (
-				<IssueColumn g={this.props.g} columnName={column} issues={issueInColumn} owner='jcouyang' repo='gira'/>
+				<IssueColumn g={this.props.g} columnName={column} issues={issueInColumn} owner={this.props.g.owner} repo={this.props.g.repo}/>
 			);
 		});
 		return (
 			<div>
-				<FilterForm onFilterSubmit={this.handleFilterSubmit}/>
+				<FilterForm onFilterSubmit={this.handleFilterSubmit} owner={this.props.g.owner}/>
 				
 				<div className="box-body">
 					<div id="contributions-calendar">
