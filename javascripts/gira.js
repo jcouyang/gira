@@ -31260,6 +31260,11 @@ var FilterForm = React.createClass({displayName: 'FilterForm',
 						React.DOM.div({className: "select-menu-modal-holder js-menu-content js-navigation-container", 'aria-hidden': "false"}, 
 							React.DOM.div({className: "select-menu-modal"}, 
 								React.DOM.div({className: "select-menu-list"}, 
+									React.DOM.a({href: "#", className: "select-menu-item js-navigation-item", onClick: this.handleFilterButton.bind(this,'state:open')}, 
+										React.DOM.div({className: "select-menu-item-text"}, 
+											"Open Issues and Pull Requests"
+										)
+									), 
 									React.DOM.a({href: "#", className: "select-menu-item js-navigation-item", onClick: this.handleFilterButton.bind(this,'creator:' + this.props.owner)}, 
 										React.DOM.div({className: "select-menu-item-text"}, 
 											"Your Issues"

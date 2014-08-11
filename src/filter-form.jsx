@@ -53,6 +53,11 @@ var FilterForm = React.createClass({
 						<div className="select-menu-modal-holder js-menu-content js-navigation-container" aria-hidden="false">
 							<div className="select-menu-modal">
 								<div className="select-menu-list">
+									<a href="#" className="select-menu-item js-navigation-item" onClick={this.handleFilterButton.bind(this,'state:open')}>
+										<div className="select-menu-item-text">
+											Open Issues and Pull Requests
+										</div>
+									</a>
 									<a href="#" className="select-menu-item js-navigation-item" onClick={this.handleFilterButton.bind(this,'creator:' + this.props.owner)}>
 										<div className="select-menu-item-text">
 											Your Issues
