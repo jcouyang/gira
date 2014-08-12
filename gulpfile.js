@@ -8,7 +8,7 @@ var paths = {
 	tests: ['__tests__/**/*.jsx']
 };
 
-var GM_location = '/Users/twer/Library/Application Support/Firefox/Profiles/d294ojk6.default/gm_scripts/gira_test-1';
+var GM_location = '/Users/twer/Library/Application Support/Firefox/Profiles/d294ojk6.default/gm_scripts/gira';
 gulp.task('reactify', function(){
 	return gulp.src(paths.jsx)
 		.pipe(react({"harmony":true}))
@@ -30,7 +30,8 @@ gulp.task('default', ['reactify', 'tests'], function() {
 gulp.task('grease', ['default'], function(){
 	return gulp.src(['javascripts/gira.user.js', 'javascripts/gira.js'])
 		.pipe(concat('gira.user.js'))
-		.pipe(gulp.dest('greasemonkey'));
+		.pipe(gulp.dest('greasemonkey'))
+	.pipe(gulp.dest(GM_location));
 });
 
 gulp.task('tests', function(){

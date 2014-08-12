@@ -31183,10 +31183,11 @@ var React = require('react');
 var IssueBoard = require('./issue-board')
 var G = require('./github-api')
 var g = new G();
+var $ = require('jquery')
 g.getAccessToken().then(function (login) {
-	if (login==='token seted')
+	if (login==='token seted'){
 		window.location = 'http://getgira.github.io/auth-done.html'
-	else{
+	}	else if (g.access_token){
 		var $__0=  window.location.pathname.split("/"),owner=$__0[1],repo=$__0[2];
 		console.log('loading issue board for ',owner,repo )
  		g.owner = owner;
@@ -31195,6 +31196,8 @@ g.getAccessToken().then(function (login) {
 			IssueBoard({g: g, owner: owner, repo: repo}),
 			document.querySelector('#js-repo-pjax-container')
 		)
+	}else {
+		$('.pagehead-actions').append('<li><a href="https://github.com/login/oauth/authorize?client_id=666dc0b3b994cc362ca2&scope=public_repo,user" class="button danger right" data-hotkey="g">Enable Gira</a></li>');
 	}
 
 }, function (error) {
@@ -31203,7 +31206,7 @@ g.getAccessToken().then(function (login) {
 
 
 
-},{"./github-api":150,"./issue-board":151,"react":147}],149:[function(require,module,exports){
+},{"./github-api":150,"./issue-board":151,"jquery":2,"react":147}],149:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 var $ = require('jquery');
