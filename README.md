@@ -22,7 +22,7 @@ or login [here](https://github.com/login/oauth/authorize?client_id=666dc0b3b994c
 #### 4 now open any issue page
 for example https://github.com/jcouyang/gira/issues
 
-#### 5 [wiki how](wiki/How-To)
+#### 5 [wiki how](https://github.com/jcouyang/gira/wiki/How-To)
 ## FOR DEVEPLOMENT
 ### install dependency
 ```
