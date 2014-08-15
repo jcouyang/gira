@@ -9,7 +9,7 @@
 then restart your browser
 
 #### 2 install Gira plugin
- by just click  [gira.user.js](https://rawgit.com/jcouyang/gira/master/greasemonkey/gira.user.js)
+by just click  [gira.user.js](https://rawgit.com/jcouyang/gira/master/greasemonkey/gira.user.js)
 
 #### 3 login
 
@@ -19,9 +19,10 @@ or login by click[here](https://github.com/login/oauth/authorize?client_id=666dc
 
 or login [here](https://github.com/login/oauth/authorize?client_id=666dc0b3b994cc362ca2&scope=private_repo,user) for **private** repo access
 
-#### now open any issue page
+#### 4 now open any issue page
 for example https://github.com/jcouyang/gira/issues
 
+#### 5 [wiki how](wiki/How-To)
 ## FOR DEVEPLOMENT
 ### install dependency
 ```
