@@ -6,7 +6,7 @@
 // @include https://github.com/*/*/issues#*
 // @include https://github.com/*/*/issues/
 // @include http://getgira.github.io/?code*
-// @version 1
+// @version 1.1
 // @grant GM_xmlhttpRequest
 // @grant GM_addStyle
 // @grant GM_getResourceText
