@@ -26,7 +26,7 @@ var IssueColumn = React.createClass({
 	render: function(){
 		var issueNodes = this.props.issues.map((issue) => {
 			return (
-				<Issue labels={issue.labels} name={issue.name} number={issue.number} url={issue.html_url} title={issue.title} repo={this.props.repo} owner={this.props.owner} label={this.props.columnName} milestone={issue.milestone} comments={issue.comments} user={issue.user}/>
+				<Issue labels={issue.labels} name={issue.name} number={issue.number} url={issue.html_url} title={issue.title} repo={this.props.repo} owner={this.props.owner} label={this.props.columnName} milestone={issue.milestone} comments={issue.comments} user={issue.user} pull={issue.pull_request}/>
 			)
 		})
 		return (

@@ -10,8 +10,9 @@ var Issue = React.createClass({
     e.dataTransfer.setData('text/plain', $(e.currentTarget).data('issue-id'));
   },
 	revealIssue: function(e){
+		var container = this.props.pull?' .view-pull-request':' #issues_next'
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
-		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
+		$(".facebox-content").load(issueLocation.concat(container));
 	},
 	render: function(){
 		var labelNodes = rejectColumnLabel(this.props.labels).map((label)=>{
@@ -23,8 +24,8 @@ var Issue = React.createClass({
 				</span>
 			)
 		})
-		
-		var detailLink = "#/" + this.props.owner + "/" + this.props.repo + "/issues/" + this.props.number;
+		var type = this.props.pull?"pull":"issues"
+		var detailLink = "#/" + [this.props.owner, this.props.repo, type, this.props.number].join('/')
 		var issueid = "issue-" + this.props.number
 		var showMilestone = {
 			display: "block"

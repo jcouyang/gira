@@ -31445,7 +31445,7 @@ var IssueColumn = React.createClass({displayName: 'IssueColumn',
 	render: function(){
 		var issueNodes = this.props.issues.map(function(issue)  {
 			return (
-				Issue({labels: issue.labels, name: issue.name, number: issue.number, url: issue.html_url, title: issue.title, repo: this.props.repo, owner: this.props.owner, label: this.props.columnName, milestone: issue.milestone, comments: issue.comments, user: issue.user})
+				Issue({labels: issue.labels, name: issue.name, number: issue.number, url: issue.html_url, title: issue.title, repo: this.props.repo, owner: this.props.owner, label: this.props.columnName, milestone: issue.milestone, comments: issue.comments, user: issue.user, pull: issue.pull_request})
 			)
 		}.bind(this))
 		return (
@@ -31475,8 +31475,9 @@ var Issue = React.createClass({displayName: 'Issue',
     e.dataTransfer.setData('text/plain', $(e.currentTarget).data('issue-id'));
   },
 	revealIssue: function(e){
+		var container = this.props.pull?' .view-pull-request':' #issues_next'
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
-		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
+		$(".facebox-content").load(issueLocation.concat(container));
 	},
 	render: function(){
 		var labelNodes = rejectColumnLabel(this.props.labels).map(function(label){
@@ -31488,8 +31489,8 @@ var Issue = React.createClass({displayName: 'Issue',
 				)
 			)
 		})
-		
-		var detailLink = "#/" + this.props.owner + "/" + this.props.repo + "/issues/" + this.props.number;
+		var type = this.props.pull?"pull":"issues"
+		var detailLink = "#/" + [this.props.owner, this.props.repo, type, this.props.number].join('/')
 		var issueid = "issue-" + this.props.number
 		var showMilestone = {
 			display: "block"

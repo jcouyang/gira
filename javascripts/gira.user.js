@@ -2,7 +2,9 @@
 // @name gira
 // @namespace oyanglul.us
 // @description gira test
-// @include https://github.com/*/*/issues*
+// @include https://github.com/*/*/issues
+// @include https://github.com/*/*/issues#*
+// @include https://github.com/*/*/issues/
 // @include http://getgira.github.io/?code*
 // @version 1
 // @grant GM_xmlhttpRequest
