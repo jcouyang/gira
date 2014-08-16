@@ -32,9 +32,23 @@ npm install
 
 ### compile
 ```
-gulp script
+
+gulp// compile everything
+gulp scripts //to compile, reactify and browerify
+
+gulp tests // compile tests file
+
+// configure GM_location in gulpfile.js, then
+gulp grease // to generate greasemonkey user script and cp to greasemonkey script local location
+
 ```
-to compile, reactify and browerify
+
+### tests
+
+using ![jest](http://facebook.github.io/jest/)
+```
+npm test
+```
 
 
 
