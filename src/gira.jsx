@@ -22,5 +22,3 @@ g.getAccessToken().then(function (login) {
 }, function (error) {
 	console.log("invalid token", error);
 });
-
-

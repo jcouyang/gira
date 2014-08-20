@@ -31475,7 +31475,7 @@ var Issue = React.createClass({displayName: 'Issue',
     e.dataTransfer.setData('text/plain', $(e.currentTarget).data('issue-id'));
   },
 	revealIssue: function(e){
-		var container = this.props.pull?' .view-pull-request':' #issues_next'
+		var container = this.props.pull?' .view-pull-request':' #show_issue'
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
 		$(".facebox-content").load(issueLocation.concat(container));
 	},
@@ -31511,7 +31511,7 @@ var Issue = React.createClass({displayName: 'Issue',
         ), 
 				labelNodes, 
 				milestoneNode, 
-				
+
 				React.DOM.a({className: commentClass}, 
 					React.DOM.span({className: "octicon octicon-comment"}), 
 					this.props.comments

@@ -22,6 +22,6 @@ describe('Issue', function(){
 		jqueryObj.attr.mockReturnValue("#hehe")
 		$.mockReturnValue(jqueryObj)
 		TestUtils.Simulate.click(linkElement, {currentTarget:"#issue-123"});
-		expect(jqueryObj.load).toBeCalledWith("hehe #issues_next")
+		expect(jqueryObj.load).toBeCalledWith("hehe #show_issue")
 	})
 })

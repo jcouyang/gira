@@ -10,7 +10,7 @@ var Issue = React.createClass({
     e.dataTransfer.setData('text/plain', $(e.currentTarget).data('issue-id'));
   },
 	revealIssue: function(e){
-		var container = this.props.pull?' .view-pull-request':' #issues_next'
+		var container = this.props.pull?' .view-pull-request':' #show_issue'
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
 		$(".facebox-content").load(issueLocation.concat(container));
 	},
@@ -41,12 +41,12 @@ var Issue = React.createClass({
 		var commentClass = this.props.comments > 0?"issue-comments-link left":"issue-comments-link left no-comment"
 		return (
 			<div id={issueid} data-issue-id={this.props.number} data-label={this.props.label} draggable="true" className="blankslate hide-buttons" onDragStart={this.dragStart}>
-        <a data-issue-id={this.props.number} className="popable" rel="facebox" href={detailLink} onClick={this.revealIssue}>          
+        <a data-issue-id={this.props.number} className="popable" rel="facebox" href={detailLink} onClick={this.revealIssue}>
           <h4 className="list-group-item-name">{this.props.title}</h4>
         </a>
 				{labelNodes}
 				{milestoneNode}
-				
+
 				<a className={commentClass}>
 					<span className="octicon octicon-comment"></span>
 					{this.props.comments}
