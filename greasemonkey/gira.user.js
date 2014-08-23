@@ -31242,7 +31242,7 @@ var FilterForm = React.createClass({displayName: 'FilterForm',
 		console.debug('create issue')
 		var issueLocation = $(e.currentTarget).attr('href').replace('#','')
 		console.debug(issueLocation)
-		$(".facebox-content").load(issueLocation.concat(" #issues_next"));
+		$(".facebox-content").load(issueLocation.concat(" #js-repo-pjax-container"));
 	},
 	filterIssues: function(e) {
 		e.stopPropagation();

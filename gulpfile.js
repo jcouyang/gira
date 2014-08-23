@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var react = require('gulp-react');
 var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
 var browserify = require('gulp-browserify');
 var paths = {
   scripts: ['src/**/*.js'],
@@ -18,6 +19,7 @@ gulp.task('reactify', function(){
 gulp.task('scripts', ['reactify'], function() {
   return gulp.src(paths.scripts)
 		.pipe(browserify())
+		.pipe(uglify())
 	  .pipe(gulp.dest("javascripts"));
 });
 

@@ -19,13 +19,15 @@
   "scripts": {
     "test": "jest"
   },
-		"jest":
-		{
-			"unmockedModulePathPatterns": ["<rootDir>/node_modules/react"]
-		},
+  "jest": {
+    "unmockedModulePathPatterns": [
+      "<rootDir>/node_modules/react"
+    ]
+  },
   "dependencies": {
     "react": "^0.11.1",
     "jquery": "^2.1.1",
-    "ramda": "^0.2.4"
+    "ramda": "^0.2.4",
+    "gulp-uglify": "^0.3.1"
   }
 }
