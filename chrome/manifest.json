@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "GIRA",
+  "version": "0.0.1",
+  "permissions": [
+    "https://api.github.com/*",
+		"storage",
+		"http://query.yahooapis.com/*"
+  ],
+  "description": "Github Issues Realy Awesome",
+
+  "author": "Ouyang Jichao",
+	"content_scripts": [
+	    {
+	      "matches": ["https://github.com/*/*/issues", "http://getgira.github.io/*"],
+	      "js": ["gira.js"],
+				"css": ["gira.css"]
+	    }
+	  ]
+}
