@@ -15,10 +15,8 @@ g.getAccessToken().then(function (login) {
 			<IssueBoard g={g} owner={owner} repo={repo}/>,
 			document.querySelector('#js-repo-pjax-container')
 		)
-	}else {
-		$('.pagehead-actions').append('<li><a href="https://github.com/login/oauth/authorize?client_id=666dc0b3b994cc362ca2&scope=public_repo,user" class="button danger right" data-hotkey="g">Enable Gira</a></li>');
 	}
-
 }, function (error) {
-	console.log("invalid token", error);
+  $('.pagehead-actions').append('<li><a href="https://github.com/login/oauth/authorize?client_id=666dc0b3b994cc362ca2&scope=public_repo,user" class="button danger right" data-hotkey="g">Enable Gira</a></li>');
+	console.debug("no token found");
 });
