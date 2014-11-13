@@ -42,7 +42,7 @@ var Issue = React.createClass({
 		return (
 			<div id={issueid} data-issue-id={this.props.number} data-label={this.props.label} draggable="true" className="blankslate hide-buttons" onDragStart={this.dragStart}>
         <a data-issue-id={this.props.number} className="popable" rel="facebox" href={detailLink} onClick={this.revealIssue}>
-          <h4 className="list-group-item-name">{this.props.title}</h4>
+          <h4>{this.props.title}</h4>
         </a>
 				{labelNodes}
 				{milestoneNode}
