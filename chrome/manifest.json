@@ -10,6 +10,10 @@
   "description": "Github Issues Realy Awesome",
 
   "author": "Ouyang Jichao",
+  "icons": {
+    "16": "assets/icon-60@2x.png",
+    "128": "assets/icon-60@3x.png"
+  },
 	"content_scripts": [
 	    {
 	      "matches": ["https://github.com/*/*/issues", "http://getgira.github.io/*"],

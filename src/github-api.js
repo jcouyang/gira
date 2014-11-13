@@ -1,11 +1,25 @@
 var $ = require('jquery');
-var store = require('./store');
+var store;
+if (process.env.NODE_ENV == "chrome")
+  store = require('./chrome_storage');
+else
+  store = require('./store');
 var Github = function (owner, repo) {
 	this.owner = owner;
 	this.repo = repo;
 	this.milestone = "";
   this.REPO_BASE = 'https://api.github.com/';
-  this.access_token = store.get('access_token');
+  this.access_token = "";
+  this.token_got = $.Deferred();
+  store.get('access_token', function(data){
+    if(typeof(data) != 'undefined' && data.access_token){
+      this.access_token = data.access_token;
+      this.token_got.resolve("yay");       
+    }else{
+      this.token_got.reject("booooo");
+    }
+
+  }.bind(this));
 };
 
 var request = function(url, method){
@@ -63,7 +77,6 @@ if(typeof GM_xmlhttpRequest != 'undefined'){
 Github.prototype = {
   getAccessToken: function () {
 		var that = this;
-		if(this.access_token) return $.Deferred().resolve(this.access_token);
     var r = /\?code=([^\/]+)\/?/;
     if (window.location.search && r.test(window.location.search)) {
 
@@ -72,7 +85,7 @@ Github.prototype = {
 				.then(function (data) {
 					var token = data.query.results.token.OAuth.access_token;
 					console.log(token);
-					store.set("access_token", token);
+					store.set({"access_token": token}, that.token_got.resolve);
 					that.access_token=token;
 					console.log("token seted");
 					return "token seted";
@@ -80,7 +93,7 @@ Github.prototype = {
         console.log("invalid code", error);
       });
     } else {
-      return $.Deferred().resolve(this.access_token);
+      return this.token_got;
     }
   },
 	getComments: function(issueId){

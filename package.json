@@ -14,7 +14,8 @@
     "gulp-browserify": "^0.5.0",
     "gulp-sourcemaps": "^1.1.0",
     "gulp-react": "^0.5.0",
-    "jest-cli": "^0.1.17"
+    "jest-cli": "^0.1.17",
+    "envify": "^3.2.0"
   },
   "scripts": {
     "test": "jest"

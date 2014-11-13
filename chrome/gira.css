@@ -16,14 +16,8 @@
 		margin-top: 5px;
 }
 
-.new-label {
+.facebox .facebox-content .new-label {
 		display:block;
-}
-.list-group-item-name {
-    font-size: 15px;
-    line-height: 1.3;
-    margin: 0 60px 2px 0;
-    word-wrap: break-word;
 }
 .marketing-section-enterprise {
 		max-height:460px;
@@ -34,6 +28,11 @@
     margin:5px;
     margin-bottom: 12px;
     padding: 5px;
+}
+
+#contributions-calendar .contrib-details {
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
 }
 
 #contributions-calendar .contrib-details span.lbl div.blankslate .octicon-remove-close {
@@ -73,15 +72,15 @@
 		width:200px;
 }
 
-.facebox-content {
+.facebox .facebox-content {
     padding-top: 40px;
-		width:800px;
+		width:691px;
 }
 
-.facebox-content .column.main {
+.facebox .facebox-content .column.main, .facebox .facebox-content .discussion-timeline {
 		width:480px;
-}
-.facebox-content .column.sidebar {
+} 
+.facebox .facebox-content .column.sidebar, .facebox .facebox-content .discussion-sidebar {
 		width:150px;
 }
 ul.color-label-list {

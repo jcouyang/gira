@@ -36,6 +36,15 @@ gulp.task('grease', ['default'], function(){
 	.pipe(gulp.dest(GM_location));
 });
 
+gulp.task('chrome', function(){
+  process.env.NODE_ENV='chrome'
+  return gulp.src("src/gira.js")
+    .pipe(browserify({
+      transform: ['envify']
+    }))
+  	.pipe(gulp.dest('chrome'))  
+});
+
 gulp.task('tests', function(){
 		return gulp.src(paths.tests)
 		.pipe(react({"harmony":true}))
@@ -46,4 +55,5 @@ gulp.task('watch', function() {
   gulp.watch(paths.jsx, ['reactify', 'scripts']);
 	  gulp.watch(paths.tests, ['tests']);
 });
+
 

@@ -30,8 +30,8 @@ var IssueColumn = React.createClass({
 			)
 		})
 		return (
-			<div id={this.props.columnName} className="table-column" onDrop={this.drop} onDragOver={this.dragover}>
-				<span className="num hide-buttons">{this.props.columnName}
+			<div id={this.props.columnName} className="contrib-column table-column" onDrop={this.drop} onDragOver={this.dragover}>
+				<span className="contrib-number hide-buttons">{this.props.columnName}
 				</span>
 				<span className="lbl">
 					{issueNodes}
