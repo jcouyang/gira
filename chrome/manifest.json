@@ -1,8 +1,18 @@
 {
   "manifest_version": 2,
   "name": "GIRA",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action":
+  {
+    "default_icon" : "assets/icon-60@2x.png",
+    "default_title" : "GIRA"
+  },
   "permissions": [
+    "declarativeContent",
     "https://api.github.com/*",
 		"storage",
 		"http://query.yahooapis.com/*"
