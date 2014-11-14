@@ -1,11 +1,10 @@
 ![](https://travis-ci.org/jcouyang/gira.svg?branch=master)
 
 ## HOW TO USE
-
-#### 1 install Grease Monkey :monkey:
-- for firefox user install [GreaseMonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) first
-- for Chrome user install [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en) first
-
+### Chrome User
+https://chrome.google.com/webstore/detail/fgmclhebkmfbpeiiomjfcfikchamelmp/publish-accepted?utm_source=chrome-ntp-icon
+### Firefox & others
+#### 1 install [GreaseMonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) first
 then restart your browser
 
 #### 2 install Gira plugin
