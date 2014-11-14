@@ -2,7 +2,7 @@
 
 ## HOW TO USE
 ### Chrome User
-https://chrome.google.com/webstore/detail/fgmclhebkmfbpeiiomjfcfikchamelmp/publish-accepted?utm_source=chrome-ntp-icon
+https://chrome.google.com/webstore/detail/fgmclhebkmfbpeiiomjfcfikchamelmp
 ### Firefox & others
 #### 1 install [GreaseMonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) first
 then restart your browser
