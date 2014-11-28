@@ -16226,6 +16226,7 @@ var HTMLDOMPropertyConfig = {
     loop: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     max: null,
     maxLength: MUST_USE_ATTRIBUTE,
+    media: MUST_USE_ATTRIBUTE,
     mediaGroup: null,
     method: null,
     min: null,
@@ -16233,6 +16234,7 @@ var HTMLDOMPropertyConfig = {
     muted: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     name: null,
     noValidate: HAS_BOOLEAN_VALUE,
+    open: null,
     pattern: null,
     placeholder: null,
     poster: null,
@@ -16253,11 +16255,12 @@ var HTMLDOMPropertyConfig = {
     selected: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     shape: null,
     size: MUST_USE_ATTRIBUTE | HAS_POSITIVE_NUMERIC_VALUE,
+    sizes: MUST_USE_ATTRIBUTE,
     span: HAS_POSITIVE_NUMERIC_VALUE,
     spellCheck: null,
     src: null,
     srcDoc: MUST_USE_PROPERTY,
-    srcSet: null,
+    srcSet: MUST_USE_ATTRIBUTE,
     start: HAS_NUMERIC_VALUE,
     step: null,
     style: null,
@@ -16751,8 +16754,20 @@ var ReactServerRendering = require("./ReactServerRendering");
 var ReactTextComponent = require("./ReactTextComponent");
 
 var onlyChild = require("./onlyChild");
+var warning = require("./warning");
 
 ReactDefaultInjection.inject();
+
+// Specifying arguments isn't necessary since we just use apply anyway, but it
+// makes it clear for those actually consuming this API.
+function createDescriptor(type, props, children) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  return type.apply(null, args);
+}
+
+if ("production" !== process.env.NODE_ENV) {
+  var _warnedForDeprecation = false;
+}
 
 var React = {
   Children: {
@@ -16767,10 +16782,18 @@ var React = {
     EventPluginUtils.useTouchEvents = shouldUseTouch;
   },
   createClass: ReactCompositeComponent.createClass,
-  createDescriptor: function(type, props, children) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    return type.apply(null, args);
+  createDescriptor: function() {
+    if ("production" !== process.env.NODE_ENV) {
+      ("production" !== process.env.NODE_ENV ? warning(
+        _warnedForDeprecation,
+        'React.createDescriptor is deprecated and will be removed in the ' +
+        'next version of React. Use React.createElement instead.'
+      ) : null);
+      _warnedForDeprecation = true;
+    }
+    return createDescriptor.apply(this, arguments);
   },
+  createElement: createDescriptor,
   constructAndRenderComponent: ReactMount.constructAndRenderComponent,
   constructAndRenderComponentByID: ReactMount.constructAndRenderComponentByID,
   renderComponent: ReactPerf.measure(
@@ -16839,12 +16862,12 @@ if ("production" !== process.env.NODE_ENV) {
 
 // Version exists only in the open-source version of React, not in Facebook's
 // internal version.
-React.version = '0.11.1';
+React.version = '0.11.2';
 
 module.exports = React;
 
 }).call(this,require("1YiZ5S"))
-},{"./DOMPropertyOperations":14,"./EventPluginUtils":22,"./ExecutionEnvironment":24,"./ReactChildren":33,"./ReactComponent":34,"./ReactCompositeComponent":36,"./ReactContext":37,"./ReactCurrentOwner":38,"./ReactDOM":39,"./ReactDOMComponent":41,"./ReactDefaultInjection":51,"./ReactDescriptor":54,"./ReactInstanceHandles":62,"./ReactMount":64,"./ReactMultiChild":65,"./ReactPerf":68,"./ReactPropTypes":72,"./ReactServerRendering":76,"./ReactTextComponent":78,"./onlyChild":138,"1YiZ5S":1}],31:[function(require,module,exports){
+},{"./DOMPropertyOperations":14,"./EventPluginUtils":22,"./ExecutionEnvironment":24,"./ReactChildren":33,"./ReactComponent":34,"./ReactCompositeComponent":36,"./ReactContext":37,"./ReactCurrentOwner":38,"./ReactDOM":39,"./ReactDOMComponent":41,"./ReactDefaultInjection":51,"./ReactDescriptor":54,"./ReactInstanceHandles":62,"./ReactMount":64,"./ReactMultiChild":65,"./ReactPerf":68,"./ReactPropTypes":72,"./ReactServerRendering":76,"./ReactTextComponent":78,"./onlyChild":138,"./warning":146,"1YiZ5S":1}],31:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014 Facebook, Inc.
@@ -19630,6 +19653,7 @@ var ReactDOM = mapObject({
   del: false,
   details: false,
   dfn: false,
+  dialog: false,
   div: false,
   dl: false,
   dt: false,
@@ -19677,6 +19701,7 @@ var ReactDOM = mapObject({
   output: false,
   p: false,
   param: true,
+  picture: false,
   pre: false,
   progress: false,
   q: false,
@@ -31305,7 +31330,7 @@ var IssueBoard = React.createClass({displayName: 'IssueBoard',
 		}.bind(this));
 		return (
 			React.DOM.div(null, 
-				FilterForm({onFilterSubmit: this.handleFilterSubmit, owner: this.props.g.owner}), 
+				FilterForm({onFilterSubmit: this.handleFilterSubmit, owner: this.props.g.owner, repo: this.props.g.repo}), 
 				
 				React.DOM.div({className: "box-body"}, 
 					React.DOM.div({id: "contributions-calendar"}, 
@@ -31368,7 +31393,7 @@ var FilterForm = React.createClass({displayName: 'FilterForm',
 				React.DOM.a({className: "button primary right", 'data-hotkey': "l", rel: "facebox", href: "#issues/new", onClick: this.createIssue}, 
 					"New issue"
 				), 
-				React.DOM.a({href: "#labels", rel: "facebox", href: "#/jcouyang/gira/labels", className: "button primary right", 'data-hotkey': "c", onClick: this.createLabel}, 
+				React.DOM.a({href: "#labels", rel: "facebox", href: "#/" + this.props.owner+"/" + this.props.repo + "/labels", className: "button primary right", 'data-hotkey': "c", onClick: this.createLabel}, 
 					"New Label"
 				), 
 				React.DOM.div({className: "right"}, 
@@ -31449,8 +31474,8 @@ var IssueColumn = React.createClass({displayName: 'IssueColumn',
 			)
 		}.bind(this))
 		return (
-			React.DOM.div({id: this.props.columnName, className: "table-column", onDrop: this.drop, onDragOver: this.dragover}, 
-				React.DOM.span({className: "num hide-buttons"}, this.props.columnName
+			React.DOM.div({id: this.props.columnName, className: "contrib-column table-column", onDrop: this.drop, onDragOver: this.dragover}, 
+				React.DOM.span({className: "contrib-number hide-buttons"}, this.props.columnName
 				), 
 				React.DOM.span({className: "lbl"}, 
 					issueNodes
@@ -31507,7 +31532,7 @@ var Issue = React.createClass({displayName: 'Issue',
 		return (
 			React.DOM.div({id: issueid, 'data-issue-id': this.props.number, 'data-label': this.props.label, draggable: "true", className: "blankslate hide-buttons", onDragStart: this.dragStart}, 
         React.DOM.a({'data-issue-id': this.props.number, className: "popable", rel: "facebox", href: detailLink, onClick: this.revealIssue}, 
-          React.DOM.h4({className: "list-group-item-name"}, this.props.title)
+          React.DOM.h4(null, this.props.title)
         ), 
 				labelNodes, 
 				milestoneNode, 

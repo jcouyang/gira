@@ -31113,7 +31113,7 @@ var FilterForm = React.createClass({displayName: 'FilterForm',
 				React.DOM.a({className: "button primary right", 'data-hotkey': "l", rel: "facebox", href: "#issues/new", onClick: this.createIssue}, 
 					"New issue"
 				), 
-				React.DOM.a({href: "#labels", rel: "facebox", href: "#/jcouyang/gira/labels", className: "button primary right", 'data-hotkey': "c", onClick: this.createLabel}, 
+				React.DOM.a({href: "#labels", rel: "facebox", href: "#/" + this.props.owner+"/" + this.props.repo + "/labels", className: "button primary right", 'data-hotkey': "c", onClick: this.createLabel}, 
 					"New Label"
 				), 
 				React.DOM.div({className: "right"}, 
@@ -31457,7 +31457,7 @@ var IssueBoard = React.createClass({displayName: 'IssueBoard',
 		}.bind(this));
 		return (
 			React.DOM.div(null, 
-				FilterForm({onFilterSubmit: this.handleFilterSubmit, owner: this.props.g.owner}), 
+				FilterForm({onFilterSubmit: this.handleFilterSubmit, owner: this.props.g.owner, repo: this.props.g.repo}), 
 				
 				React.DOM.div({className: "box-body"}, 
 					React.DOM.div({id: "contributions-calendar"}, 
@@ -31594,10 +31594,10 @@ store.get = function(key, callback){
 	console.log('store get')
 	if (typeof GM_getValue != "undefined"){
 		console.log('get from gm',GM_getValue(key),key)
-		callback(GM_getValue(key));
+		callback({access_token:GM_getValue(key)});
 	}else {
 		console.log('get from ls')
-		callback(localStorage.getItem(key));
+		callback({access_token:localStorage.getItem(key)});
 	}
 };
 

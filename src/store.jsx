@@ -5,10 +5,10 @@ store.get = function(key, callback){
 	console.log('store get')
 	if (typeof GM_getValue != "undefined"){
 		console.log('get from gm',GM_getValue(key),key)
-		callback(GM_getValue(key));
+		callback({access_token:GM_getValue(key)});
 	}else {
 		console.log('get from ls')
-		callback(localStorage.getItem(key));
+		callback({access_token:localStorage.getItem(key)});
 	}
 };
 

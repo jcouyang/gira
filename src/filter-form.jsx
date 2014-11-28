@@ -42,7 +42,7 @@ var FilterForm = React.createClass({
 				<a  className="button primary right" data-hotkey="l" rel="facebox" href="#issues/new" onClick={this.createIssue}>
 					New issue
 				</a>
-				<a href="#labels"  rel="facebox" href="#/jcouyang/gira/labels" className="button primary right" data-hotkey="c" onClick={this.createLabel}>
+				<a href="#labels"  rel="facebox" href={"#/" + this.props.owner+"/" + this.props.repo + "/labels"} className="button primary right" data-hotkey="c" onClick={this.createLabel}>
 					New Label
 				</a>
 				<div className="right">

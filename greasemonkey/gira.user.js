@@ -16247,6 +16247,7 @@ var HTMLDOMPropertyConfig = {
     loop: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     max: null,
     maxLength: MUST_USE_ATTRIBUTE,
+    media: MUST_USE_ATTRIBUTE,
     mediaGroup: null,
     method: null,
     min: null,
@@ -16254,6 +16255,7 @@ var HTMLDOMPropertyConfig = {
     muted: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     name: null,
     noValidate: HAS_BOOLEAN_VALUE,
+    open: null,
     pattern: null,
     placeholder: null,
     poster: null,
@@ -16274,11 +16276,12 @@ var HTMLDOMPropertyConfig = {
     selected: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     shape: null,
     size: MUST_USE_ATTRIBUTE | HAS_POSITIVE_NUMERIC_VALUE,
+    sizes: MUST_USE_ATTRIBUTE,
     span: HAS_POSITIVE_NUMERIC_VALUE,
     spellCheck: null,
     src: null,
     srcDoc: MUST_USE_PROPERTY,
-    srcSet: null,
+    srcSet: MUST_USE_ATTRIBUTE,
     start: HAS_NUMERIC_VALUE,
     step: null,
     style: null,
@@ -16772,8 +16775,20 @@ var ReactServerRendering = require("./ReactServerRendering");
 var ReactTextComponent = require("./ReactTextComponent");
 
 var onlyChild = require("./onlyChild");
+var warning = require("./warning");
 
 ReactDefaultInjection.inject();
+
+// Specifying arguments isn't necessary since we just use apply anyway, but it
+// makes it clear for those actually consuming this API.
+function createDescriptor(type, props, children) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  return type.apply(null, args);
+}
+
+if ("production" !== process.env.NODE_ENV) {
+  var _warnedForDeprecation = false;
+}
 
 var React = {
   Children: {
@@ -16788,10 +16803,18 @@ var React = {
     EventPluginUtils.useTouchEvents = shouldUseTouch;
   },
   createClass: ReactCompositeComponent.createClass,
-  createDescriptor: function(type, props, children) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    return type.apply(null, args);
+  createDescriptor: function() {
+    if ("production" !== process.env.NODE_ENV) {
+      ("production" !== process.env.NODE_ENV ? warning(
+        _warnedForDeprecation,
+        'React.createDescriptor is deprecated and will be removed in the ' +
+        'next version of React. Use React.createElement instead.'
+      ) : null);
+      _warnedForDeprecation = true;
+    }
+    return createDescriptor.apply(this, arguments);
   },
+  createElement: createDescriptor,
   constructAndRenderComponent: ReactMount.constructAndRenderComponent,
   constructAndRenderComponentByID: ReactMount.constructAndRenderComponentByID,
   renderComponent: ReactPerf.measure(
@@ -16860,12 +16883,12 @@ if ("production" !== process.env.NODE_ENV) {
 
 // Version exists only in the open-source version of React, not in Facebook's
 // internal version.
-React.version = '0.11.1';
+React.version = '0.11.2';
 
 module.exports = React;
 
 }).call(this,require("1YiZ5S"))
-},{"./DOMPropertyOperations":14,"./EventPluginUtils":22,"./ExecutionEnvironment":24,"./ReactChildren":33,"./ReactComponent":34,"./ReactCompositeComponent":36,"./ReactContext":37,"./ReactCurrentOwner":38,"./ReactDOM":39,"./ReactDOMComponent":41,"./ReactDefaultInjection":51,"./ReactDescriptor":54,"./ReactInstanceHandles":62,"./ReactMount":64,"./ReactMultiChild":65,"./ReactPerf":68,"./ReactPropTypes":72,"./ReactServerRendering":76,"./ReactTextComponent":78,"./onlyChild":138,"1YiZ5S":1}],31:[function(require,module,exports){
+},{"./DOMPropertyOperations":14,"./EventPluginUtils":22,"./ExecutionEnvironment":24,"./ReactChildren":33,"./ReactComponent":34,"./ReactCompositeComponent":36,"./ReactContext":37,"./ReactCurrentOwner":38,"./ReactDOM":39,"./ReactDOMComponent":41,"./ReactDefaultInjection":51,"./ReactDescriptor":54,"./ReactInstanceHandles":62,"./ReactMount":64,"./ReactMultiChild":65,"./ReactPerf":68,"./ReactPropTypes":72,"./ReactServerRendering":76,"./ReactTextComponent":78,"./onlyChild":138,"./warning":146,"1YiZ5S":1}],31:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014 Facebook, Inc.
@@ -19651,6 +19674,7 @@ var ReactDOM = mapObject({
   del: false,
   details: false,
   dfn: false,
+  dialog: false,
   div: false,
   dl: false,
   dt: false,
@@ -19698,6 +19722,7 @@ var ReactDOM = mapObject({
   output: false,
   p: false,
   param: true,
+  picture: false,
   pre: false,
   progress: false,
   q: false,
@@ -31200,6 +31225,21 @@ module.exports = require('./lib/React');
 
 },{"./lib/React":30}],148:[function(require,module,exports){
 /** @jsx React.DOM */
+var store = function(){
+};
+
+store.get = function(key, callback){
+	chrome.storage.local.get(key, callback)
+};
+
+store.set = function(keyval, callback){
+  chrome.storage.local.set(keyval,callback)
+}
+
+module.exports = store
+
+},{}],149:[function(require,module,exports){
+/** @jsx React.DOM */
 var React = require('react');
 var IssueBoard = require('./issue-board')
 var G = require('./github-api')
@@ -31217,15 +31257,13 @@ g.getAccessToken().then(function (login) {
 			IssueBoard({g: g, owner: owner, repo: repo}),
 			document.querySelector('#js-repo-pjax-container')
 		)
-	}else {
-		$('.pagehead-actions').append('<li><a href="https://github.com/login/oauth/authorize?client_id=666dc0b3b994cc362ca2&scope=public_repo,user" class="button danger right" data-hotkey="g">Enable Gira</a></li>');
 	}
-
 }, function (error) {
-	console.log("invalid token", error);
+  $('.pagehead-actions').append('<li><a href="https://github.com/login/oauth/authorize?client_id=666dc0b3b994cc362ca2&scope=public_repo,user" class="button danger right" data-hotkey="g">Enable Gira</a></li>');
+	console.debug("no token found");
 });
 
-},{"./github-api":150,"./issue-board":151,"jquery":2,"react":147}],149:[function(require,module,exports){
+},{"./github-api":151,"./issue-board":152,"jquery":2,"react":147}],150:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 var $ = require('jquery');
@@ -31271,7 +31309,7 @@ var FilterForm = React.createClass({displayName: 'FilterForm',
 				React.DOM.a({className: "button primary right", 'data-hotkey': "l", rel: "facebox", href: "#issues/new", onClick: this.createIssue}, 
 					"New issue"
 				), 
-				React.DOM.a({href: "#labels", rel: "facebox", href: "#/jcouyang/gira/labels", className: "button primary right", 'data-hotkey': "c", onClick: this.createLabel}, 
+				React.DOM.a({href: "#labels", rel: "facebox", href: "#/" + this.props.owner+"/" + this.props.repo + "/labels", className: "button primary right", 'data-hotkey': "c", onClick: this.createLabel}, 
 					"New Label"
 				), 
 				React.DOM.div({className: "right"}, 
@@ -31318,15 +31356,30 @@ var FilterForm = React.createClass({displayName: 'FilterForm',
 })
 module.exports = FilterForm;
 
-},{"jquery":2,"react":147}],150:[function(require,module,exports){
+},{"jquery":2,"react":147}],151:[function(require,module,exports){
+(function (process){
 var $ = require('jquery');
-var store = require('./store');
+var store;
+if (process.env.NODE_ENV == "chrome")
+  store = require('./chrome_storage');
+else
+  store = require('./store');
 var Github = function (owner, repo) {
 	this.owner = owner;
 	this.repo = repo;
 	this.milestone = "";
   this.REPO_BASE = 'https://api.github.com/';
-  this.access_token = store.get('access_token');
+  this.access_token = "";
+  this.token_got = $.Deferred();
+  store.get('access_token', function(data){
+    if(typeof(data) != 'undefined' && data.access_token){
+      this.access_token = data.access_token;
+      this.token_got.resolve("yay");       
+    }else{
+      this.token_got.reject("booooo");
+    }
+
+  }.bind(this));
 };
 
 var request = function(url, method){
@@ -31384,7 +31437,6 @@ if(typeof GM_xmlhttpRequest != 'undefined'){
 Github.prototype = {
   getAccessToken: function () {
 		var that = this;
-		if(this.access_token) return $.Deferred().resolve(this.access_token);
     var r = /\?code=([^\/]+)\/?/;
     if (window.location.search && r.test(window.location.search)) {
 
@@ -31393,7 +31445,7 @@ Github.prototype = {
 				.then(function (data) {
 					var token = data.query.results.token.OAuth.access_token;
 					console.log(token);
-					store.set("access_token", token);
+					store.set({"access_token": token}, that.token_got.resolve);
 					that.access_token=token;
 					console.log("token seted");
 					return "token seted";
@@ -31401,7 +31453,7 @@ Github.prototype = {
         console.log("invalid code", error);
       });
     } else {
-      return $.Deferred().resolve(this.access_token);
+      return this.token_got;
     }
   },
 	getComments: function(issueId){
@@ -31474,7 +31526,8 @@ Github.prototype = {
 
 module.exports = Github;
 
-},{"./store":154,"jquery":2}],151:[function(require,module,exports){
+}).call(this,require("1YiZ5S"))
+},{"./chrome_storage":148,"./store":155,"1YiZ5S":1,"jquery":2}],152:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 var $ = require('jquery');
@@ -31602,7 +31655,7 @@ var IssueBoard = React.createClass({displayName: 'IssueBoard',
 		}.bind(this));
 		return (
 			React.DOM.div(null, 
-				FilterForm({onFilterSubmit: this.handleFilterSubmit, owner: this.props.g.owner}), 
+				FilterForm({onFilterSubmit: this.handleFilterSubmit, owner: this.props.g.owner, repo: this.props.g.repo}), 
 				
 				React.DOM.div({className: "box-body"}, 
 					React.DOM.div({id: "contributions-calendar"}, 
@@ -31619,7 +31672,7 @@ var IssueBoard = React.createClass({displayName: 'IssueBoard',
 
 module.exports = IssueBoard;
 
-},{"./filter-form":149,"./issue-column":152,"jquery":2,"ramda":3,"react":147}],152:[function(require,module,exports){
+},{"./filter-form":150,"./issue-column":153,"jquery":2,"ramda":3,"react":147}],153:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 var $ = require('jquery');
@@ -31653,8 +31706,8 @@ var IssueColumn = React.createClass({displayName: 'IssueColumn',
 			)
 		}.bind(this))
 		return (
-			React.DOM.div({id: this.props.columnName, className: "table-column", onDrop: this.drop, onDragOver: this.dragover}, 
-				React.DOM.span({className: "num hide-buttons"}, this.props.columnName
+			React.DOM.div({id: this.props.columnName, className: "contrib-column table-column", onDrop: this.drop, onDragOver: this.dragover}, 
+				React.DOM.span({className: "contrib-number hide-buttons"}, this.props.columnName
 				), 
 				React.DOM.span({className: "lbl"}, 
 					issueNodes
@@ -31665,7 +31718,7 @@ var IssueColumn = React.createClass({displayName: 'IssueColumn',
 });
 module.exports = IssueColumn;
 
-},{"./issue":153,"jquery":2,"ramda":3,"react":147}],153:[function(require,module,exports){
+},{"./issue":154,"jquery":2,"ramda":3,"react":147}],154:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 var $ = require('jquery');
@@ -31711,7 +31764,7 @@ var Issue = React.createClass({displayName: 'Issue',
 		return (
 			React.DOM.div({id: issueid, 'data-issue-id': this.props.number, 'data-label': this.props.label, draggable: "true", className: "blankslate hide-buttons", onDragStart: this.dragStart}, 
         React.DOM.a({'data-issue-id': this.props.number, className: "popable", rel: "facebox", href: detailLink, onClick: this.revealIssue}, 
-          React.DOM.h4({className: "list-group-item-name"}, this.props.title)
+          React.DOM.h4(null, this.props.title)
         ), 
 				labelNodes, 
 				milestoneNode, 
@@ -31730,33 +31783,32 @@ var Issue = React.createClass({displayName: 'Issue',
 });
 module.exports = Issue;
 
-},{"jquery":2,"ramda":3,"react":147}],154:[function(require,module,exports){
+},{"jquery":2,"ramda":3,"react":147}],155:[function(require,module,exports){
 /** @jsx React.DOM */
 var store = function(){
 };
 
-store.get = function(key){
+store.get = function(key, callback){
 	console.log('store get')
 	if (typeof GM_getValue != "undefined"){
 		console.log('get from gm',GM_getValue(key),key)
-		return GM_getValue(key);
+		callback({access_token:GM_getValue(key)});
 	}else {
 		console.log('get from ls')
-		return localStorage.getItem(key);
+		callback({access_token:localStorage.getItem(key)});
 	}
 };
 
-store.set = function(key, val){
+store.set = function(keyval, callback){
 		console.log('store get')
 	if (typeof GM_setValue != "undefined"){
-		console.log('set to gm', val)
-		GM_setValue(key,val);
+		callback(GM_setValue(keyval.key, keyval.vals));
 	}else {
 		console.log('set to ls')
-		localStorage.setItem(key,val);
+		callback(localStorage.setItem(keyval.key,keyval.val));
 	}
 }
 
 module.exports = store
 
-},{}]},{},[148])
+},{}]},{},[149])

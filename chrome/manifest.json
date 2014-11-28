@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "GIRA",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "background": {
     "scripts": ["background.js"],
     "persistent": false

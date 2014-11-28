@@ -124,7 +124,7 @@ var IssueBoard = React.createClass({
 		});
 		return (
 			<div>
-				<FilterForm onFilterSubmit={this.handleFilterSubmit} owner={this.props.g.owner}/>
+				<FilterForm onFilterSubmit={this.handleFilterSubmit} owner={this.props.g.owner} repo={this.props.g.repo}/>
 				
 				<div className="box-body">
 					<div id="contributions-calendar">

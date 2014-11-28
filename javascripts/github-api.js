@@ -1,4 +1,69 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    if (canPost) {
+        var queue = [];
+        window.addEventListener('message', function (ev) {
+            var source = ev.source;
+            if ((source === window || source === null) && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+}
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}],2:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.1
  * http://jquery.com/
@@ -9190,15 +9255,45 @@ return jQuery;
 
 }));
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
+/** @jsx React.DOM */
+var store = function(){
+};
+
+store.get = function(key, callback){
+	chrome.storage.local.get(key, callback)
+};
+
+store.set = function(keyval, callback){
+  chrome.storage.local.set(keyval,callback)
+}
+
+module.exports = store
+
+},{}],4:[function(require,module,exports){
+(function (process){
 var $ = require('jquery');
-var store = require('./store');
+var store;
+if (process.env.NODE_ENV == "chrome")
+  store = require('./chrome_storage');
+else
+  store = require('./store');
 var Github = function (owner, repo) {
 	this.owner = owner;
 	this.repo = repo;
 	this.milestone = "";
   this.REPO_BASE = 'https://api.github.com/';
-  this.access_token = store.get('access_token');
+  this.access_token = "";
+  this.token_got = $.Deferred();
+  store.get('access_token', function(data){
+    if(typeof(data) != 'undefined' && data.access_token){
+      this.access_token = data.access_token;
+      this.token_got.resolve("yay");       
+    }else{
+      this.token_got.reject("booooo");
+    }
+
+  }.bind(this));
 };
 
 var request = function(url, method){
@@ -9256,7 +9351,6 @@ if(typeof GM_xmlhttpRequest != 'undefined'){
 Github.prototype = {
   getAccessToken: function () {
 		var that = this;
-		if(this.access_token) return $.Deferred().resolve(this.access_token);
     var r = /\?code=([^\/]+)\/?/;
     if (window.location.search && r.test(window.location.search)) {
 
@@ -9265,7 +9359,7 @@ Github.prototype = {
 				.then(function (data) {
 					var token = data.query.results.token.OAuth.access_token;
 					console.log(token);
-					store.set("access_token", token);
+					store.set({"access_token": token}, that.token_got.resolve);
 					that.access_token=token;
 					console.log("token seted");
 					return "token seted";
@@ -9273,7 +9367,7 @@ Github.prototype = {
         console.log("invalid code", error);
       });
     } else {
-      return $.Deferred().resolve(this.access_token);
+      return this.token_got;
     }
   },
 	getComments: function(issueId){
@@ -9346,33 +9440,33 @@ Github.prototype = {
 
 module.exports = Github;
 
-},{"./store":3,"jquery":1}],3:[function(require,module,exports){
+}).call(this,require("1YiZ5S"))
+},{"./chrome_storage":3,"./store":5,"1YiZ5S":1,"jquery":2}],5:[function(require,module,exports){
 /** @jsx React.DOM */
 var store = function(){
 };
 
-store.get = function(key){
+store.get = function(key, callback){
 	console.log('store get')
 	if (typeof GM_getValue != "undefined"){
 		console.log('get from gm',GM_getValue(key),key)
-		return GM_getValue(key);
+		callback({access_token:GM_getValue(key)});
 	}else {
 		console.log('get from ls')
-		return localStorage.getItem(key);
+		callback({access_token:localStorage.getItem(key)});
 	}
 };
 
-store.set = function(key, val){
+store.set = function(keyval, callback){
 		console.log('store get')
 	if (typeof GM_setValue != "undefined"){
-		console.log('set to gm', val)
-		GM_setValue(key,val);
+		callback(GM_setValue(keyval.key, keyval.vals));
 	}else {
 		console.log('set to ls')
-		localStorage.setItem(key,val);
+		callback(localStorage.setItem(keyval.key,keyval.val));
 	}
 }
 
 module.exports = store
 
-},{}]},{},[2])
+},{}]},{},[4])
