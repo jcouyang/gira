@@ -2,6 +2,7 @@
 
 ## HOW TO USE
 ### Chrome User
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/jcouyang/gira?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 https://chrome.google.com/webstore/detail/fgmclhebkmfbpeiiomjfcfikchamelmp
 ### Firefox & others
 #### 1 install [GreaseMonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) first
