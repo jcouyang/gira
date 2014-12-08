@@ -159,6 +159,9 @@ Github.prototype = {
   createLabel: function (label) {
 		return post(this.getReposUrl() +  '/labels' + this.concatToken(), 'post',JSON.stringify(label));
   },
+  getIssueLabel: function (id) {
+		return post(this.getReposUrl() +  '/issues/' + id + '/labels' + this.concatToken(), 'get');
+  },
   deleteLabel: function (id, label) {
 		return request(this.getReposUrl() + "/issues/" + id + "/labels/" + label + this.concatToken(), 'delete');
   },

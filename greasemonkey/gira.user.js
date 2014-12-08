@@ -31691,9 +31691,7 @@ var IssueColumn = React.createClass({displayName: 'IssueColumn',
     var column = e.currentTarget;
     var $issue = $('#issue-' + e.dataTransfer.getData('text/plain'));
     this.props.g.deleteLabel($issue.data('issue-id'), $issue.data('label'))
-      .then(function(labels)  {
-        this.props.g.addLabel($issue.data('issue-id'), r.pluck('name')(labels).concat(column.id));
-      }.bind(this));
+    this.props.g.addLabel($issue.data('issue-id'), r.pluck('name')(labels).concat(column.id));
     $(e.currentTarget)
       .find('span.lbl')
       .append($($issue));

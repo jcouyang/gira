@@ -15,9 +15,14 @@ var IssueColumn = React.createClass({
     var column = e.currentTarget;
     var $issue = $('#issue-' + e.dataTransfer.getData('text/plain'));
     this.props.g.deleteLabel($issue.data('issue-id'), $issue.data('label'))
-      .then((labels) => {
+                .then((labels)=>{
+      this.props.g.addLabel($issue.data('issue-id'), r.pluck('name')(labels).concat(column.id));
+                },()=>{
+      this.props.g.getIssueLabel($issue.data('issue-id')).then((labels)=>{
         this.props.g.addLabel($issue.data('issue-id'), r.pluck('name')(labels).concat(column.id));
-      });
+      })
+                })
+
     $(e.currentTarget)
       .find('span.lbl')
       .append($($issue));
