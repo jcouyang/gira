@@ -31519,6 +31519,9 @@ Github.prototype = {
   createLabel: function (label) {
 		return post(this.getReposUrl() +  '/labels' + this.concatToken(), 'post',JSON.stringify(label));
   },
+  getIssueLabel: function (id) {
+		return post(this.getReposUrl() +  '/issues/' + id + '/labels' + this.concatToken(), 'get');
+  },
   deleteLabel: function (id, label) {
 		return request(this.getReposUrl() + "/issues/" + id + "/labels/" + label + this.concatToken(), 'delete');
   },
@@ -31691,7 +31694,14 @@ var IssueColumn = React.createClass({displayName: 'IssueColumn',
     var column = e.currentTarget;
     var $issue = $('#issue-' + e.dataTransfer.getData('text/plain'));
     this.props.g.deleteLabel($issue.data('issue-id'), $issue.data('label'))
-    this.props.g.addLabel($issue.data('issue-id'), r.pluck('name')(labels).concat(column.id));
+                .then(function(labels){
+      this.props.g.addLabel($issue.data('issue-id'), r.pluck('name')(labels).concat(column.id));
+                }.bind(this),function(){
+      this.props.g.getIssueLabel($issue.data('issue-id')).then(function(labels){
+        this.props.g.addLabel($issue.data('issue-id'), r.pluck('name')(labels).concat(column.id));
+      }.bind(this))
+                }.bind(this))
+
     $(e.currentTarget)
       .find('span.lbl')
       .append($($issue));
