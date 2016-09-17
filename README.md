@@ -1,3 +1,5 @@
+## **DEPRECATED**: please use github's native [projects](https://help.github.com/articles/tracking-the-progress-of-your-work-with-projects/)
+
 ![](https://travis-ci.org/jcouyang/gira.svg?branch=master)
 
 ## HOW TO USE
